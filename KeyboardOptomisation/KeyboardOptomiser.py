@@ -42,5 +42,6 @@ def avgBDistance(filename):
 
 
 # Usage example
-filename = 'google-10000-english-usa.txt'  # Replace with your file name
+# Replace with your file name
+filename = 'KeyboardOptomisation/Wordlist/google-10000-english-usa.txt'
 avgBDistance(filename)
