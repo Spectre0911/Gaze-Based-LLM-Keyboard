@@ -41,7 +41,5 @@ def avgBDistance(filename):
         print(f"File '{filename}' not found.")
 
 
-# Usage example
-# Replace with your file name
 filename = 'KeyboardOptomisation/Wordlist/google-10000-english-usa.txt'
 avgBDistance(filename)
