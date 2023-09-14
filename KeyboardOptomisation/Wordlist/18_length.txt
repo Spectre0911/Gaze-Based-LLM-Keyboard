@@ -1,8 +1,8 @@
-32329.characteristically
-37657.telecommunications
-56414.misrepresentations
-80419.disproportionately
-83146.telecommunications
-87087.wissenschaftlichen
-88410.intercommunication
-88972.transubstantiation
+characteristically
+telecommunications
+misrepresentations
+disproportionately
+telecommunications
+wissenschaftlichen
+intercommunication
+transubstantiation
