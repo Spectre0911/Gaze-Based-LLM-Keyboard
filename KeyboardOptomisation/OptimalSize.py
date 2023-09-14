@@ -5,27 +5,6 @@ import Trie
 from itertools import combinations
 from constants import BASE_PATH
 
-def generate_random_alphabet():
-    """
-    Generates a random set of characters between 10 and 26 characters long.
-
-    Returns:
-        Set: A set of characters
-    """
-    alphabet = [
-        'b', 'c', 'd',  'f', 'g', 'h', 'j', 'k', 'l',
-        'm', 'n', 'p', 'q', 'r', 's', 't',  'v', 'w', 'x', 'y', 'z']
-    numLetters = random.randint(5, 21)
-    random_letters = random.choices(
-        alphabet, k=numLetters)
-    random_letters.append('a')
-    random_letters.append('e')
-    random_letters.append('i')
-    random_letters.append('o')
-    random_letters.append('u')
-    return set(''.join(random_letters))
-
-
 def get_random_word():
     """
     Gets a random word of random length.
