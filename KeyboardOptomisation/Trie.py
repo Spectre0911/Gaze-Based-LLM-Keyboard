@@ -1,3 +1,6 @@
+from constants import BASE_PATH
+
+
 class TrieNode:
     def __init__(self):
         self.children = {}  
@@ -24,58 +27,58 @@ class Trie:
             node = node.children[char]
         return node.is_end_of_word
 
-    def searchR(self, regex, B):
+        
+    def spellWord(self, word, characterSet):
+        """
+        Spells the word with the available characters in the character set
+
+        Args:
+            word (String): A word within the wordlist
+            characterSet (Set): A set of characters representing the available characters on the keyboard
+
+        Returns:
+            _type_: _description_
+        """
+        normalisedWord = ""
+        normalisedWord = "".join([c if c in characterSet else "_" for c in word])
+        return normalisedWord
+
+    def searchR(self, word, unknownCharacterSet, characterSet):
+        """
+        Searches for the word in the trie, and returns the words that match the the normalised word and the number of them
+
+        Args:
+            word (String): The word to be searched for
+            characterSet (String): The characters that can be used
+
+        Returns:
+            (Int, List): (Number of words that match the normalised word, List of words that match the normalised word)
+        """
         words = []
         count = [0]
 
-        def dfs(regex, currentWord, node):
-            if not regex:
+        def dfs(word, currentWord, node):
+            if not word:
                 if node.is_end_of_word:
                     count[0] += 1
                     words.append(''.join(currentWord))
                 return
 
-            char = regex[0]
+            char = word[0]
             children = node.children
 
             if char == "_":
-                inter = B.intersection(children)
-                for child in inter:
-                    dfs(regex[1:], currentWord + [child], children[child])
+                nextWord = word[1:]
+                for child in children:
+                    if child in unknownCharacterSet:
+                        dfs(nextWord, currentWord + [child], children[child])
             elif char in children:
-                dfs(regex[1:], currentWord + [char], children[char])
+                dfs(word[1:], currentWord + [char], children[char])
 
-        dfs(list(regex), [], self.root)
+        dfs(self.spellWord(word, characterSet), [], self.root)
         return (count, words)
 
-    def spellSearch(self, regex, B):
-        words = []
 
-        def dfs(regex, currentWord, node):
-            if not regex:  # Base case: If the regex is empty, add the currentWord to the list
-                if node.is_end_of_word:
-                    words.append(currentWord)
-                return
 
-            char = regex[0]
-            children = node.children
+    
 
-            if char in B:
-                inter = B.intersection(children)
-                for child in inter:
-                    dfs(regex[1:], currentWord + child, children[child])
-            elif char not in children:
-                return
-            else:
-                dfs(regex[1:], currentWord + char, children[char])
-
-        dfs(regex, "", self.root)
-        return words
-
-    def starts_with(self, prefix):
-        node = self.root
-        for char in prefix:
-            if char not in node.children:
-                return False
-            node = node.children[char]
-        return True
