@@ -42,6 +42,7 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
     count = [10000000] * len(characterSets) 
     # Keeps track of the optimal character set 
     cSet = [None] * len(characterSets) 
+    
     for j, kCharSet in enumerate(characterSets):
         print(j)
         for characterSet in kCharSet:
@@ -53,11 +54,12 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
                     word, unknownCharacterSet, characterSet)[0][0]
             currentCount = count[j]
             if tempCount < currentCount:
-                count[j] = tempCount
+                count[j] = tempCount 
                 cSet[j] = characterSet
 
-    print("----------")
-    [print(c) for c in count]
+    # print("----------")
+    for i in range(len(count)):
+        print(f"Keyboard {cSet[i]} has an average of {count[i]} words returned")
     return count
 
 def createWordTries():

@@ -1,6 +1,5 @@
 BASE_PATH = "Wordlist/"
 alphabet = set('abcdefghijklmnopqrstuvwxyz')
-prechosen = {'a', 'e', 'i', 'o', 'u', 't',
-                'n', 's', 'r', 'h', 'f', 'd', 'p', 'm', 'l'}
-
+prechosen = {'h', 'n', 's', 'd', 'g', 'a', 'o', 'i', 'p', 'r', 'm', 'c', 't', 'l','e'}
 # prechosen = {'p', 'y', 'j', 'v', 'w', 'f', 'm', 'c', 'n', 'b', 'g', 'x', 'q', 'z', 'k'}
+# prechosen = {'p', 'd', 'n', 'o', 'c', 'e', 's', 't', 'r', 'a', 'm', 'i', 'l'}

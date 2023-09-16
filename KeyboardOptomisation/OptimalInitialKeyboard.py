@@ -1,32 +1,42 @@
+import string
 from KeyboardCharacterOptomiser import calculateAverageWordsReturnedT, createWordTries, getSampleWords
 from constants import alphabet, prechosen, BASE_PATH
 import random
 import math
 import copy
+import time
+def simulatedAnnealing(prechosen, allWordTries, sampleWords):
+    T = 1000.0  # initial temperature
+    T_min = 50  # minimum temperature
+    alpha = 0.99  # cooling rate    
+    
+    curMinCharSet = prechosen
+    curMinCount = calculateAverageWordsReturnedT([[curMinCharSet]], allWordTries, sampleWords, curMinCharSet)[0]
+    
+    globalMinCharSet = curMinCharSet
+    globalMinCount = curMinCount
 
-def simulatedAnnealing(prechosen, initialMinCount):
-    """
-    Performs simulated annealing to find the best character set for a given word length.
-    """
-    # The set of all words in the wordlist in tries
-    allWordTries = createWordTries()
-    # A selection of 10000 randomly chosen words from the wordlist
-    sampleWords = getSampleWords(10000)
-    count = initialMinCount
-    minCharSet = prechosen
-    for _ in range(10000):
-        newCharSet = mutateChars(minCharSet)
-        avgWords = calculateAverageWordsReturnedT([[minCharSet]], allWordTries, sampleWords, minCharSet)[0]
-        deltaE = count - avgWords 
-        print(deltaE)
-        prob = math.exp(-deltaE)
-        print(f"p: {prob}, count: {count}, avgWords: {avgWords}")
+    while T > T_min:
+        print(T)
+        newCharSet = mutateChars(curMinCharSet)
+        avgWords = calculateAverageWordsReturnedT([[newCharSet]], allWordTries, sampleWords, newCharSet)[0]
+        deltaE = avgWords - curMinCount
+        
         if deltaE < 0:
-            count = avgWords
-            minCharSet = newCharSet
-            print(minCharSet)
-    print(count, minCharSet)
+            # print("Accepting better solution")
+            if avgWords < globalMinCount:
+                globalMinCount = avgWords
+                globalMinCharSet = newCharSet
+            curMinCount = avgWords
+            curMinCharSet = newCharSet
+            
+        elif random.random() < math.exp(-deltaE / T):
+            # print(f"Accepting worse solution with prob {(math.exp(-deltaE / T))}")
+            curMinCount = avgWords
+            curMinCharSet = newCharSet
 
+        T *= alpha
+    print(globalMinCount, globalMinCharSet)
 
 def mutateChars(prechosen):
     """
@@ -43,9 +53,20 @@ def mutateChars(prechosen):
 
     newSet.remove(letterToChange)
     newSet.add(letterToChangeTo)
-    print(len(prechosen), len(newSet), letterToChange, letterToChangeTo)
 
     return newSet
 
-simulatedAnnealing(prechosen, 100000000)
+def generate_random_charset(k):
+    all_characters = string.ascii_lowercase
+    random_set = set()
+    while len(random_set) < k:
+        random_set.add(random.choice(all_characters))
+    return random_set
+
+allWordTries = createWordTries()
+sampleWords = getSampleWords(10000)
+for i in range(10):
+    prechosen = generate_random_charset(len(prechosen))
+    simulatedAnnealing(prechosen, allWordTries, sampleWords)
+    print("Completed iteration")
 
