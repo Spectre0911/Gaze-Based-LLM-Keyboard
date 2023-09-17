@@ -83,28 +83,59 @@ def createWordTries():
 
     return trie_dict
 
+def calculateAverageWordsReturnedIncremental( allWordTries, sampleWords, prechosen):
+    initialLength = len(prechosen)
+    # The letters that do not appear on the keyboard
+    remainingAlphabet = alphabet - prechosen
+    # Keeps track of the average number of words returned for the each optimal character set
+    count = [10000000] * 26
+    # Keeps track of the optimal character set 
+    cSet = [None] * 26
+        
+    for j in range(len(prechosen), 26):
+        print("Here")
+        combs = generateKLengthCharacterSets(j, prechosen)
+        for characterSet in combs:
+            unknownCharacterSet = remainingAlphabet - characterSet
+            tempCount = 0
+            for word in sampleWords:
+                wordLength = len(word)
+                tempCount += allWordTries[wordLength].searchR(
+                    word, unknownCharacterSet, characterSet)[0][0]
+            currentCount = count[j-initialLength]
+            if tempCount < currentCount:
+                count[j-initialLength] = tempCount 
+                cSet[j-initialLength] = characterSet
+        prechosen = cSet[j-initialLength]
+
+    # print("----------")
+    for i in range(len(count)):
+        print(f"Keyboard {cSet[i]} has an average of {count[i]} words returned")
+    return count
 
 
-def generateKLengthCharacterSets(k):
+
+def generateKLengthCharacterSets(k, prechosen):
     consonants = ''.join(sorted(alphabet - prechosen))
     return [set(prechosen) | set(c) for c in combinations(consonants, k - len(prechosen))]
 
 if __name__ == '__main__':
-    print("GENERATING CHARACTER SETS....")
-    arr = []
-    for i in range(len(prechosen), 26):
-        combs = generateKLengthCharacterSets(i)
-        print(i, len(combs))
-        arr.append(combs)
-    print("GENERATED CHARACTER SETS....")
-    print("GENERATING TRIES")
-    # The set of all words in the wordlist in tries
-    allWordTries = createWordTries()
-    print("GENERATED TRIES")
-    # A selection of 10000 randomly chosen words from the wordlist
-    sampleWords = getSampleWords(10000)
-    print("CALCULATING AVERAGE POSITION OF WORD FOR CHARACTER SET...")
-    count = calculateAverageWordsReturnedT(arr, allWordTries, sampleWords, prechosen)[0]
-    print("COMPLETE")
+    calculateAverageWordsReturnedIncremental(createWordTries(), getSampleWords(10000), prechosen)
+    # print("GENERATING CHARACTER SETS....")
+    # arr = []
+    # for i in range(len(prechosen), 26):
+    #     combs = generateKLengthCharacterSets(i)
+    #     print(i, len(combs))
+    #     arr.append(combs)
+    # print("GENERATED CHARACTER SETS....")
+    # print("GENERATING TRIES")
+    # # The set of all words in the wordlist in tries
+    # allWordTries = createWordTries()
+    # print("GENERATED TRIES")
+    # # A selection of 10000 randomly chosen words from the wordlist
+    # sampleWords = getSampleWords(10000)
+    # print("CALCULATING AVERAGE POSITION OF WORD FOR CHARACTER SET...")
+    # count = calculateAverageWordsReturnedT(arr, allWordTries, sampleWords, prechosen)[0]
+    # print("COMPLETE")
 
 
