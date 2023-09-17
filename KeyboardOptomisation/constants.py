@@ -21,3 +21,6 @@ prechosen =  {'t', 'e', 'c', 'r', 'd', 'n', 'o', 'a', 'i', 's', 'l'}
 # Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'z', 'k', 'u', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'f', 'g', 'h'} has an average of 10019 words returned
 # Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'z', 'k', 'u', 'd', 'e', 'x', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'f', 'g', 'h'} has an average of 10010 words returned
 # Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'z', 'k', 'u', 'd', 'e', 'x', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'j', 'f', 'g', 'h'} has an average of 10008 words returned
+
+
+# Average sentence length 20 words
