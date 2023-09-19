@@ -40,7 +40,7 @@ class Trie:
             _type_: _description_
         """
         normalisedWord = ""
-        normalisedWord = "".join([c if c in characterSet else "_" for c in word])
+        normalisedWord = "".join([c if c in characterSet else "!" for c in word])
         return normalisedWord
 
     def searchR(self, word, unknownCharacterSet, characterSet):
@@ -67,7 +67,7 @@ class Trie:
             char = word[0]
             children = node.children
 
-            if char == "_":
+            if char == "!":
                 nextWord = word[1:]
                 for child in children:
                     if child in unknownCharacterSet:

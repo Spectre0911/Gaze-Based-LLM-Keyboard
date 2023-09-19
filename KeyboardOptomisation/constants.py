@@ -24,3 +24,8 @@ prechosen =  {'t', 'e', 'c', 'r', 'd', 'n', 'o', 'a', 'i', 's', 'l'}
 
 
 # Average sentence length 20 words
+"""
+Spelt sentence: lab!rinthine corridors !ithin the ancient castle !ere filled !ith cob!ebs and shro!ded in m!ster!, Unknown {'z', 'j', 'y', 'u', 'v', 'w', 'k', 'x', 'q'}
+
+What is sentence, preface explicitly with <Decoded>: 
+"""
