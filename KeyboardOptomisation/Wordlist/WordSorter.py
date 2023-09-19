@@ -13,7 +13,7 @@ def process_words(filename):
         if word.startswith('#!comment:') or word.startswith('http') or word.startswith('-') or k > 18 or not english_alphabet_pattern.match(word):
             continue
 
-        output_filename = f"{BASE_PATH}{k}_length.txt"
+        output_filename = f"{k}_length.txt"
 
         # Open the output file in append mode
         with open(output_filename, 'a') as output_file:

@@ -24,6 +24,15 @@ def getWordLengthProbability():
 
 
 def getSampleWords(k):
+    """
+    Get a sample of words based on word length probability.
+
+    Args:
+        k (int): Number of words to sample in total.
+    
+    Returns:
+        list: List of sampled words.
+    """
     probs = getWordLengthProbability()
     sampleWords = []
     for i in range(1, 19):
@@ -31,8 +40,7 @@ def getSampleWords(k):
         with open(f"{BASE_PATH}{i}_length.txt", 'r') as file:
             words = file.read().split()
             samples = random.choices(words, k=prop)
-            for i in samples:
-                sampleWords.append(i)
+            sampleWords.extend(samples)
     return sampleWords
 
 def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, prechosen):
@@ -91,26 +99,32 @@ def calculateAverageWordsReturnedIncremental( allWordTries, sampleWords, prechos
     count = [10000000] * 26
     # Keeps track of the optimal character set 
     cSet = [None] * 26
+    singleCount = [0] * 26
         
     for j in range(len(prechosen), 26):
         print("Here")
         combs = generateKLengthCharacterSets(j, prechosen)
         for characterSet in combs:
-            unknownCharacterSet = remainingAlphabet - characterSet
+            unknownCharacterSet = alphabet - characterSet
             tempCount = 0
+            tempSingleWord = 0
             for word in sampleWords:
                 wordLength = len(word)
-                tempCount += allWordTries[wordLength].searchR(
+                wordCount = allWordTries[wordLength].searchR(
                     word, unknownCharacterSet, characterSet)[0][0]
+                tempCount += wordCount
+                if wordCount == 1:
+                    tempSingleWord += 1
             currentCount = count[j-initialLength]
             if tempCount < currentCount:
                 count[j-initialLength] = tempCount 
                 cSet[j-initialLength] = characterSet
+                singleCount[j-initialLength] = tempSingleWord
         prechosen = cSet[j-initialLength]
 
     # print("----------")
     for i in range(len(count)):
-        print(f"Keyboard {cSet[i]} has an average of {count[i]} words returned")
+        print(f"Keyboard {cSet[i]} has an average of {count[i]} words returned where only 1 word was returned {singleCount[i]} times")
     return count
 
 
@@ -137,5 +151,6 @@ if __name__ == '__main__':
     # print("CALCULATING AVERAGE POSITION OF WORD FOR CHARACTER SET...")
     # count = calculateAverageWordsReturnedT(arr, allWordTries, sampleWords, prechosen)[0]
     # print("COMPLETE")
+ 
 
 

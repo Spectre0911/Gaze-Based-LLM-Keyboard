@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 import os
 from Trie import Trie  
 from constants import BASE_PATH, alphabet
-import requests
-import json
 import csv
 import openai
 
@@ -12,16 +10,7 @@ load_dotenv()
 
 
 openai.api_key = os.getenv("GPT_API_KEY")
-keyboards = [
-    {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'd', 'e'},
-    # {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'd', 'e'},
-    # {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'p', 'd', 'e'},
-    # {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'p', 'b', 'd', 'e'},
-    # {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'p', 'b', 'd', 'e', 'h'},
-    # {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'p', 'b', 'd', 'e', 'g', 'h'},
-    # {'i', 'c', 'l', 'p', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'm', 'b', 'f', 'g', 'h'},
-    # {'i', 'c', 'w', 'l', 'p', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'm', 'b', 'f', 'g', 'h'},
-]
+
 
 def process_text(sentence):
     # Remove punctuation

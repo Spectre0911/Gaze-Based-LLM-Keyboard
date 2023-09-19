@@ -1,27 +1,27 @@
 BASE_PATH = "Wordlist/"
 alphabet = set('abcdefghijklmnopqrstuvwxyz')
 
-# prechosen = {'m', 'e', 'i', 's', 'l', 'o', 'd', 't', 'h', 'n', 'a', 'r'}
 #22225
 prechosen =  {'t', 'e', 'c', 'r', 'd', 'n', 'o', 'a', 'i', 's', 'l'}
 
 
-# Keyboard {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'd', 'e'} has an average of 21596 words returned
-# Keyboard {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'd', 'e'} has an average of 17743 words returned
-# Keyboard {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'p', 'd', 'e'} has an average of 15447 words returned
-# Keyboard {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'p', 'b', 'd', 'e'} has an average of 13659 words returned
-# Keyboard {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'p', 'b', 'd', 'e', 'h'} has an average of 12466 words returned
-# Keyboard {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'p', 'b', 'd', 'e', 'g', 'h'} has an average of 11648 words returned
-# Keyboard {'i', 'c', 'l', 'p', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'm', 'b', 'f', 'g', 'h'} has an average of 11046 words returned
-# Keyboard {'i', 'c', 'w', 'l', 'p', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'm', 'b', 'f', 'g', 'h'} has an average of 10645 words returned
-# Keyboard {'i', 'c', 'w', 'l', 'p', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'f', 'g', 'h'} has an average of 10377 words returned
-# Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'f', 'g', 'h'} has an average of 10199 words returned
-# Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'k', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'f', 'g', 'h'} has an average of 10105 words returned
-# Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'k', 'u', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'f', 'g', 'h'} has an average of 10054 words returned
-# Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'z', 'k', 'u', 'd', 'e', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'f', 'g', 'h'} has an average of 10019 words returned
-# Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'z', 'k', 'u', 'd', 'e', 'x', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'f', 'g', 'h'} has an average of 10010 words returned
-# Keyboard {'i', 'c', 'w', 'l', 'p', 'y', 'z', 'k', 'u', 'd', 'e', 'x', 'o', 'r', 'n', 'a', 's', 't', 'v', 'm', 'b', 'j', 'f', 'g', 'h'} has an average of 10008 words returned
 
+
+# Keyboard {'t', 'e', 'r', 'i', 'd', 'c', 'a', 'n', 'o', 's', 'l'} has an average of 21761 words returned where only 1 word was returned 7712 times
+# Keyboard {'t', 'e', 'r', 'i', 'd', 'm', 'c', 'a', 'n', 'o', 's', 'l'} has an average of 17964 words returned where only 1 word was returned 8146 times
+# Keyboard {'t', 'e', 'g', 'r', 'i', 'd', 'm', 'c', 'a', 'n', 'o', 's', 'l'} has an average of 15638 words returned where only 1 word was returned 8465 times
+# Keyboard {'t', 'e', 'g', 'r', 'i', 'd', 'm', 'c', 'a', 'b', 'n', 'o', 's', 'l'} has an average of 13940 words returned where only 1 word was returned 8813 times
+# Keyboard {'t', 'e', 'g', 'r', 'i', 'd', 'm', 'c', 'p', 'a', 'b', 'n', 'o', 's', 'l'} has an average of 12609 words returned where only 1 word was returned 9130 times
+# Keyboard {'t', 'e', 'h', 'g', 'r', 'i', 'd', 'm', 'c', 'p', 'a', 'b', 'n', 'o', 's', 'l'} has an average of 11700 words returned where only 1 word was returned 9381 times
+# Keyboard {'t', 'e', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'p', 'a', 'b', 'n', 'm', 'l'} has an average of 11075 words returned where only 1 word was returned 9564 times
+# Keyboard {'t', 'e', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'p', 'a', 'b', 'n', 'm', 'f', 'l'} has an average of 10675 words returned where only 1 word was returned 9680 times
+# Keyboard {'t', 'e', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'u', 'p', 'a', 'b', 'n', 'm', 'f', 'l'} has an average of 10391 words returned where only 1 word was returned 9781 times
+# Keyboard {'t', 'e', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'u', 'k', 'p', 'a', 'b', 'n', 'm', 'f', 'l'} has an average of 10220 words returned where only 1 word was returned 9867 times
+# Keyboard {'t', 'e', 'v', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'u', 'k', 'p', 'a', 'b', 'n', 'm', 'f', 'l'} has an average of 10113 words returned where only 1 word was returned 9937 times
+# Keyboard {'t', 'e', 'v', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'u', 'k', 'p', 'y', 'a', 'b', 'n', 'm', 'f', 'l'} has an average of 10048 words returned where only 1 word was returned 9977 times
+# Keyboard {'t', 'e', 'v', 'j', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'u', 'k', 'p', 'y', 'a', 'b', 'n', 'm', 'f', 'l'} has an average of 10017 words returned where only 1 word was returned 9999 times
+# Keyboard {'t', 'e', 'z', 'v', 'j', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'u', 'k', 'p', 'y', 'a', 'b', 'n', 'm', 'f', 'l'} has an average of 10008 words returned where only 1 word was returned 10008 times
+# Keyboard {'t', 'e', 'z', 'v', 'j', 'c', 'g', 'o', 'r', 's', 'h', 'w', 'i', 'd', 'u', 'k', 'q', 'p', 'y', 'a', 'b', 'n', 'm', 'f', 'l'} has an average of 10008 words returned where only 1 word was returned 10008 t
 
 # Average sentence length 20 words
 """
