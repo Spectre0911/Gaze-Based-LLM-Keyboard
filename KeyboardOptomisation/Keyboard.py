@@ -1,8 +1,9 @@
 import string
 from dotenv import load_dotenv
 import os
+from KeyboardCharacterOptomiser import createWordTries
 from Trie import Trie  
-from constants import BASE_PATH, alphabet
+from constants import BASE_PATH, alphabet, prechosen
 import csv
 import openai
 
@@ -12,32 +13,8 @@ load_dotenv()
 openai.api_key = os.getenv("GPT_API_KEY")
 
 
-def process_text(sentence):
-    # Remove punctuation
-    sentence = sentence.translate(str.maketrans('', '', string.punctuation))
-    # Convert to lower case
-    sentence = sentence.lower()
-    return sentence
-
-def decodeSentence(speltSentence, unknownChars):
-    data = {
-        "role": "user",
-        "content": f"Spelt sentence: {speltSentence}, Unknown {unknownChars} What is sentence? Think first and preface sentence with Decoded:",
-    }
-    result = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[data])
-    if 'choices' in result and len(result['choices']) > 0:
-        resultContent = result['choices'][0]['message']["content"].strip().split(":")[1].lstrip()
-        processedContent = process_text(resultContent)
-        
-        return processedContent
-    else:
-        return "No response from API."
-    
-
-    
-
-def scoreSentence(gptSentence, actualSentence):
-    gptWords = gptSentence.split()
+def scoreSentence(returnedSentence, actualSentence):
+    gptWords = returnedSentence.split()
     actualWords = actualSentence.split()
     score = 0
     
@@ -47,12 +24,10 @@ def scoreSentence(gptSentence, actualSentence):
             
     return score
 
-def spellSentences(filename, keyboards):
+def spellSentences(filename, keyboards, allWordTries):
     try:
-        with open(filename, 'r') as file, open("Keyboard11Results.csv", 'w', newline='') as result_file:
-            csv_writer = csv.writer(result_file)
-            csv_writer.writerow(["Spelt Sentence", "GPT Sentence", "Actual Sentence", "Score", "Average"])
-            
+        with open(filename, 'r') as file:
+            sentences = []
             for keyboard in keyboards:
                 file.seek(0)
                 for line in file:
@@ -62,35 +37,35 @@ def spellSentences(filename, keyboards):
                         speltWord = Trie().spellWord(word, keyboard)
                         speltWords.append(speltWord)
                     speltSentence = " ".join(speltWords)
-                    unknownChars = str(set(alphabet) - set(keyboard))
-                    gpt_sentence = decodeSentence(speltSentence, unknownChars)
-                    score = scoreSentence(gpt_sentence, line.strip())
+                    sentences.append(speltSentence)
+                    singleWordReplaced = singleWordReplacement(speltSentence, keyboard, allWordTries)
+                    speltSentenceScore = scoreSentence(speltSentence, line)
+                    singleWordReplacedScore = scoreSentence(singleWordReplaced, line)
+                    print(f"O- {line.strip()}\nS- {speltSentence}: {speltSentenceScore/len(words)}\nR- {singleWordReplaced}: {singleWordReplacedScore/len(words)}\n")
                     
-                    csv_writer.writerow([speltSentence, gpt_sentence, line.strip(), score, score/len(line.strip().split())])
-                    
+            return sentences
     except FileNotFoundError:
         print(f"File '{filename}' not found.")
         
-# filename = f"{BASE_PATH}/sentences.txt"
-# spellSentences(filename, keyboards)
+def singleWordReplacement(speltSentence, keyboard, allWordTries):
+    newWords = []
+    words = speltSentence.strip().split()
+    for word in words:
+        searchRes = allWordTries[len(word)].searchR(word, alphabet - keyboard, keyboard)
+        wordCount = searchRes[0][0]
+        words = searchRes[1]
+        if wordCount == 1:
 
-def calculate_average_score(filename):
-    total_score = 0
-    num_rows = 0
+            newWords.append(words[0])
+        else:
+            newWords.append(word)
+    newSentence = " ".join(newWords)
+    return newSentence
+  
+                    
+def main():
+    allWordTries = createWordTries()
+    spellSentences(f"{BASE_PATH}/sentences.txt", [prechosen], allWordTries)
     
-    with open(filename, 'r') as result_file:
-        csv_reader = csv.DictReader(result_file)
-        
-        for row in csv_reader:
-            total_score += float(row['Average'])
-            num_rows += 1
-    
-    if num_rows == 0:
-        return 0
-    
-    return total_score / num_rows
-
-# Example usage
-filename = "Keyboard11Results.csv"
-averageScore = calculate_average_score(filename)
-print(f"{averageScore}")
+if __name__ == "__main__":
+    main()
