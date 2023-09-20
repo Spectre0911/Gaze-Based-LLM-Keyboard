@@ -1,4 +1,4 @@
-import string
+import csv
 from dotenv import load_dotenv
 import os
 from KeyboardCharacterOptomiser import createWordTries
@@ -24,9 +24,12 @@ def scoreSentence(returnedSentence, actualSentence):
             
     return score
 
+
 def spellSentences(filename, keyboards, allWordTries):
     try:
-        with open(filename, 'r') as file:
+        with open(filename, 'r') as file, open('singleWordReplacementImprovement.csv', 'w', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow(['Original', 'SpeltSentence', 'SpeltSentenceScore', 'SingleWordReplaced', 'SingleWordReplacedScore'])  # Header
             sentences = []
             for keyboard in keyboards:
                 file.seek(0)
@@ -41,11 +44,16 @@ def spellSentences(filename, keyboards, allWordTries):
                     singleWordReplaced = singleWordReplacement(speltSentence, keyboard, allWordTries)
                     speltSentenceScore = scoreSentence(speltSentence, line)
                     singleWordReplacedScore = scoreSentence(singleWordReplaced, line)
+                    
+                    # Write to CSV
+                    csvwriter.writerow([line.strip(), speltSentence, speltSentenceScore/len(words), singleWordReplaced, singleWordReplacedScore/len(words)])
+                    
                     print(f"O- {line.strip()}\nS- {speltSentence}: {speltSentenceScore/len(words)}\nR- {singleWordReplaced}: {singleWordReplacedScore/len(words)}\n")
                     
             return sentences
     except FileNotFoundError:
         print(f"File '{filename}' not found.")
+
         
 def singleWordReplacement(speltSentence, keyboard, allWordTries):
     newWords = []
