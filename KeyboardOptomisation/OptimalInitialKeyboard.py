@@ -17,7 +17,6 @@ def simulatedAnnealing(prechosen, allWordTries, sampleWords):
     globalMinCount = curMinCount
 
     while T > T_min:
-        print(T)
         newCharSet = mutateChars(curMinCharSet)
         avgWords = calculateAverageWordsReturnedT([[newCharSet]], allWordTries, sampleWords, newCharSet)[0]
         deltaE = avgWords - curMinCount
@@ -37,6 +36,7 @@ def simulatedAnnealing(prechosen, allWordTries, sampleWords):
 
         T *= alpha
     print(globalMinCount, globalMinCharSet)
+    return globalMinCharSet
 
 def mutateChars(prechosen):
     """

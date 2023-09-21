@@ -29,7 +29,7 @@ def spellSentences(filename, keyboards, allWordTries):
     try:
         with open(filename, 'r') as file, open('singleWordReplacementImprovement.csv', 'w', newline='') as csvfile:
             csvwriter = csv.writer(csvfile)
-            csvwriter.writerow(['Original', 'SpeltSentence', 'SpeltSentenceScore', 'SingleWordReplaced', 'SingleWordReplacedScore'])  # Header
+            csvwriter.writerow(['Original', 'SpeltSentence', 'SpeltSentenceScore', 'SingleWordReplaced', 'SingleWordReplacedScore', 'Diff'])  # Header
             sentences = []
             for keyboard in keyboards:
                 file.seek(0)
@@ -39,16 +39,19 @@ def spellSentences(filename, keyboards, allWordTries):
                     for word in words:
                         speltWord = Trie().spellWord(word, keyboard)
                         speltWords.append(speltWord)
-                    speltSentence = " ".join(speltWords)
-                    sentences.append(speltSentence)
-                    singleWordReplaced = singleWordReplacement(speltSentence, keyboard, allWordTries)
-                    speltSentenceScore = scoreSentence(speltSentence, line)
-                    singleWordReplacedScore = scoreSentence(singleWordReplaced, line)
-                    
-                    # Write to CSV
-                    csvwriter.writerow([line.strip(), speltSentence, speltSentenceScore/len(words), singleWordReplaced, singleWordReplacedScore/len(words)])
-                    
-                    print(f"O- {line.strip()}\nS- {speltSentence}: {speltSentenceScore/len(words)}\nR- {singleWordReplaced}: {singleWordReplacedScore/len(words)}\n")
+                    if len(words) > 0:
+                        speltSentence = " ".join(speltWords)
+                        sentences.append(speltSentence)
+                        singleWordReplaced = singleWordReplacement(speltSentence, keyboard, allWordTries)
+                        speltSentenceScore = scoreSentence(speltSentence, line)
+                        singleWordReplacedScore = scoreSentence(singleWordReplaced, line)
+                        
+                        # Write to CSV
+                        speltSentenceScoreAvg = speltSentenceScore/len(words)
+                        singleWordReplacedScoreAvg = singleWordReplacedScore/len(words)
+                        csvwriter.writerow([line.strip(), speltSentence, speltSentenceScoreAvg, singleWordReplaced, singleWordReplacedScoreAvg, singleWordReplacedScoreAvg - speltSentenceScoreAvg])
+                        
+                        print(f"O- {line.strip()}\nS- {speltSentence}\nR- {singleWordReplaced}\nDiff: {singleWordReplacedScoreAvg - speltSentenceScoreAvg}\n")
                     
             return sentences
     except FileNotFoundError:
