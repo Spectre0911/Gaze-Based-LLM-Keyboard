@@ -77,23 +77,42 @@ def createWordTries():
         dict: A dictionary containing trie objects for different word lengths.
             The keys are the word lengths, and the values are the corresponding trie objects.
     """
-    trie_dict = {}
+    trieDict = {}
 
     for i in range(1, 19):
-        trie_dict[i] = Trie.Trie()
+        trieDict[i] = Trie.Trie()
 
     for i in range(1, 19):
         with open(f"{BASE_PATH}{i}_length.txt", 'r') as file:
             words = file.read().split()
             for word in words:
-                trie_dict[i].insert(word)
+                trieDict[i].insert(word)
 
-    return trie_dict
+    return trieDict
+
+def createWordFrequencyMap():
+    """
+    Creates an map of maps where each index i represents a map of words of length i and their frequency.
+    
+    Returns:
+        list: An array where each index i contains a dictionary of words of length i and their frequency.
+    """
+    frequencyArray = {}  
+    
+        
+    for i in range(1, 19):
+        frequencyArray[i] = {}
+
+
+    with open(f"{BASE_PATH}all-normalized-words.txt", 'r') as file:
+        words = file.read().split()
+        for lineNumber, word in enumerate(words):
+            frequencyArray[len(word)][word] = lineNumber - 1
+
+    return frequencyArray
 
 def calculateAverageWordsReturnedIncremental( allWordTries, sampleWords, prechosen):
     initialLength = len(prechosen)
-    # The letters that do not appear on the keyboard
-    remainingAlphabet = alphabet - prechosen
     # Keeps track of the average number of words returned for the each optimal character set
     count = [10000000] * 26
     # Keeps track of the optimal character set 
@@ -133,7 +152,8 @@ def generateKLengthCharacterSets(k, prechosen):
     return [set(prechosen) | set(c) for c in combinations(consonants, k - len(prechosen))]
 
 if __name__ == '__main__':
-    calculateAverageWordsReturnedIncremental(createWordTries(), getSampleWords(10000), prechosen)
+    createWordFrequencyMap()
+    # calculateAverageWordsReturnedIncremental(createWordTries(), getSampleWords(10000), prechosen)
     # print("GENERATING CHARACTER SETS....")
     # arr = []
     # for i in range(len(prechosen), 26):

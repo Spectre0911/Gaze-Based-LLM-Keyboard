@@ -25,54 +25,63 @@ def scoreSentence(returnedSentence, actualSentence):
     return score
 
 
+
 def spellSentences(filename, keyboards, allWordTries):
     try:
+        trie = Trie()
         with open(filename, 'r') as file, open('singleWordReplacementImprovement.csv', 'w', newline='') as csvfile:
-            csvwriter = csv.writer(csvfile)
-            csvwriter.writerow(['Original', 'SpeltSentence', 'SpeltSentenceScore', 'SingleWordReplaced', 'SingleWordReplacedScore', 'Diff'])  # Header
+            fieldnames = ['Original', 'SpeltSentence', 'SpeltSentenceScore', 'SingleWordReplaced', 'SingleWordReplacedScore', 'Diff']
+            csvwriter = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            csvwriter.writeheader()
             sentences = []
+            
             for keyboard in keyboards:
                 file.seek(0)
                 for line in file:
-                    speltWords = []
                     words = line.strip().split()
-                    for word in words:
-                        speltWord = Trie().spellWord(word, keyboard)
-                        speltWords.append(speltWord)
-                    if len(words) > 0:
-                        speltSentence = " ".join(speltWords)
-                        sentences.append(speltSentence)
-                        singleWordReplaced = singleWordReplacement(speltSentence, keyboard, allWordTries)
-                        speltSentenceScore = scoreSentence(speltSentence, line)
-                        singleWordReplacedScore = scoreSentence(singleWordReplaced, line)
-                        
-                        # Write to CSV
-                        speltSentenceScoreAvg = speltSentenceScore/len(words)
-                        singleWordReplacedScoreAvg = singleWordReplacedScore/len(words)
-                        csvwriter.writerow([line.strip(), speltSentence, speltSentenceScoreAvg, singleWordReplaced, singleWordReplacedScoreAvg, singleWordReplacedScoreAvg - speltSentenceScoreAvg])
-                        
-                        print(f"O- {line.strip()}\nS- {speltSentence}\nR- {singleWordReplaced}\nDiff: {singleWordReplacedScoreAvg - speltSentenceScoreAvg}\n")
+                    word_count = len(words)
                     
-            return sentences
+                    if word_count > 0:
+                        speltWords = [trie.spellWord(word, keyboard) for word in words]
+                        replacedWords = []
+                        for i in range(word_count):
+                            replacedWord = singleWordReplacement(" ".join(replacedWords), speltWords[i], keyboard, allWordTries, 5, words[i])
+                            replacedWords.append(replacedWord)                        
+                        speltSentence = " ".join(speltWords)
+                        singleWordReplaced = " ".join(replacedWords)
+                        
+                        speltSentenceScore = scoreSentence(speltSentence, line) / word_count
+                        singleWordReplacedScore = scoreSentence(singleWordReplaced, line) / word_count
+                        
+                        csvwriter.writerow({
+                            'Original': line.strip(),
+                            'SpeltSentence': speltSentence,
+                            'SpeltSentenceScore': speltSentenceScore,
+                            'SingleWordReplaced': singleWordReplaced,
+                            'SingleWordReplacedScore': singleWordReplacedScore,
+                            'Diff': singleWordReplacedScore - speltSentenceScore
+                        })
+                                                
+                        sentences.append(speltSentence)
+                        
+        return sentences
     except FileNotFoundError:
         print(f"File '{filename}' not found.")
 
-        
-def singleWordReplacement(speltSentence, keyboard, allWordTries):
-    newWords = []
-    words = speltSentence.strip().split()
-    for word in words:
-        searchRes = allWordTries[len(word)].searchR(word, alphabet - keyboard, keyboard)
-        wordCount = searchRes[0][0]
-        words = searchRes[1]
-        if wordCount == 1:
 
-            newWords.append(words[0])
-        else:
-            newWords.append(word)
-    newSentence = " ".join(newWords)
-    return newSentence
-  
+        
+
+def singleWordReplacement(context, speltWord, keyboard, allWordTries, threshold, actualWord="None"):
+    searchRes = allWordTries[len(speltWord)].searchR(speltWord, alphabet - keyboard, keyboard)
+    wordCount = searchRes[0][0]
+    words = searchRes[1]
+    if wordCount == 1:
+        return words[0]
+    elif wordCount < threshold:
+        print(f"UNDER THRESHOLD {context} {speltWord} {words}")
+    # else:
+        # print(f"{actualWord} {speltWord}: {len(words)}")
+    return speltWord
                     
 def main():
     allWordTries = createWordTries()

@@ -1,5 +1,3 @@
-words
-handy
 which
 their
 would
@@ -43,6 +41,7 @@ small
 woman
 whose
 quite
+words
 given
 taken
 hands
@@ -1561,6 +1560,7 @@ illus
 crisp
 worms
 flint
+handy
 alley
 masts
 fiend

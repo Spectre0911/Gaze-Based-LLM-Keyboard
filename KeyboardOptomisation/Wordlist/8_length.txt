@@ -1,4 +1,3 @@
-compiled
 received
 anything
 together
@@ -1981,6 +1980,7 @@ readings
 immersed
 maddened
 metaphor
+compiled
 validity
 inspires
 intruder
