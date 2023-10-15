@@ -5,10 +5,13 @@ from constants import BASE_PATH, alphabet
 import matplotlib.pyplot as plt
 import numpy as np
 
-keyboards = [
-    {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'd', 'e'},
-    {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'd', 'e'},
-]
+# keyboards = [
+#     {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'd', 'e'},
+#     {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'd', 'e'},
+# ]
+
+keyboards = [{'n', 'l', 'r', 'a', 'e', 's', 't', 'o', 'm', 'i', 'd'},
+                     {'n', 'r', 'o', 'p', 's', 't', 'm', 'l', 'd', 'e', 'i', 'a'}]
 
 
 def plot_nested_dict(d):

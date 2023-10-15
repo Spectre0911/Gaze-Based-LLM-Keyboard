@@ -3,7 +3,7 @@ from constants import BASE_PATH
 
 class TrieNode:
     def __init__(self):
-        self.children = {}  
+        self.children = {}
         self.is_end_of_word = False
 
 
@@ -27,7 +27,6 @@ class Trie:
             node = node.children[char]
         return node.is_end_of_word
 
-        
     def spellWord(self, word, characterSet):
         """
         Spells the word with the available characters in the character set
@@ -40,7 +39,8 @@ class Trie:
             _type_: _description_
         """
         normalisedWord = ""
-        normalisedWord = "".join([c if c in characterSet else "!" for c in word])
+        normalisedWord = "".join(
+            [c if c in characterSet else "%" for c in word])
         return normalisedWord
 
     def searchR(self, word, unknownCharacterSet, characterSet):
@@ -67,7 +67,7 @@ class Trie:
             char = word[0]
             children = node.children
 
-            if char == "!":
+            if char == "%":
                 nextWord = word[1:]
                 for child in children:
                     if child in unknownCharacterSet:
@@ -77,8 +77,3 @@ class Trie:
 
         dfs(self.spellWord(word, characterSet), [], self.root)
         return (count, words)
-
-
-
-    
-

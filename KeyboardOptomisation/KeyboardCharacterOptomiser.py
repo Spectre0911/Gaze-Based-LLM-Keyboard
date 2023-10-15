@@ -44,6 +44,9 @@ def getSampleWords(k):
     return sampleWords
 
 def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, prechosen):
+    frequencyMaps = createWordFrequencyMap()
+    totalWordCount = sum([len(m) for m in frequencyMaps.values()])
+    minWeight = sum([((totalWordCount -frequencyMaps[len(w)][w])/totalWordCount) for w in sampleWords])
     # The letters that do not appear on the keyboard
     remainingAlphabet = alphabet - prechosen
     # Keeps track of the average number of words returned for the each optimal character set
@@ -52,13 +55,16 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
     cSet = [None] * len(characterSets) 
     
     for j, kCharSet in enumerate(characterSets):
+        print(j, len(kCharSet))
         for characterSet in kCharSet:
             unknownCharacterSet = remainingAlphabet - characterSet
             tempCount = 0
             for word in sampleWords:
                 wordLength = len(word)
-                tempCount += allWordTries[wordLength].searchR(
+                returnedWords = allWordTries[wordLength].searchR(
                     word, unknownCharacterSet, characterSet)[0][0]
+                weightedReturnedWords = returnedWords * (((totalWordCount) - frequencyMaps[wordLength][word])/totalWordCount)
+                tempCount += weightedReturnedWords
             currentCount = count[j]
             if tempCount < currentCount:
                 count[j] = tempCount 
@@ -66,7 +72,7 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
 
     print("----------")
     for i in range(len(count)):
-        print(f"Keyboard {cSet[i]} has an average of {count[i]} words returned")
+        print(f"Keyboard {cSet[i]} has an frequency weighted count of {count[i]} out of a minimum of {minWeight}")
     return count
 
 def createWordTries():
@@ -152,24 +158,22 @@ def generateKLengthCharacterSets(k, prechosen):
     return [set(prechosen) | set(c) for c in combinations(consonants, k - len(prechosen))]
 
 if __name__ == '__main__':
-    createWordFrequencyMap()
     # calculateAverageWordsReturnedIncremental(createWordTries(), getSampleWords(10000), prechosen)
-    # print("GENERATING CHARACTER SETS....")
-    # arr = []
-    # for i in range(len(prechosen), 26):
-    #     combs = generateKLengthCharacterSets(i)
-    #     print(i, len(combs))
-    #     arr.append(combs)
-    # print("GENERATED CHARACTER SETS....")
-    # print("GENERATING TRIES")
-    # # The set of all words in the wordlist in tries
-    # allWordTries = createWordTries()
-    # print("GENERATED TRIES")
-    # # A selection of 10000 randomly chosen words from the wordlist
-    # sampleWords = getSampleWords(10000)
-    # print("CALCULATING AVERAGE POSITION OF WORD FOR CHARACTER SET...")
-    # count = calculateAverageWordsReturnedT(arr, allWordTries, sampleWords, prechosen)[0]
-    # print("COMPLETE")
+    print("GENERATING CHARACTER SETS....")
+    arr = []
+    for i in range(len(prechosen), 26):
+        combs = generateKLengthCharacterSets(i, prechosen)
+        print(i, len(combs))
+        arr.append(combs)
+    print("GENERATED CHARACTER SETS....")
+    print("GENERATING TRIES")
+    # The set of all words in the wordlist in tries
+    allWordTries = createWordTries()
+    print("GENERATED TRIES")
+    # A selection of 10000 randomly chosen words from the wordlist
+    sampleWords = getSampleWords(10000)
+    print("CALCULATING AVERAGE POSITION OF WORD FOR CHARACTER SET...")
+    count = calculateAverageWordsReturnedT(arr, allWordTries, sampleWords, prechosen)[0]
+    print("COMPLETE")
  
-
 
