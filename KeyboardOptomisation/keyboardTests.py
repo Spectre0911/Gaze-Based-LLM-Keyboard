@@ -39,22 +39,15 @@ def spellSentences(filename, keyboards, allWordTries):
                 file.seek(0)
                 for line in file:
                     words = line.strip().split()
-                    word_count = len(words)
-                    if word_count > 0:
-                        speltWords = [trie.spellWord(
-                            word, keyboard) for word in words]
-                        replacedWords = []
-                        for i in range(word_count):
-                            replacedWord = singleWordReplacement(
-                                " ".join(replacedWords), speltWords[i], keyboard, allWordTries, 5, words[i])
-                            replacedWords.append(replacedWord)
-                        speltSentence = " ".join(speltWords)
-                        singleWordReplaced = " ".join(replacedWords)
+                    wordCount = len(words)
+                    if wordCount > 0:
+                        speltSentence, singleWordReplaced = spellSentence(
+                            allWordTries, trie, keyboard, words, wordCount)
 
                         speltSentenceScore = scoreSentence(
-                            speltSentence, line) / word_count
+                            speltSentence, line) / wordCount
                         singleWordReplacedScore = scoreSentence(
-                            singleWordReplaced, line) / word_count
+                            singleWordReplaced, line) / wordCount
 
                         csvwriter.writerow({
                             'Original': line.strip(),
@@ -71,6 +64,31 @@ def spellSentences(filename, keyboards, allWordTries):
         print(f"File '{filename}' not found.")
 
 
+def spellSentence(allWordTries, trie, keyboard, words, wordCount):
+    speltWords = [trie.spellWord(word, keyboard) for word in words]
+    replacedWords = []
+    for i in range(wordCount):
+        replacedWord = singleWordReplacement(
+            " ".join(replacedWords), speltWords[i], keyboard, allWordTries, 5, words[i])
+        replacedWords.append(replacedWord)
+    speltSentence = " ".join(speltWords)
+    singleWordReplaced = " ".join(replacedWords)
+    return speltSentence, singleWordReplaced
+
+
+def gptReplacedSentence(sentence):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence and you only have one more guess. "},
+            {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried. You have yet to guess from this set: {'v', 'x', 'b', 'y', 'c', 'j', 'f', 'w', 'u', 'q', 'z', 'h', 'p', 'k'}. What do you think the sentence says? Take a deep breath and think about it."},
+            {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\" The words \"His,\" \"stand-up,\" \"was,\" \"I,\" and \"cried\" seem to fit in the context of the sentence, and the remaining letters are not needed to complete this sentence."},
+            {"role": "user", "content": f"Current sentence: {sentence}"},
+        ]
+    )
+    print(response)
+
+
 def singleWordReplacement(context, speltWord, keyboard, allWordTries, threshold, actualWord="None"):
     searchRes = allWordTries[len(speltWord)].searchR(
         speltWord, alphabet - keyboard, keyboard)
@@ -84,10 +102,12 @@ def singleWordReplacement(context, speltWord, keyboard, allWordTries, threshold,
 
 
 def main():
-    unknown = alphabet - prechosen
-    print(unknown)
-    allWordTries = createWordTries()
-    spellSentences(f"{BASE_PATH}/sentences.txt", [prechosen], allWordTries)
+    gptReplacedSentence(
+        "%ars boomed %% on t%e %ig%%a%ea%% one a capsule o% individual li%es and stories %et to %e told")
+    # unknown = alphabet - prechosen
+    # print(unknown)
+    # allWordTries = createWordTries()
+    # spellSentences(f"{BASE_PATH}/sentences.txt", [prechosen], allWordTries)
 
 
 if __name__ == "__main__":

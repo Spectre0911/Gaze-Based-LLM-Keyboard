@@ -45,7 +45,7 @@ class Trie:
 
     def searchR(self, word, unknownCharacterSet, characterSet):
         """
-        Searches for the word in the trie, and returns the words that match the the normalised word and the number of them
+        Searches for the word in the trie recursively, and returns the words that match the the normalised word and the number of them
 
         Args:
             word (String): The word to be searched for
@@ -77,3 +77,8 @@ class Trie:
 
         dfs(self.spellWord(word, characterSet), [], self.root)
         return (count, words)
+
+    def searchSR(self, curNode, nextLetter, unknownCharacterSet, characterSet):
+
+        words = []
+        count = [0]
