@@ -33,8 +33,8 @@ class Trie:
         wordCount = searchRes[0][0]
         words = searchRes[1]
         if wordCount == 1:
-            return words[0]
-        return speltWord
+            return (words[0], True)
+        return (speltWord, False)
 
     def spellWord(self, word, characterSet):
         """

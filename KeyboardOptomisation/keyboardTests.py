@@ -64,16 +64,6 @@ def spellSentences(filename, keyboards, allWordTries):
         print(f"File '{filename}' not found.")
 
 
-def singleWordReplacement(speltWord, keyboard, wordTrie):
-    searchRes = wordTrie.searchR(
-        speltWord, alphabet - keyboard, keyboard)
-    wordCount = searchRes[0][0]
-    words = searchRes[1]
-    if wordCount == 1:
-        return words[0]
-    return speltWord
-
-
 def spellSentence(allWordTries, trie, keyboard, words, wordCount):
     speltWords = [trie.spellWord(word, keyboard) for word in words]
     replacedWords = []
@@ -81,8 +71,6 @@ def spellSentence(allWordTries, trie, keyboard, words, wordCount):
         wordTrie = allWordTries[len(speltWords[i])]
         replacedWord = wordTrie.singleWordReplacement(
             speltWords[i], keyboard)
-        # replacedWord = singleWordReplacement(
-        #     speltWords[i], keyboard, wordTrie)
         replacedWords.append(replacedWord)
     speltSentence = " ".join(speltWords)
     singleWordReplaced = " ".join(replacedWords)

@@ -1,9 +1,9 @@
 import curses
-from KeyboardCharacterOptomiser import createWordTries
-from constants import prechosen
+from KeyboardCharacterOptomiser import createWordFrequencyMap, createWordTries
+from constants import prechosen, alphabet
 
 
-def main(stdscr, allWordTries):
+def main(stdscr, allWordTries, frequencyMaps):
     curses.noecho()
     curses.cbreak()
     stdscr.keypad(True)
@@ -24,7 +24,8 @@ def main(stdscr, allWordTries):
                 inputStr = inputStr[:x - promptLength -
                                     1] + inputStr[x - promptLength:]
                 updateScreen = True
-                wordLength -= 1
+                if wordLength > 0:
+                    wordLength -= 1
                 moveAmount = -1
         elif 33 <= charCode <= 126:  # Excluding space which has a charCode of 32
             char = chr(charCode)
@@ -37,12 +38,34 @@ def main(stdscr, allWordTries):
             moveAmount = 1
         elif charCode == 32:  # Handling space separately
             char = chr(charCode)
-            # NEED TO CHECK THIS LINE FOR DELETION BUG ERRORS
-            word = inputStr[len(inputStr)-wordLength:len(inputStr)]
-            replacedWord = allWordTries[len(word)].singleWordReplacement(
-                word, prechosen)
-            beforeWord = inputStr[:len(inputStr)-wordLength]
-            inputStr = beforeWord + replacedWord + char
+
+            # If wordLength is 0, just type a space
+            if wordLength == 0:
+                inputStr += char
+            else:
+                # Perform single word replacement
+                speltWord = inputStr[len(inputStr)-wordLength:len(inputStr)]
+                wordTrie = allWordTries[len(speltWord)]
+                # Get all possible words, that match the spelt word
+                alternatives = wordTrie.searchR(
+                    speltWord, alphabet - prechosen, prechosen)[1]
+                # Check if single word replacement is possible
+                replacedWord, replaced = wordTrie.singleWordReplacement(
+                    speltWord, prechosen)
+                # If single word replacement did not occur
+                if replaced == False:
+                    freqMap = frequencyMaps[len(speltWord)]
+                    alternatives = sorted(
+                        alternatives, key=lambda x: freqMap[x])
+                    if len(alternatives) > 0:
+                        replacedWord = alternatives[0]
+                    else:
+                        # Need to add some additional functionality here to handle the case where the word is not in wordlist
+                        pass
+
+                beforeWord = inputStr[:len(inputStr)-wordLength]
+                inputStr = beforeWord + replacedWord + char
+
             wordLength = 0
             updateScreen = True
             moveAmount = 1
@@ -59,4 +82,5 @@ def main(stdscr, allWordTries):
 
 if __name__ == "__main__":
     alllWordTries = createWordTries()
-    curses.wrapper(lambda stdscr: main(stdscr, alllWordTries))
+    frequencyMaps = createWordFrequencyMap()
+    curses.wrapper(lambda stdscr: main(stdscr, alllWordTries, frequencyMaps))
