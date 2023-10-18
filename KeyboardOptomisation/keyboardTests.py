@@ -64,12 +64,25 @@ def spellSentences(filename, keyboards, allWordTries):
         print(f"File '{filename}' not found.")
 
 
+def singleWordReplacement(speltWord, keyboard, wordTrie):
+    searchRes = wordTrie.searchR(
+        speltWord, alphabet - keyboard, keyboard)
+    wordCount = searchRes[0][0]
+    words = searchRes[1]
+    if wordCount == 1:
+        return words[0]
+    return speltWord
+
+
 def spellSentence(allWordTries, trie, keyboard, words, wordCount):
     speltWords = [trie.spellWord(word, keyboard) for word in words]
     replacedWords = []
     for i in range(wordCount):
-        replacedWord = singleWordReplacement(
-            " ".join(replacedWords), speltWords[i], keyboard, allWordTries, 5, words[i])
+        wordTrie = allWordTries[len(speltWords[i])]
+        replacedWord = wordTrie.singleWordReplacement(
+            speltWords[i], keyboard)
+        # replacedWord = singleWordReplacement(
+        #     speltWords[i], keyboard, wordTrie)
         replacedWords.append(replacedWord)
     speltSentence = " ".join(speltWords)
     singleWordReplaced = " ".join(replacedWords)
@@ -87,18 +100,6 @@ def gptReplacedSentence(sentence):
         ]
     )
     print(response)
-
-
-def singleWordReplacement(context, speltWord, keyboard, allWordTries, threshold, actualWord="None"):
-    searchRes = allWordTries[len(speltWord)].searchR(
-        speltWord, alphabet - keyboard, keyboard)
-    wordCount = searchRes[0][0]
-    words = searchRes[1]
-    if wordCount == 1:
-        return words[0]
-    elif wordCount <= threshold:
-        print(f"UNDER THRESHOLD {context} {speltWord} {words}")
-    return speltWord
 
 
 def main():

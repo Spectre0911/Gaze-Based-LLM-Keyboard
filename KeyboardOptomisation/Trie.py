@@ -1,4 +1,4 @@
-from constants import BASE_PATH
+from constants import BASE_PATH, alphabet, prechosen
 
 
 class TrieNode:
@@ -26,6 +26,15 @@ class Trie:
                 return False
             node = node.children[char]
         return node.is_end_of_word
+
+    def singleWordReplacement(self, speltWord, keyboard):
+        searchRes = self.searchR(
+            speltWord, alphabet - keyboard, keyboard)
+        wordCount = searchRes[0][0]
+        words = searchRes[1]
+        if wordCount == 1:
+            return words[0]
+        return speltWord
 
     def spellWord(self, word, characterSet):
         """
