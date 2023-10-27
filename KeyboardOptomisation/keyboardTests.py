@@ -92,7 +92,7 @@ def gptReplacedSentence(sentence):
 
 def main():
     gptReplacedSentence(
-        "%ars boomed %% on t%e %ig%%a%ea%% one a capsule o% individual li%es and stories %et to %e told")
+        "%ars boomed %% on t%e %ig%%a% ea%% one a capsule o% individual li%es and stories %et to %e told")
     # unknown = alphabet - prechosen
     # print(unknown)
     # allWordTries = createWordTries()
