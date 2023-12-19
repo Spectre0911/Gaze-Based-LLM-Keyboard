@@ -1,0 +1,42 @@
+.custom-button {
+  border: none;
+  background-color: #fff;
+  padding: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px; /* Adjust the gap as needed */
+}
+
+.button-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px; /* Adjust the width as needed */
+  height: 60px; /* Adjust the height as needed */
+  background-color: #e0f7fa; /* Adjust the color as needed */
+  border-radius: 10px; /* Adjust the border-radius as needed */
+}
+
+.top-row {
+  grid-column: span 3;
+}
+
+.bottom-row {
+  grid-column: 1 / 4;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Adjust the font as needed */
+.button-item {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #333;
+}
