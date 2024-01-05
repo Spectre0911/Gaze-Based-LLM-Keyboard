@@ -1,5 +1,5 @@
 import csv
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 from KeyboardCharacterOptomiser import createWordTries
 from Trie import Trie
@@ -7,10 +7,11 @@ from constants import BASE_PATH, alphabet, prechosen
 import csv
 import openai
 
-load_dotenv()
+# load_dotenv()
 
 
-openai.api_key = os.getenv("GPT_API_KEY")
+# openai.api_key = os.getenv("GPT_API_KEY")
+openai.api_key = "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"
 
 
 def scoreSentence(returnedSentence, actualSentence):
@@ -81,7 +82,7 @@ def gptReplacedSentence(sentence):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence and you only have one more guess. "},
+            {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence and you only have one more guess."},
             {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried. You have yet to guess from this set: {'v', 'x', 'b', 'y', 'c', 'j', 'f', 'w', 'u', 'q', 'z', 'h', 'p', 'k'}. What do you think the sentence says? Take a deep breath and think about it."},
             {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\" The words \"His,\" \"stand-up,\" \"was,\" \"I,\" and \"cried\" seem to fit in the context of the sentence, and the remaining letters are not needed to complete this sentence."},
             {"role": "user", "content": f"Current sentence: {sentence}"},
