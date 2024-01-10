@@ -49,6 +49,11 @@
   color: var(--white);
 }
 
+.purple-arrow-button {
+  background-color: var(--purple);
+  color: var(--white);
+}
+
 .dark-blue-button-small {
   font-size: 3vw;
   width: 5vw;
@@ -79,11 +84,22 @@
 
 .wildcard-button,
 .space-button {
-  background-color: #5bc2e2; /* Consider defining this color in :root too */
+  background-color: #5bc2e2;
   color: var(--white);
 }
 
 .space-button {
+  grid-column: span 3;
+  width: 100vw;
+  height: 15vh;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+.red-space-button {
+  background-color: var(--red); /* This sets the background color to red */
+  color: var(--white); /* This keeps the text color white */
   grid-column: span 3;
   width: 100vw;
   height: 15vh;
