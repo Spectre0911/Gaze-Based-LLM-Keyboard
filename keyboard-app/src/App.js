@@ -28,6 +28,8 @@ function App() {
   const [currentState, setCurrentState] = useState(0);
   const [buttonClass, setButtonClass] = useState("light-blue-button");
   const [rightArrowCount, setRightArrowCount] = useState(0);
+  const [delCount, setDelCount] = useState(0);
+
   const [currentWord, setCurrentWord] = useState("");
   const [currentSentence, setCurrentSentence] = useState("");
   const [allWords, setAllWords] = useState([]);
@@ -59,7 +61,6 @@ function App() {
     // WORD SHOULD BE SENT TO BACKEND TO BE SEARCHED FOR
     console.log("Searching for: " + currentWord);
     console.log("Current sentence: " + currentSentence);
-    console.log("All words: " + allWords);
 
     setCurrentSentence(currentSentence + " ");
     if (currentState === 0) {
@@ -68,8 +69,9 @@ function App() {
     // IF PERIOD BUTTON IS DEPRESSED
     else {
       console.log("RESETTING ALL STATES");
-      setAllWords();
+      setAllWords([]);
       setCurrentWord("");
+      setCurrentSentence("");
       setCurrentState(0);
     }
   };
@@ -93,13 +95,6 @@ function App() {
 
   const onDepress = (label) => {
     console.log("Depressed: " + label);
-    // IF DEPRESS FOLLOWS WORD SEARCH UPDATE STATES
-    if (currentState !== 0) {
-      let updatedWords = [...allWords, currentWord];
-      console.log("Updated words: " + updatedWords);
-      setAllWords(updatedWords);
-      setCurrentWord("");
-    }
 
     // WHEN BACKSPACE IS PRESSED
     if (label === "DEL") {
@@ -108,30 +103,38 @@ function App() {
         setCurrentSentence(currentSentence.slice(0, -1));
       }
       if (currentWord.length > 0) {
-        setCurrentSentence(currentWord.slice(0, -1));
+        setCurrentWord(currentWord.slice(0, -1));
       }
-      // IF CURRENT WORD IS EMPTY, REMOVE LAST WORD FROM ALL WORDS AND UPDATE CURRENT WORD
+      // IF CURRENT WORD IS EMPTY
       else {
+        // IF THERE ARE STILL WORDS IN THE SENTENCE
         if (allWords.length > 0) {
-          var lastWord = allWords.pop();
+          // GET THE LAST WORD FROM THE LIST OF WORDS
+          var lastWord = allWords[allWords.length - 1];
+          // REMOVE THE LAST WORD FROM THE LIST OF WORDS
+          setAllWords(allWords.slice(0, -1));
+          // SET THE CURRENT WORD TO THE PREVIOUS WORD
           setCurrentWord(lastWord);
         }
       }
-    }
-    // WHEN SENTENCE IS COMPLETED
-    else if (label === ".") {
-      // SHOULD SEND TO BACKEND FOR GPT PROCESSING
 
-      // RESET STATES
-      setCurrentSentence("");
-      setCurrentWord("");
-      setAllWords([]);
+      console.log(currentWord);
     }
+
     // WHEN A CHARACTER IS TYPED
     else {
-      // APPEND TO RELEVANT STATES
+      console.log("UPDATING CURRENT WORD");
+      // APPEND TO THE SENTENCE
       setCurrentSentence(currentSentence + label);
-      setCurrentWord(currentWord + label);
+      // IF RETURNING FROM A SPACE
+      if (currentState != 0) {
+        // WRITE THE CURRENT WORD TO THE LIST OF WORDS
+        setAllWords([...allWords, currentWord]);
+        // OVERWRITE THE CURRENT WORD
+        setCurrentWord(label);
+      } else {
+        setCurrentWord(currentWord + label);
+      }
     }
 
     // ENSURE THAT WE ARE IN BASE STATE AFTER TYPING ANY CHARACTER

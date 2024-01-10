@@ -11,7 +11,6 @@ import openai
 
 
 # openai.api_key = os.getenv("GPT_API_KEY")
-openai.api_key = "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"
 
 
 def scoreSentence(returnedSentence, actualSentence):

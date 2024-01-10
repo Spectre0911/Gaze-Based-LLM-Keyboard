@@ -11,16 +11,16 @@ def main(stdscr, allWordTries, frequencyMaps):
     inputStr = ""
     singleWordReplacedStr = ""
     prompt = "Start typing (press 'ESC' to exit): "
-    
+
     stdscr.addstr(prompt)
     promptLength = len(prompt)
-    
+
     prevWordLength = 0
     curWordLength = 0
-    
+
     alternatives = []
     curAlternativeIndex = 1
-    
+
     while True:
         charCode = stdscr.getch()
         char = chr(charCode)
@@ -32,18 +32,19 @@ def main(stdscr, allWordTries, frequencyMaps):
         elif charCode == curses.KEY_UP:
             if curAlternativeIndex > 0 and curAlternativeIndex < len(alternatives):
                 curAlternativeIndex -= 1
-                inputStr = replaceWord(inputStr[:len(inputStr)-1], prevWordLength, " ", alternatives[curAlternativeIndex])
-                moveAmount = 0
-                updateScreen = True
-                
-        elif charCode == curses.KEY_DOWN:
-            if  curAlternativeIndex >= 0 and curAlternativeIndex < len(alternatives) - 1:
-                curAlternativeIndex += 1
-                # print(alternatives, alternatives[curAlternativeIndex])
-                inputStr = replaceWord(inputStr[:len(inputStr)-1], prevWordLength, " ", alternatives[curAlternativeIndex])
+                inputStr = replaceWord(inputStr[:len(
+                    inputStr)-1], prevWordLength, " ", alternatives[curAlternativeIndex])
                 moveAmount = 0
                 updateScreen = True
 
+        elif charCode == curses.KEY_DOWN:
+            if curAlternativeIndex >= 0 and curAlternativeIndex < len(alternatives) - 1:
+                curAlternativeIndex += 1
+                # print(alternatives, alternatives[curAlternativeIndex])
+                inputStr = replaceWord(inputStr[:len(
+                    inputStr)-1], prevWordLength, " ", alternatives[curAlternativeIndex])
+                moveAmount = 0
+                updateScreen = True
 
         elif charCode == curses.KEY_BACKSPACE or charCode == 127:
             if x > promptLength:
@@ -53,7 +54,7 @@ def main(stdscr, allWordTries, frequencyMaps):
                 if curWordLength > 0:
                     curWordLength -= 1
                 moveAmount = -1
-            
+
         elif 33 <= charCode <= 126:  # Excluding space which has a charCode of 32
             if char not in prechosen:
                 char = '%'
@@ -66,7 +67,7 @@ def main(stdscr, allWordTries, frequencyMaps):
         elif charCode == 32:  # Handling space separately
             speltWord = inputStr[len(inputStr)-curWordLength:len(inputStr)]
             inputStr, singleWordReplacedStr, previousAlternatives = onSpace(allWordTries, frequencyMaps,
-                                                      inputStr, singleWordReplacedStr, curWordLength, char)
+                                                                            inputStr, singleWordReplacedStr, curWordLength, char)
             # This is a very temporary fix, ideally we should look at storing these alternatives to avoid recomputation
             alternatives = [speltWord]
             alternatives += previousAlternatives
@@ -119,6 +120,7 @@ def onSpace(allWordTries, frequencyMaps, inputStr, singleWordReplacedStr, curWor
         inputStr = replaceWord(inputStr, curWordLength, char, replacedWord)
     return inputStr, singleWordReplacedStr, alternatives
 
+
 def replaceWord(inputStr, curWordLength, char, replacedWord):
     beforeWord = inputStr[:len(inputStr)-curWordLength]
     inputStr = beforeWord + replacedWord + char
@@ -126,6 +128,6 @@ def replaceWord(inputStr, curWordLength, char, replacedWord):
 
 
 if __name__ == "__main__":
-    alllWordTries = createWordTries()
+    allWordTries = createWordTries()
     frequencyMaps = createWordFrequencyMap()
-    curses.wrapper(lambda stdscr: main(stdscr, alllWordTries, frequencyMaps))
+    curses.wrapper(lambda stdscr: main(stdscr, allWordTries, frequencyMaps))
