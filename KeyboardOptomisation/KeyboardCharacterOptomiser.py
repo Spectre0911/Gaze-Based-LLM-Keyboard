@@ -2,7 +2,7 @@ from itertools import combinations
 from constants import alphabet, prechosen, BASE_PATH
 import random
 import math
-import Trie
+import Trie as Trie
 
 
 def getWordDistribution():

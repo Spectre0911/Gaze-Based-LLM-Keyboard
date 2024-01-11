@@ -11,32 +11,32 @@ import numpy as np
 # ]
 
 keyboards = [{'n', 'l', 'r', 'a', 'e', 's', 't', 'o', 'm', 'i', 'd'},
-                     {'n', 'r', 'o', 'p', 's', 't', 'm', 'l', 'd', 'e', 'i', 'a'}]
+             {'n', 'r', 'o', 'p', 's', 't', 'm', 'l', 'd', 'e', 'i', 'a'}]
 
 
 def plot_nested_dict(d):
     keys = sorted(d.keys())
     sub_keys = sorted(set(k for sub_d in d.values() for k in sub_d.keys()))
-    
+
     ind = np.arange(len(keys))
     width = 0.35
-    
+
     plt.figure(figsize=(15, 10))
-    
+
     bottom_values = np.zeros(len(keys))
     for sub_key in sub_keys:
         values = [d[k].get(sub_key, 0) for k in keys]
-        plt.bar(ind, values, width, label=f'Word Length {sub_key}', bottom=bottom_values)
+        plt.bar(ind, values, width,
+                label=f'Word Length {sub_key}', bottom=bottom_values)
         bottom_values += values
-    
+
     plt.xlabel('Word Count')
     plt.ylabel('Frequency')
     plt.title('Frequency by Word Count and Word Length')
     plt.xticks(ind, keys)
     plt.legend()
-    
-    plt.show()
 
+    plt.show()
 
 
 def getAllWords():
@@ -53,6 +53,7 @@ def getAllWords():
             allWords.extend(words)
     return allWords
 
+
 def prettyPrintNestedDict(d):
     nestedKeys, columnTotals, grandTotal = set(), {}, 0
 
@@ -64,7 +65,7 @@ def prettyPrintNestedDict(d):
 
     print("Row Key", end="\t")
     print("\t".join(map(str, d.keys())), "Total")
-    
+
     for nestedKey in sorted(nestedKeys):
         rowTotal = 0
         print(nestedKey, end="")
@@ -88,18 +89,19 @@ def prettyPrintNestedDict(d):
         print(f"\t{runningVal}", end="")
     print(f"\t{runningVal}")
 
-        
 
 def getKeyboardData(allWordTries, sampleWords):
     count = [10000000] * len(keyboards)
-    wordCountFrequency = [defaultdict(lambda: defaultdict(int)) for _ in range(len(keyboards))]
+    wordCountFrequency = [defaultdict(
+        lambda: defaultdict(int)) for _ in range(len(keyboards))]
 
     for j, keyboard in enumerate(keyboards):
         unknownCharacterSet = alphabet - keyboard
         tempCount = 0
         for word in sampleWords:
             wordLength = len(word)
-            searchRes = allWordTries[wordLength].searchR(word, unknownCharacterSet, keyboard)
+            searchRes = allWordTries[wordLength].searchR(
+                word, unknownCharacterSet, keyboard)
             wordCount = searchRes[0][0]
             tempCount += wordCount
             wordCountFrequency[j][wordCount][wordLength] += 1
@@ -107,8 +109,9 @@ def getKeyboardData(allWordTries, sampleWords):
         count[j] = tempCount
 
     for i in range(len(count)):
-        print(f"Keyboard: {keyboards[i]}, Returned: {count[i]}, SSS: {sum(wordCountFrequency[i][1].values())/len(sampleWords)}, SST: {sum(wordCountFrequency[i][1].values())/count[i]}")
-        
+        print(
+            f"Keyboard: {keyboards[i]}, Returned: {count[i]}, SSS: {sum(wordCountFrequency[i][1].values())/len(sampleWords)}, SST: {sum(wordCountFrequency[i][1].values())/count[i]}")
+
         sortedDict = OrderedDict(sorted(wordCountFrequency[i].items()))
         for wordCount, lengthDict in sortedDict.items():
             sorted_length_dict = OrderedDict(sorted(lengthDict.items()))
@@ -119,7 +122,6 @@ def getKeyboardData(allWordTries, sampleWords):
         print("\n")
 
     return count
-
 
 
 getKeyboardData(createWordTries(), getAllWords())

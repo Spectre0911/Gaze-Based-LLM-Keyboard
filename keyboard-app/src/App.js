@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import "./App.css";
+import { sendDataToFlask } from "./services/sendDataToFlask";
 import Switch from "./Switch";
+import "./App.css";
 
 function getOppositeColor(currentColor) {
   return currentColor === "light-blue-button"
@@ -12,15 +13,15 @@ function App() {
   // State to track the button class
 
   const lightBlueStates = [
-    ["I", "T", "A", "N", "~", "E", "DEL", "+", "."],
-    ["I", "T", "A", "N", "~", "E", "DEL", "+", "->"],
-    ["I", "T", "A", "N", "~", "E", "<-", "+", "->"],
+    ["I", "T", "A", "N", "%", "E", "DEL", "+", "."],
+    ["I", "T", "A", "N", "%", "E", "DEL", "+", "->"],
+    ["I", "T", "A", "N", "%", "E", "<-", "+", "->"],
   ];
 
   const darkBlueStates = [
-    ["D", "O", "S", "L", "~", "R", "DEL", "+", "."],
-    ["D", "O", "S", "L", "~", "R", "DEL", "+", "->"],
-    ["D", "O", "S", "L", "~", "R", "<-", "+", "->"],
+    ["D", "O", "S", "L", "%", "R", "DEL", "+", "."],
+    ["D", "O", "S", "L", "%", "R", "DEL", "+", "->"],
+    ["D", "O", "S", "L", "%", "R", "<-", "+", "->"],
   ];
 
   const allStates = [lightBlueStates, darkBlueStates];
@@ -31,6 +32,7 @@ function App() {
   const [delCount, setDelCount] = useState(0);
 
   const [currentWord, setCurrentWord] = useState("");
+  const [currentWordChoices, setCurrentWordChoices] = useState([]);
   const [currentSentence, setCurrentSentence] = useState("");
   const [allWords, setAllWords] = useState([]);
 
@@ -57,17 +59,31 @@ function App() {
     }
   };
 
-  const onSpace = () => {
-    // WORD SHOULD BE SENT TO BACKEND TO BE SEARCHED FOR
+  const onSpace = async () => {
     console.log("Searching for: " + currentWord);
     console.log("Current sentence: " + currentSentence);
-
-    setCurrentSentence(currentSentence + " ");
+    var nextState = 1;
+    // Send currentWord to the backend
     if (currentState === 0) {
-      setCurrentState(1);
-    }
-    // IF PERIOD BUTTON IS DEPRESSED
-    else {
+      try {
+        const response = await sendDataToFlask({
+          currentWord: currentWord,
+          currentSentence: currentSentence,
+        });
+        console.log("Response recieved");
+        console.log("Response from backend:", response);
+        setCurrentWordChoices([currentWord, ...response[1]]);
+        if (response[1].length === 1) {
+          setCurrentWord(response[1][0].toUpperCase());
+          setRightArrowCount(1);
+          nextState = 2;
+        }
+      } catch (error) {
+        console.error("Error sending word to backend:", error);
+      }
+      setCurrentSentence(currentSentence + " ");
+      setCurrentState(nextState);
+    } else {
       console.log("RESETTING ALL STATES");
       setAllWords([]);
       setCurrentWord("");
@@ -77,8 +93,13 @@ function App() {
   };
 
   const onRightArrow = () => {
-    // LA to LARA + SELF LOOP | RAK
-    setRightArrowCount(rightArrowCount + 1);
+    if (rightArrowCount < currentWordChoices.length - 1) {
+      setCurrentWord(currentWordChoices[rightArrowCount + 1].toUpperCase());
+      console.log(
+        "Current word: " + currentWordChoices[rightArrowCount + 1].toUpperCase()
+      );
+      setRightArrowCount(rightArrowCount + 1);
+    }
 
     if (currentState === 1) {
       setCurrentState(2);
@@ -86,10 +107,15 @@ function App() {
   };
 
   const onLeftArrow = () => {
-    // LARA to LA | LAK
     if (rightArrowCount === 1) {
+      setCurrentState(1);
+    } else if (rightArrowCount === 0) {
       setCurrentState(0);
     }
+    setCurrentWord(currentWordChoices[rightArrowCount - 1].toUpperCase());
+    console.log(
+      "Current word: " + currentWordChoices[rightArrowCount - 1].toUpperCase()
+    );
     setRightArrowCount(rightArrowCount - 1);
   };
 
@@ -151,7 +177,7 @@ function App() {
       case ".":
         className = "flex-center-button red-button";
         break;
-      case "~":
+      case "%":
         className = "flex-center-button wildcard-button";
         break;
       case "<-":
@@ -169,6 +195,7 @@ function App() {
             buttonClass={getOppositeColor(buttonClass)}
             buttonLabels={allStates[switchFace === 0 ? 1 : 0][0]}
             onSwitchClick={onSwitch}
+            currentWord={currentWord}
           />
         );
       default:
