@@ -5,10 +5,11 @@
   --button-min-height: 50px;
   --button-radius: 10px;
   --button-border: 1px solid black;
-  --purple: #a8a6ff;
-  --light-blue: #88f2df;
-  --dark-blue: #4d9bb4;
-  --red: #e25b5b;
+  --purple: #9496ff;
+  --light-blue: #60e6d4;
+  --dark-blue: #3d8ea6;
+  --green: #00d1a0;
+  --red: #d94d4d;
   --white: white;
   --black: black;
 }
@@ -99,6 +100,17 @@
 
 .red-space-button {
   background-color: var(--red); /* This sets the background color to red */
+  color: var(--white); /* This keeps the text color white */
+  grid-column: span 3;
+  width: 100vw;
+  height: 15vh;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+.green-space-button {
+  background-color: var(--green); /* This sets the background color to red */
   color: var(--white); /* This keeps the text color white */
   grid-column: span 3;
   width: 100vw;
