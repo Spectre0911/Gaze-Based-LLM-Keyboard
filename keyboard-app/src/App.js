@@ -60,67 +60,9 @@ function App({ pred }) {
       : "flex-center-button red-space-button";
 
   useEffect(() => {
-    console.log(pred);
-
     const letter = findLetterForPoint(pred, coordinateMap);
     setLookingAt(letter);
   }, [pred, coordinateMap]);
-
-  const onSwitch = () => {
-    setRightArrowCount(0);
-
-    if (currentState !== 0) {
-      setCurrentSentence(currentSentence + currentWord);
-      setAllWords([...allWords, currentWord]);
-      setCurrentWord("");
-    }
-
-    setSwitchFace((prevSwitchFace) => (prevSwitchFace === 1 ? 0 : 1));
-    setButtonClass((prevClass) =>
-      prevClass === "light-blue-button"
-        ? "dark-blue-button"
-        : "light-blue-button"
-    );
-    if (currentState !== 0) {
-      setCurrentState(0);
-    }
-  };
-
-  const onSpace = async () => {
-    console.log("Searching for: " + currentWord);
-    console.log("Current sentence: " + currentSentence);
-    var nextState = 1;
-    // Send currentWord to the backend
-    if (currentState === 0) {
-      try {
-        const response = await sendDataToFlask({
-          currentWord: currentWord,
-          currentSentence: currentSentence,
-        });
-        console.log("Response recieved");
-        console.log("Response from backend:", response);
-        setCurrentWordChoices([currentWord, ...response[1]]);
-        if (response[1].length === 1) {
-          setCurrentWord(response[1][0].toUpperCase());
-          setRightArrowCount(1);
-          nextState = 2;
-        }
-      } catch (error) {
-        console.error("Error sending word to backend:", error);
-      }
-
-      setCurrentSentence(currentSentence + " ");
-      setCurrentState(nextState);
-    } else if (currentState === 1 || currentState === 2) {
-      setCurrentSentence(currentSentence + currentWord);
-      setCurrentState(3);
-      setAllWords([]);
-      setCurrentWord("");
-    } else if (currentState === 3) {
-      setCurrentSentence("");
-      setCurrentState(0);
-    }
-  };
 
   const updateCoords = (label, data) => {
     setCoordinateMap((prevMap) => ({
@@ -159,7 +101,6 @@ function App({ pred }) {
   const onDepress = (label) => {
     // RESET RIGHT ARROW CLICKS
     setRightArrowCount(0);
-    console.log("Depressed: " + label);
 
     // // WHEN BACKSPACE IS PRESSED
     // if (label === "DEL") {
@@ -188,9 +129,6 @@ function App({ pred }) {
 
     // WHEN A CHARACTER IS TYPED
     if (label != "DEL") {
-      console.log("UPDATING CURRENT WORD");
-      // APPEND TO THE SENTENCE
-      // setCurrentSentence(currentSentence + label);
       // IF RETURNING FROM A SPACE
       if (currentState != 0) {
         // WRITE THE CURRENT WORD TO THE LIST OF WORDS
@@ -207,45 +145,64 @@ function App({ pred }) {
     setCurrentState(0);
   };
 
-  const buttons = buttonLabels.map((label) => {
-    console.log("Label: " + label);
-    let className;
-    let onClick = onDepress.bind(this, label);
+  const getButtonConfig = (label) => {
     switch (label) {
       case "DEL":
-        className = "flex-center-button red-button";
-        break;
       case "PAUSE":
-        className = "flex-center-button red-button";
-        break;
+        return {
+          className: "flex-center-button red-button",
+          onClick: onDepress.bind(this, label),
+        };
       case "%":
-        className = "flex-center-button wildcard-button";
-        break;
+        return {
+          className: "flex-center-button wildcard-button",
+          onClick: onDepress.bind(this, label),
+        };
       case "<-":
-        className = "flex-center-button purple-button";
-        onClick = onLeftArrow;
-        break;
+        return {
+          className: "flex-center-button purple-button",
+          onClick: onLeftArrow,
+        };
       case "->":
-        className = "flex-center-button purple-button";
-        onClick = onRightArrow;
-        break;
-      case "+":
-        return (
-          <Switch
-            key="Switch"
-            buttonClass={getOppositeColor(buttonClass)}
-            buttonLabels={allStates[switchFace === 0 ? 1 : 0][0]}
-            onSwitchClick={onSwitch}
-            currentWord={currentWord}
-          />
-        );
+        return {
+          className: "flex-center-button purple-button",
+          onClick: onRightArrow,
+        };
       default:
-        className = `flex-center-button ${buttonClass}`; // Use state for class
-        break;
+        return {
+          className: `flex-center-button ${buttonClass}`,
+          onClick: onDepress.bind(this, label),
+        };
     }
+  };
+
+  const buttons = buttonLabels.map((label) => {
+    if (label === "+") {
+      return (
+        <Switch
+          key="Switch"
+          buttonClass={getOppositeColor(buttonClass)}
+          buttonLabels={allStates[switchFace === 0 ? 1 : 0][0]}
+          currentWord={currentWord}
+          setRightArrowCount={setRightArrowCount}
+          setCurrentSentence={setCurrentSentence}
+          setAllWords={setAllWords}
+          setCurrentWord={setCurrentWord}
+          setSwitchFace={setSwitchFace}
+          setButtonClass={setButtonClass}
+          setCurrentState={setCurrentState}
+          currentState={currentState}
+          currentSentence={currentSentence}
+          allWords={allWords}
+        />
+      );
+    }
+
+    const { className, onClick } = getButtonConfig(label);
 
     return (
       <TriggerButton
+        key={label}
         className={className}
         label={label}
         onClick={onClick}
@@ -257,29 +214,8 @@ function App({ pred }) {
   return (
     <div>
       <div className="grid-container">{buttons}</div>
-      <TriggerButton
+      <SpaceTriggerButton
         className={spaceClassName}
-        onClick={onSpace}
-        sendCoords={updateCoords}
-        label={
-          currentState === 0
-            ? "SPACE"
-            : currentState == 3
-            ? currentSentence
-            : "."
-        }
-      ></TriggerButton>
-      ;
-    </div>
-  );
-}
-
-export default App;
-
-{
-  /* <SpaceTriggerButton
-        className={spaceClassName}
-        onClick={onSpace}
         sendCoords={updateCoords}
         label={
           currentState === 0
@@ -298,5 +234,10 @@ export default App;
         setAllWords={setAllWords}
         setCurrentWordChoices={setCurrentWordChoices}
         sendDataToFlask={sendDataToFlask}
-      /> */
+      />
+      ;
+    </div>
+  );
 }
+
+export default App;

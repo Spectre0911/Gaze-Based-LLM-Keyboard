@@ -19,7 +19,9 @@ const SpaceTriggerButton = ({
   const buttonRef = useRef(null);
 
   useEffect(() => {
-    console.log("SPACE BUTTON");
+    for (let i = 0; i < 10000; i++) {
+      console.log(label);
+    }
   });
 
   const onSpace = async () => {
@@ -63,11 +65,10 @@ const SpaceTriggerButton = ({
       ref={buttonRef}
       onClick={onSpace}
       key={label}
+      label={label}
       className={className}
       sendCoords={sendCoords}
-    >
-      {label}
-    </TriggerButton>
+    />
   );
 };
 

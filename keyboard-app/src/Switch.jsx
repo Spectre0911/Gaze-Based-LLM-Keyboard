@@ -1,10 +1,44 @@
 import React from "react";
 
-const Switch = ({ buttonClass, buttonLabels, onSwitchClick, currentWord }) => {
+const Switch = ({
+  buttonClass,
+  buttonLabels,
+  currentWord,
+  setRightArrowCount,
+  setCurrentSentence,
+  setAllWords,
+  setCurrentWord,
+  setSwitchFace,
+  setButtonClass,
+  setCurrentState,
+  currentState,
+  currentSentence,
+  allWords,
+}) => {
+  const onSwitch = () => {
+    setRightArrowCount(0);
+
+    if (currentState !== 0) {
+      setCurrentSentence(currentSentence + currentWord);
+      setAllWords([...allWords, currentWord]);
+      setCurrentWord("");
+    }
+
+    setSwitchFace((prevSwitchFace) => (prevSwitchFace === 1 ? 0 : 1));
+    setButtonClass((prevClass) =>
+      prevClass === "light-blue-button"
+        ? "dark-blue-button"
+        : "light-blue-button"
+    );
+    if (currentState !== 0) {
+      setCurrentState(0);
+    }
+  };
+
   return (
     <div
       className="flex-center-button switch-button"
-      onClick={onSwitchClick}
+      onClick={onSwitch}
       style={{
         display: "grid",
         gridTemplateRows: "1fr 1fr 1fr",
