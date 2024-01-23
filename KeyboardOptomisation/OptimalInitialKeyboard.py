@@ -10,7 +10,7 @@ import time
 def simulatedAnnealing(prechosen, allWordTries, sampleWords):
     T = 1000.0  # initial temperature
     T_min = 50  # minimum temperature
-    alpha = 0.99  # cooling rate
+    alpha = 0.98  # cooling rate
 
     curMinCharSet = prechosen
     curMinCount = calculateAverageWordsReturnedT(

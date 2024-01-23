@@ -183,7 +183,7 @@ function App({ pred }) {
           key="Switch"
           buttonClass={getOppositeColor(buttonClass)}
           buttonLabels={allStates[switchFace === 0 ? 1 : 0][0]}
-          currentWord={currentWord}
+          currentWord={lookingAt}
           setRightArrowCount={setRightArrowCount}
           setCurrentSentence={setCurrentSentence}
           setAllWords={setAllWords}

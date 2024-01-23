@@ -18,12 +18,6 @@ const SpaceTriggerButton = ({
 }) => {
   const buttonRef = useRef(null);
 
-  useEffect(() => {
-    for (let i = 0; i < 10000; i++) {
-      console.log(label);
-    }
-  });
-
   const onSpace = async () => {
     console.log("Searching for: " + currentWord);
     console.log("Current sentence: " + currentSentence);

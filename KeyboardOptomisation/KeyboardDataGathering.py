@@ -10,8 +10,7 @@ import numpy as np
 #     {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'd', 'e'},
 # ]
 
-keyboards = [{'n', 'l', 'r', 'a', 'e', 's', 't', 'o', 'm', 'i', 'd'},
-             {'n', 'r', 'o', 'p', 's', 't', 'm', 'l', 'd', 'e', 'i', 'a'}]
+keyboards = [{'l', 'i', 's', 't', 'n', 'a', 'r', 'e'}]
 
 
 def plot_nested_dict(d):

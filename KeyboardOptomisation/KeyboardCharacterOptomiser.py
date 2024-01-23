@@ -59,7 +59,6 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
     cSet = [None] * len(characterSets)
 
     for j, kCharSet in enumerate(characterSets):
-        print(j, len(kCharSet))
         for characterSet in kCharSet:
             unknownCharacterSet = remainingAlphabet - characterSet
             tempCount = 0
@@ -67,10 +66,10 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
                 wordLength = len(word)
                 returnedWords = allWordTries[wordLength].searchR(
                     word, unknownCharacterSet, characterSet)[0][0]
-                weightedReturnedWords = returnedWords * \
-                    (((totalWordCount) -
-                     frequencyMaps[wordLength][word])/totalWordCount)
-                tempCount += weightedReturnedWords
+                # weightedReturnedWords = returnedWords * \
+                #     (((totalWordCount) -
+                #      frequencyMaps[wordLength][word])/totalWordCount)
+                tempCount += returnedWords
             currentCount = count[j]
             if tempCount < currentCount:
                 count[j] = tempCount
@@ -79,7 +78,7 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
     print("----------")
     for i in range(len(count)):
         print(
-            f"Keyboard {cSet[i]} has an frequency weighted count of {count[i]} out of a minimum of {minWeight}")
+            f"Keyboard {cSet[i]} has an frequency weighted count of {count[i]} out of a minimum of {len(sampleWords)}")
     return count
 
 

@@ -43,9 +43,11 @@ const Switch = ({
         display: "grid",
         gridTemplateRows: "1fr 1fr 1fr",
         gridTemplateColumns: "1fr 1fr 1fr",
-        height: "20vh", // Total height to match button height
-        width: "30vw", // Total width to match button width
-        gap: "2.5vh 7.5vw", // Adjusted gaps
+        height: "25vh",
+        width: "32vw",
+        gap: "2.5vh 7.5vw",
+        backgroundColor:
+          buttonClass === "light-blue-button" ? "#60e6d4" : "#3d8ea6",
       }}
     >
       <button className={`flex-center-button ${buttonClass}-small`}>
@@ -62,8 +64,11 @@ const Switch = ({
         style={{
           gridColumn: "1 / -1",
           textAlign: "center",
-          color: "black", // Example color
-          backgroundColor: "white", // Example background
+          color: buttonClass === "light-blue-button" ? "black" : "white",
+
+          backgroundColor:
+            buttonClass === "light-blue-button" ? "#60e6d4" : "#3d8ea6",
+
           fontSize: "4rem", // Example font size
           border: "none",
           height: "5vh",
