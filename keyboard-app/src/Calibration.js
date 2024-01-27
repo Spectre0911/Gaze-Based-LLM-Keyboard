@@ -3,13 +3,13 @@ import Dot from "./Dot";
 import App from "./App";
 const Calibration = ({ prediction }) => {
   const [dotsClicked, setDotsClicked] = useState(0);
-  const totalDots = 9;
+  const totalDots = 12;
 
   const handleMaxClicks = () => {
     setDotsClicked(dotsClicked + 1);
   };
 
-  if (dotsClicked !== totalDots) {
+  if (dotsClicked === totalDots) {
     return <App pred={prediction} />;
   }
 

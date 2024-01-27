@@ -1,14 +1,26 @@
 import React, { useRef, useEffect } from "react";
 import "./App.css";
+import ReactCardFlip from "react-card-flip";
 
-function TriggerButton({ className, onClick, label, sendCoords }) {
-  const buttonRef = useRef(null);
+function TriggerButton({
+  className,
+  onClick,
+  frontLabel,
+  backLabel,
+  sendCoords,
+  flipCard,
+  flipped,
+  selected,
+}) {
+  const frontButtonRef = useRef(null);
+  const backButtonRef = useRef(null);
+  var className = selected ? `${className} selected` : className;
 
   useEffect(() => {
+    // Could probably calculate this a bit more intelligently in app.js
     const handleResize = () => {
-      if (buttonRef.current) {
-        console.log("Buttons redrawn");
-        const rect = buttonRef.current.getBoundingClientRect();
+      if (frontButtonRef.current) {
+        const rect = frontButtonRef.current.getBoundingClientRect();
         const coords = {
           topLeft: { x: rect.left, y: rect.top },
           topRight: { x: rect.right, y: rect.top },
@@ -16,7 +28,13 @@ function TriggerButton({ className, onClick, label, sendCoords }) {
           bottomRight: { x: rect.right, y: rect.bottom },
         };
         console.log(coords);
-        sendCoords(label, coords);
+        if (flipped) {
+          sendCoords(backLabel, coords);
+        } else {
+          console.log("in here");
+          console.log(frontLabel);
+          sendCoords(frontLabel, coords);
+        }
       }
     };
 
@@ -25,13 +43,41 @@ function TriggerButton({ className, onClick, label, sendCoords }) {
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [flipped]);
 
-  return (
-    <button ref={buttonRef} onClick={onClick} key={label} className={className}>
-      {label}
-    </button>
-  );
+  if (flipCard) {
+    return (
+      <ReactCardFlip isFlipped={flipped} flipDirection="vertical">
+        <button
+          ref={frontButtonRef}
+          onClick={onClick}
+          key={frontLabel}
+          className={className}
+        >
+          {frontLabel}
+        </button>
+        <button
+          ref={backButtonRef}
+          onClick={onClick}
+          key={backLabel}
+          className={className}
+        >
+          {backLabel}
+        </button>
+      </ReactCardFlip>
+    );
+  } else {
+    return (
+      <button
+        ref={frontButtonRef}
+        onClick={onClick}
+        key={frontLabel}
+        className={className}
+      >
+        {frontLabel}
+      </button>
+    );
+  }
 }
 
 export default TriggerButton;

@@ -19,15 +19,16 @@ const Dot = ({ onMaxClicksReached }) => {
 
   // Style that includes dynamic background color
   const dotStyle = {
-    textAlign: "center",
     width: "2vw",
     height: "2vw",
-    borderRadius: "50%",
     backgroundColor: `rgb(255, ${greenValue}, 0)`, // RGB with dynamic green component
+    borderRadius: "50%",
   };
 
   return (
-    <button className="dot" style={dotStyle} onClick={handleClick}></button>
+    <div className="grid-items">
+      <button style={dotStyle} onClick={handleClick}></button>{" "}
+    </div>
   );
 };
 

@@ -20,6 +20,8 @@ const EyeBlinkTracker = () => {
   const loadWebGazer = async () => {
     if (window.webgazer) {
       webgazer.showVideo(false);
+      webgazer.util.bound(prediction);
+      webgazer.applyKalmanFilter(true);
       webgazer
         .setGazeListener(function (data, elapsedTime) {
           if (data == null) {
@@ -30,7 +32,7 @@ const EyeBlinkTracker = () => {
           setPrediction({ x: xprediction, y: yprediction });
         })
         .begin();
-      webgazer.showPredictionPoints(true);
+      webgazer.showPredictionPoints(false);
     }
   };
 

@@ -4,7 +4,7 @@ import { sendDataToFlask } from "./services/sendDataToFlask";
 
 const SpaceTriggerButton = ({
   className,
-  label,
+  frontLabel,
   sendCoords,
   setCurrentWord,
   setAllWords,
@@ -15,6 +15,7 @@ const SpaceTriggerButton = ({
   currentWord,
   currentSentence,
   currentState,
+  selected,
 }) => {
   const buttonRef = useRef(null);
 
@@ -58,10 +59,11 @@ const SpaceTriggerButton = ({
     <TriggerButton
       ref={buttonRef}
       onClick={onSpace}
-      key={label}
-      label={label}
+      key={frontLabel}
+      frontLabel={frontLabel}
       className={className}
       sendCoords={sendCoords}
+      selected={selected}
     />
   );
 };
