@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Dot from "./Dot";
 import App from "./App";
 const Calibration = ({ prediction }) => {
@@ -9,7 +9,7 @@ const Calibration = ({ prediction }) => {
     setDotsClicked(dotsClicked + 1);
   };
 
-  if (dotsClicked === totalDots) {
+  if (dotsClicked !== totalDots) {
     return <App pred={prediction} />;
   }
 

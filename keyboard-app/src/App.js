@@ -78,6 +78,7 @@ function App({ pred }) {
   const [lookingAt, setLookingAt] = useState("");
   const [buttons, setButtons] = useState([]);
   const [selected, setSelected] = useState(Array(10).fill(false));
+  const [selectedLetter, setSelectedLetter] = useState("");
 
   const allStates = [lightBlueStates, darkBlueStates];
   const zippedStates = twoDimZip(lightBlueStates, darkBlueStates);
@@ -126,6 +127,23 @@ function App({ pred }) {
   };
 
   useEffect(() => {
+    const handleSpaceBar = () => {
+      onDepress(selectedLetter);
+    };
+    const handleKeyDown = (event) => {
+      if (event.code === "Space") {
+        handleSpaceBar();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedLetter]);
+
+  useEffect(() => {
     const letter = findLetterForPoint(pred, coordinateMap);
     setLookingAt(letter);
     // Highlight the letter on the keyboard
@@ -133,8 +151,8 @@ function App({ pred }) {
       setSelected((_) => {
         const newSelected = Array(10).fill(false);
         const index = letterIndexMap[letter];
-        console.log(index);
         newSelected[index] = true;
+        setSelectedLetter(letter);
         return newSelected;
       });
     }
@@ -147,6 +165,43 @@ function App({ pred }) {
     }));
   };
 
+  // WHEN SPACE BUTTON IS DEPRESSED
+  const onSpace = async () => {
+    console.log("Searching for: " + currentWord);
+    console.log("Current sentence: " + currentSentence);
+    var nextState = 1;
+    // Send currentWord to the backend
+    if (currentState === 0) {
+      try {
+        const response = await sendDataToFlask({
+          currentWord: currentWord,
+          currentSentence: currentSentence,
+        });
+        console.log("Response recieved");
+        console.log("Response from backend:", response);
+        setCurrentWordChoices([currentWord, ...response[1]]);
+        if (response[1].length === 1) {
+          setCurrentWord(response[1][0].toUpperCase());
+          setRightArrowCount(1);
+          nextState = 2;
+        }
+      } catch (error) {
+        console.error("Error sending word to backend:", error);
+      }
+      // Append space to current sentence
+      setCurrentState(nextState);
+    } else if (currentState === 1 || currentState === 2) {
+      setCurrentSentence([...allWords, currentWord].join(" "));
+      setCurrentState(3);
+      setAllWords([]);
+      setCurrentWord("");
+    } else if (currentState === 3) {
+      setCurrentSentence("");
+      setCurrentState(0);
+    }
+  };
+
+  // WHEN RIGHT ARROW IS CLICKED
   const onRightArrow = () => {
     if (rightArrowCount < currentWordChoices.length - 1) {
       setCurrentWord(currentWordChoices[rightArrowCount + 1].toUpperCase());
@@ -161,6 +216,7 @@ function App({ pred }) {
     }
   };
 
+  // WHEN LEFT ARROW IS CLICKED
   const onLeftArrow = () => {
     if (rightArrowCount === 1) {
       setCurrentState(1);
@@ -174,41 +230,52 @@ function App({ pred }) {
     setRightArrowCount(rightArrowCount - 1);
   };
 
+  // WHEN SWITCH IS CLICKED
+  const onSwitch = () => {
+    setRightArrowCount(0);
+    setCoordinateMap({});
+
+    if (currentState !== 0) {
+      setAllWords([...allWords, currentWord]);
+      setCurrentWord("");
+    }
+
+    setSwitchFace((prevSwitchFace) => (prevSwitchFace === 1 ? 0 : 1));
+    setButtonClass((prevClass) =>
+      prevClass === "light-blue-button"
+        ? "dark-blue-button"
+        : "light-blue-button"
+    );
+    if (currentState !== 0) {
+      setCurrentState(0);
+    }
+  };
+
+  // WHEN ANY TRIGGER IS DEPRESSED
   const onDepress = (label) => {
+    console.log(label);
     // RESET RIGHT ARROW CLICKS
     setRightArrowCount(0);
-
-    // // WHEN BACKSPACE IS PRESSED
-    // if (label === "DEL") {
-    //   // REMOVE LAST CHARACTER FROM RELEVANT STATES
-    //   // if (currentSentence.length > 0) {
-    //   //   setCurrentSentence(currentSentence.slice(0, -1));
-    //   // }
-    //   if (currentWord.length > 0) {
-    //     setCurrentWord(currentWord.slice(0, -1));
-    //   }
-    //   // IF CURRENT WORD IS EMPTY
-    //   else {
-    //     // IF THERE ARE STILL WORDS IN THE SENTENCE
-    //     if (allWords.l`ength > 0) {
-    //       // GET THE LAST WORD FROM THE LIST OF WORDS
-    //       var lastWord = allWords[allWords.length - 1];
-    //       // REMOVE THE LAST WORD FROM THE LIST OF WORDS
-    //       setAllWords(allWords.slice(0, -1));
-    //       // SET THE CURRENT WORD TO THE PREVIOUS WORD
-    //       setCurrentWord(lastWord);
-    //     }
-    //   }
-
-    //   console.log(currentWord);
-    // }
-
-    // WHEN A CHARACTER IS TYPED
-    if (label != "DEL") {
+    if (label === "DEL") {
+      if (currentWord.length > 0) {
+        setCurrentWord(currentWord.slice(0, -1));
+      } else {
+        if (allWords.length > 0) {
+          var lastWord = allWords[allWords.length - 1];
+          setAllWords(allWords.slice(0, -1));
+          setCurrentWord(lastWord);
+        }
+      }
+    } else if (label === "+") {
+      onSwitch();
+    } else if (label === "SPACE") {
+      console.log("SPACE");
+      onSpace();
+    } else if (label == "AUTO") {
+    } else {
       // IF RETURNING FROM A SPACE
       if (currentState != 0) {
         // WRITE THE CURRENT WORD TO THE LIST OF WORDS
-        setCurrentSentence(currentSentence + currentWord);
         setAllWords([...allWords, currentWord]);
         // OVERWRITE THE CURRENT WORD
         setCurrentWord(label);
@@ -220,8 +287,6 @@ function App({ pred }) {
     // ENSURE THAT WE ARE IN BASE STATE AFTER TYPING ANY CHARACTER
     setCurrentState(0);
   };
-
-  // console.log(zippedStates);
 
   // Initially create the buttons
   useEffect(() => {
@@ -236,25 +301,21 @@ function App({ pred }) {
             key="Switch"
             buttonClass={getOppositeColor(buttonClass)}
             buttonLabels={allStates[switchFace === 0 ? 1 : 0][0]}
-            currentWord={lookingAt}
-            setRightArrowCount={setRightArrowCount}
-            setCurrentSentence={setCurrentSentence}
-            setAllWords={setAllWords}
-            setCurrentWord={setCurrentWord}
-            setSwitchFace={setSwitchFace}
-            setButtonClass={setButtonClass}
-            setCurrentState={setCurrentState}
-            currentState={currentState}
-            currentSentence={currentSentence}
-            allWords={allWords}
-            setCoordinateMap={setCoordinateMap}
+            currentWord={currentWord}
+            onSwitch={onSwitch}
             sendCoords={updateCoords}
             selected={selected[i]}
           />
         );
       }
 
-      const { className, onClick, flip } = getButtonConfig(frontLabel);
+      let strokeLabel = frontLabel;
+
+      if (switchFace === 1) {
+        strokeLabel = backLabel;
+      }
+
+      const { className, onClick, flip } = getButtonConfig(strokeLabel);
 
       return (
         <TriggerButton
@@ -271,14 +332,13 @@ function App({ pred }) {
     });
 
     setButtons(buttons);
-  }, [switchFace, lookingAt]);
+  }, [switchFace, currentWord, currentState, lookingAt]);
 
   return (
     <div>
       <div className="grid-container">{buttons}</div>
-      <SpaceTriggerButton
+      <TriggerButton
         className={spaceClassName}
-        sendCoords={updateCoords}
         frontLabel={
           currentState === 0
             ? "SPACE"
@@ -286,18 +346,12 @@ function App({ pred }) {
             ? currentSentence
             : "."
         }
-        currentState={currentState}
-        setCurrentState={setCurrentState}
-        currentWord={currentWord}
-        setCurrentWord={setCurrentWord}
-        currentSentence={currentSentence}
-        setCurrentSentence={setCurrentSentence}
-        setRightArrowCount={setRightArrowCount}
-        setAllWords={setAllWords}
-        setCurrentWordChoices={setCurrentWordChoices}
-        sendDataToFlask={sendDataToFlask}
+        onClick={onSpace}
+        sendCoords={updateCoords}
+        flipCard={false}
+        flipped={false}
         selected={selected[9]}
-      />
+      />{" "}
       ;
     </div>
   );

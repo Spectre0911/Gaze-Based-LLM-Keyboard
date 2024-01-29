@@ -32,7 +32,8 @@ const EyeBlinkTracker = () => {
           setPrediction({ x: xprediction, y: yprediction });
         })
         .begin();
-      webgazer.showPredictionPoints(false);
+      webgazer.showPredictionPoints(true);
+      webgazer.saveDataAcrossSessions(false);
     }
   };
 
@@ -40,18 +41,6 @@ const EyeBlinkTracker = () => {
     console.log("loading webgazer");
     loadWebGazer();
   }, []);
-
-  // const canvas = webgazer.getVideoElementCanvas();
-  // if (canvas) {
-  //   console.log("captured");
-  //   const capturedStream = canvas.captureStream(30); // 30 FPS
-  //   console.log(capturedStream);
-  //   setStream(capturedStream);
-  //   if (videoRef.current) {
-  //     console.log(videoRef);
-  //     videoRef.current.srcObject = stream;
-  //   }
-  // }
 
   return <Calibration prediction={prediction}></Calibration>;
 };

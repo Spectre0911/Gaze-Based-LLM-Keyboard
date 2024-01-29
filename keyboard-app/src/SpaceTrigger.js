@@ -16,6 +16,7 @@ const SpaceTriggerButton = ({
   currentSentence,
   currentState,
   selected,
+  allWords,
 }) => {
   const buttonRef = useRef(null);
 
@@ -41,11 +42,10 @@ const SpaceTriggerButton = ({
       } catch (error) {
         console.error("Error sending word to backend:", error);
       }
-
-      setCurrentSentence(currentSentence + " ");
+      // Append space to current sentence
       setCurrentState(nextState);
     } else if (currentState === 1 || currentState === 2) {
-      setCurrentSentence(currentSentence + currentWord);
+      setCurrentSentence([...allWords, currentWord].join(" "));
       setCurrentState(3);
       setAllWords([]);
       setCurrentWord("");

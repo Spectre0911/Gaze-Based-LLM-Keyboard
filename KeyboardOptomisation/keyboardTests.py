@@ -79,11 +79,10 @@ def spellSentence(allWordTries, trie, keyboard, words, wordCount):
 
 def gptReplacedSentence(sentence):
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-0125-preview",
         messages=[
-            {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence and you only have one more guess."},
-            {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried. You have yet to guess from this set: {'v', 'x', 'b', 'y', 'c', 'j', 'f', 'w', 'u', 'q', 'z', 'h', 'p', 'k'}. What do you think the sentence says? Take a deep breath and think about it."},
-            {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\" The words \"His,\" \"stand-up,\" \"was,\" \"I,\" and \"cried\" seem to fit in the context of the sentence, and the remaining letters are not needed to complete this sentence."},
+            {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried. You have to guess what each % says. Take a deep breath and think about it."},
+            {"role": "assistant", "content": "Deciphered: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\" The words \"His,\" \"stand-up,\" \"was,\" \"I,\" and \"cried\" seem to fit in the context of the sentence, and the remaining letters are not needed to complete this sentence."},
             {"role": "user", "content": f"Current sentence: {sentence}"},
         ]
     )

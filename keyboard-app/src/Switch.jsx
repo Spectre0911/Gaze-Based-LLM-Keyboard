@@ -4,42 +4,11 @@ const Switch = ({
   buttonClass,
   buttonLabels,
   currentWord,
-  setRightArrowCount,
-  setCurrentSentence,
-  setAllWords,
-  setCurrentWord,
-  setSwitchFace,
-  setButtonClass,
-  setCurrentState,
-  currentState,
-  currentSentence,
-  allWords,
-  setCoordinateMap,
+  onSwitch,
   sendCoords,
   selected,
 }) => {
   const frontButtonRef = useRef(null);
-
-  const onSwitch = () => {
-    setRightArrowCount(0);
-    setCoordinateMap({});
-
-    if (currentState !== 0) {
-      setCurrentSentence(currentSentence + currentWord);
-      setAllWords([...allWords, currentWord]);
-      setCurrentWord("");
-    }
-
-    setSwitchFace((prevSwitchFace) => (prevSwitchFace === 1 ? 0 : 1));
-    setButtonClass((prevClass) =>
-      prevClass === "light-blue-button"
-        ? "dark-blue-button"
-        : "light-blue-button"
-    );
-    if (currentState !== 0) {
-      setCurrentState(0);
-    }
-  };
 
   useEffect(() => {
     // Could probably calculate this a bit more intelligently in app.js
@@ -63,6 +32,34 @@ const Switch = ({
     return () => window.removeEventListener("resize", handleResize);
   });
 
+  const switchStyle = {
+    display: "grid",
+    gridTemplateRows: "1fr 1fr 1fr",
+    gridTemplateColumns: "1fr 1fr 1fr",
+    height: "25.5vh",
+    width: "31.5vw",
+    gap: "2.5vh 7.5vw",
+    backgroundColor:
+      buttonClass === "light-blue-button" ? "#9496ff" : "#3d8ea6",
+  };
+
+  const currentWordStyle = {
+    gridColumn: "1 / -1",
+    textAlign: "center",
+    color: selected ? "#96ff94" : "white",
+
+    backgroundColor:
+      buttonClass === "light-blue-button" ? "#9496ff" : "#3d8ea6",
+
+    fontSize: "4rem", // Example font size
+    border: "none",
+    height: "5vh",
+  };
+
+  const buttonClassName = `flex-center-button ${buttonClass}-small ${
+    selected ? "selected" : ""
+  }`;
+
   return (
     <div
       ref={frontButtonRef}
@@ -72,50 +69,16 @@ const Switch = ({
           : "flex-center-button switch-button"
       }
       onClick={onSwitch}
-      style={{
-        display: "grid",
-        gridTemplateRows: "1fr 1fr 1fr",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        height: "25.5vh",
-        width: "31.5vw",
-        gap: "2.5vh 7.5vw",
-        backgroundColor:
-          buttonClass === "light-blue-button" ? "#9496ff" : "#3d8ea6",
-      }}
+      style={switchStyle}
     >
-      <button className={`flex-center-button ${buttonClass}-small`}>
-        {buttonLabels[0]}
-      </button>
-      <button className={`flex-center-button ${buttonClass}-small`}>
-        {buttonLabels[1]}
-      </button>
-      <button className={`flex-center-button ${buttonClass}-small`}>
-        {buttonLabels[2]}
-      </button>
+      <button className={buttonClassName}>{buttonLabels[0]}</button>
+      <button className={buttonClassName}>{buttonLabels[1]}</button>
+      <button className={buttonClassName}>{buttonLabels[2]}</button>
       {/* Display currentWord */}
-      <button
-        style={{
-          gridColumn: "1 / -1",
-          textAlign: "center",
-          color: "white",
-
-          backgroundColor:
-            buttonClass === "light-blue-button" ? "#9496ff" : "#3d8ea6",
-
-          fontSize: "4rem", // Example font size
-          border: "none",
-          height: "5vh",
-        }}
-      >
-        {currentWord}
-      </button>
-      <button className={`flex-center-button ${buttonClass}-small`}>
-        {buttonLabels[3]}
-      </button>
+      <button style={currentWordStyle}>{currentWord}</button>
+      <button className={buttonClassName}>{buttonLabels[3]}</button>
       <div /> {/* Empty div for spacing, no need for flex: 1 */}
-      <button className={`flex-center-button ${buttonClass}-small`}>
-        {buttonLabels[5]}
-      </button>
+      <button className={buttonClassName}>{buttonLabels[5]}</button>
     </div>
   );
 };
