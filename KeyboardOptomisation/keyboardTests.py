@@ -5,7 +5,9 @@ from KeyboardCharacterOptomiser import createWordTries
 from Trie import Trie
 from constants import BASE_PATH, alphabet, prechosen
 import csv
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 
 # load_dotenv()
 
@@ -30,7 +32,7 @@ def spellSentences(filename, keyboards, allWordTries):
         trie = Trie()
         with open(filename, 'r') as file, open('singleWordReplacementImprovement.csv', 'w', newline='') as csvfile:
             fieldnames = ['Original', 'SpeltSentence', 'SpeltSentenceScore',
-                          'SingleWordReplaced', 'SingleWordReplacedScore', 'Diff']
+                          'SingleWordReplaced', 'SingleWordReplacedScore', 'GPT', 'GPTScore']
             csvwriter = csv.DictWriter(csvfile, fieldnames=fieldnames)
             csvwriter.writeheader()
             sentences = []
@@ -46,8 +48,12 @@ def spellSentences(filename, keyboards, allWordTries):
 
                         speltSentenceScore = scoreSentence(
                             speltSentence, line) / wordCount
+
                         singleWordReplacedScore = scoreSentence(
                             singleWordReplaced, line) / wordCount
+
+                        gptSentence = gptWrapper(singleWordReplaced)
+                        gptScore = scoreSentence(gptSentence, line) / wordCount
 
                         csvwriter.writerow({
                             'Original': line.strip(),
@@ -55,7 +61,8 @@ def spellSentences(filename, keyboards, allWordTries):
                             'SpeltSentenceScore': speltSentenceScore,
                             'SingleWordReplaced': singleWordReplaced,
                             'SingleWordReplacedScore': singleWordReplacedScore,
-                            'Diff': singleWordReplacedScore - speltSentenceScore
+                            'GPT': gptSentence,
+                            'GPTScore': gptScore,
                         })
                         sentences.append(speltSentence)
 
@@ -71,31 +78,94 @@ def spellSentence(allWordTries, trie, keyboard, words, wordCount):
         wordTrie = allWordTries[len(speltWords[i])]
         replacedWord = wordTrie.singleWordReplacement(
             speltWords[i], keyboard)
-        replacedWords.append(replacedWord)
+        replacedWords.append(replacedWord[0])
     speltSentence = " ".join(speltWords)
     singleWordReplaced = " ".join(replacedWords)
     return speltSentence, singleWordReplaced
 
 
+def compareWords(tuples, keyboard):
+    newTuples = []
+    for (w1, w2) in tuples:
+        w1 = w1.lower()
+        w2 = w2.lower()
+
+        match = True
+        i = 0
+
+        if len(w1) != len(w2):
+            match = False
+
+        while match and i < len(w1):
+            wildcardPresent = w2[i] == "%"
+            gptCharacterNotPossible = w1[i] in keyboard
+            if wildcardPresent and gptCharacterNotPossible:
+                match = False
+            elif not wildcardPresent:
+                if w1[i] != w2[i]:
+                    match = False
+            i += 1
+
+        newTuples.append((w1, match))
+    return newTuples
+
+
 def gptReplacedSentence(sentence):
-    response = openai.ChatCompletion.create(
-        model="gpt-4-0125-preview",
-        messages=[
-            {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried. You have to guess what each % says. Take a deep breath and think about it."},
-            {"role": "assistant", "content": "Deciphered: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\" The words \"His,\" \"stand-up,\" \"was,\" \"I,\" and \"cried\" seem to fit in the context of the sentence, and the remaining letters are not needed to complete this sentence."},
-            {"role": "user", "content": f"Current sentence: {sentence}"},
-        ]
-    )
-    print(response)
+    response = client.chat.completions.create(model="gpt-3.5-turbo-1106",
+                                              messages=[
+                                                  {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'a', 'd', 'e', 'i', 'l', 'n', 'o', 'r', 's', 't'} DO NOT REUSE ANY OF THEM"},
+                                                  {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried.  What do you think the sentence says? Take a deep breath and think about it."},
+                                                  {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\""},
+                                                  {"role": "user",
+                                                      "content": f"Current sentence: {sentence}"},
+
+                                              ])
+    response = response.choices[0].message.content
+    first_quote_index = response.find('"')
+    last_quote_index = response.find(
+        '.')
+    extracted = response[first_quote_index + 1: last_quote_index]
+    print("GPT Sentence: ")
+    print(extracted)
+
+    extractedWords = extracted.split()
+    sentenceWords = sentence.split()
+
+    zippedWords = list(zip(extractedWords, sentenceWords))
+    reversedZippedWords = list(zip(extractedWords[::-1], sentenceWords[::-1]))
+
+    forwardPass = compareWords(zippedWords, prechosen)
+    backPass = compareWords(reversedZippedWords, prechosen)
+
+    newSentence = sentence.split()
+    print(newSentence)
+    for index, (w1, match) in enumerate(forwardPass):
+        if match:
+            newSentence[index] = w1
+    for index, (w1,  match) in enumerate(backPass):
+        if match:
+            newSentence[-index - 1] = w1
+    newSentenceString = " ".join(newSentence)
+    print("New sentence: ")
+    print(newSentenceString)
+    print("\n\n\n")
+    return (newSentenceString)
+
+
+def gptWrapper(sentence):
+    for i in range(3):
+        sentence = gptReplacedSentence(sentence)
+    return sentence
 
 
 def main():
-    gptReplacedSentence(
-        "%ars boomed %% on t%e %ig%%a% ea%% one a capsule o% individual li%es and stories %et to %e told")
-    # unknown = alphabet - prechosen
-    # print(unknown)
-    # allWordTries = createWordTries()
-    # spellSentences(f"{BASE_PATH}/sentences.txt", [prechosen], allWordTries)
+    # sentence = "%ars %oo%ed %% on the %i%%%a% ea%% one a capsule o% indi%id%al li%es and stories %et to %e told"
+    # for i in range(5):
+    #     sentence = gptReplacedSentence(sentence)
+
+    # gptWrapper(sentence)
+    allWordTries = createWordTries()
+    spellSentences(f"{BASE_PATH}/sentences.txt", [prechosen], allWordTries)
 
 
 if __name__ == "__main__":
