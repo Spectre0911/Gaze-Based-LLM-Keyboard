@@ -12,19 +12,6 @@ function getOppositeColor(currentColor) {
     : "light-blue-button";
 }
 
-function findLetterForPoint(point, map) {
-  for (const [letter, coords] of Object.entries(map)) {
-    if (
-      point.x >= coords.topLeft.x &&
-      point.x <= coords.topRight.x &&
-      point.y >= coords.topLeft.y &&
-      point.y <= coords.bottomLeft.y
-    ) {
-      return letter;
-    }
-  }
-}
-
 function twoDimZip(a, b) {
   return a.map(function (ai, i) {
     return ai.map(function (e, j) {
@@ -37,19 +24,20 @@ const lightBlueStates = [
   ["I", "T", "A", "N", "+", "E", "DEL", "%", "AUTO"],
   ["I", "T", "A", "N", "+", "E", "DEL", "%", "->"],
   ["I", "T", "A", "N", "+", "E", "<-", "%", "->"],
-  ["I", "T", "A", "N", "+", "E", "<-", "%", "->"],
+  ["I", "T", "A", "N", "+", "E", "DEL", "%", "AUTO"],
 ];
 
 const darkBlueStates = [
   ["D", "O", "S", "L", "+", "R", "DEL", "%", "AUTO"],
   ["D", "O", "S", "L", "+", "R", "DEL", "%", "->"],
   ["D", "O", "S", "L", "+", "R", "<-", "%", "->"],
-  ["D", "O", "S", "L", "+", "R", "<-", "%", "->"],
+  ["D", "O", "S", "L", "+", "R", "DEL", "%", "AUTO"],
 ];
 
 const createHashMap = (arrays) => {
   let hashMap = {};
   hashMap["SPACE"] = 9;
+  hashMap["."] = 9;
   arrays.forEach((array, arrayIndex) => {
     array.forEach((subArray, subArrayIndex) => {
       subArray.forEach((item, i) => {
@@ -64,7 +52,6 @@ const createHashMap = (arrays) => {
 };
 
 const letterIndexMap = createHashMap([lightBlueStates, darkBlueStates]);
-console.log(letterIndexMap);
 
 function App({ pred }) {
   const [coordinateMap, setCoordinateMap] = useState({});
@@ -89,17 +76,38 @@ function App({ pred }) {
     y: screenSize.height / 2,
   });
   const [buffering, setBuffering] = useState(false);
-
   const allStates = [lightBlueStates, darkBlueStates];
   const zippedStates = twoDimZip(lightBlueStates, darkBlueStates);
+  const spaceStates = ["SPACE", ".", ".", currentSentence];
   var buttonLabels = zippedStates[currentState];
-
   var spaceClassName =
     currentState === 0
       ? "flex-center-button space-button"
       : currentState === 3
       ? "flex-center-button green-space-button"
       : "flex-center-button red-space-button";
+
+  function findLetterForPoint(point, map) {
+    let validKeys = [
+      ...allStates[switchFace][currentState],
+      spaceStates[currentState],
+    ];
+    let validKeysSet = new Set(validKeys);
+
+    for (const [letter, coords] of Object.entries(map)) {
+      if (!validKeysSet.has(letter)) {
+        continue;
+      }
+      if (
+        point.x >= coords.topLeft.x &&
+        point.x <= coords.topRight.x &&
+        point.y >= coords.topLeft.y &&
+        point.y <= coords.bottomLeft.y
+      ) {
+        return letter;
+      }
+    }
+  }
 
   const getButtonConfig = (label) => {
     let className = "flex-center-button";
@@ -137,6 +145,8 @@ function App({ pred }) {
   };
 
   useEffect(() => {
+    console.log(`You are in state ${currentState}`);
+
     const handleSpaceBar = () => {
       onDepress(selectedLetter);
 
@@ -156,7 +166,7 @@ function App({ pred }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedLetter]);
+  }, [selectedLetter, currentState]);
 
   useEffect(() => {
     const letter = findLetterForPoint(cursorPosition, coordinateMap);
@@ -173,6 +183,37 @@ function App({ pred }) {
     }
   }, [cursorPosition, coordinateMap]);
 
+  useEffect(() => {
+    if (currentState !== 3) {
+      return;
+    }
+    // Set buffering true at the start of the effect
+    setBuffering(true);
+
+    // Combine words to form the sentence for GPT
+    const sentence = [...allWords, currentWord].join(" ");
+
+    // Define the asynchronous function inside the useEffect
+    const sendSentence = async () => {
+      try {
+        const response = await sentSentenceToGPT({ sentence });
+        // After the async operation, update the state based on the response
+        setCurrentSentence(response);
+        setAllWords([]);
+        setCurrentWord("");
+      } catch (error) {
+        console.error("Error sending sentence to GPT:", error);
+        // Handle any errors appropriately
+      } finally {
+        // Ensure buffering is turned off after the operation completes or fails
+        setBuffering(false);
+      }
+    };
+
+    // Call the async function
+    sendSentence();
+  }, [currentState]); // Depen
+
   const updateCoords = (label, data) => {
     setCoordinateMap((prevMap) => ({
       ...prevMap,
@@ -182,6 +223,8 @@ function App({ pred }) {
 
   // WHEN SPACE BUTTON IS DEPRESSED
   const onSpace = async () => {
+    console.log("Before SPACE: " + currentState);
+
     var nextState = 1;
     // Send currentWord to the backend
     if (currentState === 0) {
@@ -203,15 +246,8 @@ function App({ pred }) {
       setCurrentState(nextState);
     } else if (currentState === 1 || currentState === 2) {
       setCurrentState(3);
-      setBuffering(true);
-      const response = await sentSentenceToGPT({
-        sentence: [...allWords, currentWord].join(" "),
-      });
-      setBuffering(false);
-      setCurrentSentence(response);
-      setAllWords([]);
-      setCurrentWord("");
-    } else if (currentState === 3) {
+    } else {
+      console.log("RETURNING TO HOME STATE");
       setCurrentSentence("");
       setCurrentState(0);
     }
@@ -263,21 +299,23 @@ function App({ pred }) {
         : "light-blue-button"
     );
     if (currentState !== 0) {
+      console.log("FORCE TRANSITION");
       setCurrentState(0);
     }
   };
 
   // WHEN ANY TRIGGER IS DEPRESSED
   const onDepress = (label) => {
+    // Prevent any key from being depressed when information is being collected from GPT
     if (buffering) {
-      console.log("buffering");
       return;
     }
+    // If a key is depressed after the sentence is returned from GPT, reset the sentence
     if (currentState == 3) {
       setCurrentSentence("");
       setCurrentState(0);
     }
-    console.log(label);
+
     // RESET RIGHT ARROW CLICKS
     setRightArrowCount(0);
     if (label === "DEL") {
@@ -374,13 +412,7 @@ function App({ pred }) {
       <div className="grid-container">{buttons}</div>
       <TriggerButton
         className={spaceClassName}
-        frontLabel={
-          currentState === 0
-            ? "SPACE"
-            : currentState == 3
-            ? currentSentence
-            : "."
-        }
+        frontLabel={spaceStates[currentState]}
         onClick={onSpace}
         sendCoords={updateCoords}
         flipCard={false}

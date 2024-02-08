@@ -10,13 +10,17 @@ function TriggerButton({
   backLabel,
   sendCoords,
   flipCard,
-  flipped,
   selected,
+  flipped = false,
   buffering = false,
 }) {
   const frontButtonRef = useRef(null);
   const backButtonRef = useRef(null);
+
   var className = selected ? `${className} selected` : className;
+
+  let fa = <i className="fa-solid fa-arrow-right"></i>;
+  let ba = <i className="fa-solid fa-arrow-left"></i>;
 
   useEffect(() => {
     // Could probably calculate this a bit more intelligently in app.js
@@ -29,12 +33,9 @@ function TriggerButton({
           bottomLeft: { x: rect.left, y: rect.bottom },
           bottomRight: { x: rect.right, y: rect.bottom },
         };
-        console.log(coords);
         if (flipped) {
           sendCoords(backLabel, coords);
         } else {
-          console.log("in here");
-          console.log(frontLabel);
           sendCoords(frontLabel, coords);
         }
       }
@@ -71,7 +72,7 @@ function TriggerButton({
   } else if (buffering) {
     return (
       <div className={className}>
-        <LoadingIcons.ThreeDots stroke="white" strokeOpacity={0.1}  />
+        <LoadingIcons.ThreeDots stroke="white" strokeOpacity={0.1} />
       </div>
     );
   } else {
@@ -82,7 +83,7 @@ function TriggerButton({
         key={frontLabel}
         className={className}
       >
-        {frontLabel}
+        {frontLabel === "->" ? fa : frontLabel == "<-" ? ba : frontLabel}
       </button>
     );
   }
