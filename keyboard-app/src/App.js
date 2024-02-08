@@ -316,27 +316,28 @@ function App({ pred }) {
       setCurrentState(0);
     }
 
-    // RESET RIGHT ARROW CLICKS
-    setRightArrowCount(0);
     if (label === "DEL") {
+      // Delete the last character of a word, if a word still exists
       if (currentWord.length > 0) {
         setCurrentWord(currentWord.slice(0, -1));
       } else {
+        // If no word exists, get the last word (if one exists)
         if (allWords.length > 0) {
           var lastWord = allWords[allWords.length - 1];
+          // Remove the last word from the list of words
           setAllWords(allWords.slice(0, -1));
+          // Set the last word as the current word
           setCurrentWord(lastWord);
         }
       }
-    } else if (label === "+") {
-      onSwitch();
+      setCurrentState(0);
     } else if (label === "SPACE" || label === ".") {
       onSpace();
+    } else if (label === "+") {
+      onSwitch();
+      setCurrentState(0);
     } else if (label == "AUTO") {
-    } else if (label == "->") {
-      onRightArrow();
-    } else if (label == "<-") {
-      onLeftArrow();
+      setCurrentState(0);
     } else {
       // IF RETURNING FROM A SPACE
       if (currentState != 0) {
@@ -344,13 +345,12 @@ function App({ pred }) {
         setAllWords([...allWords, currentWord]);
         // OVERWRITE THE CURRENT WORD
         setCurrentWord(label);
+        setCurrentState(0);
       } else {
         setCurrentWord(currentWord + label);
+        setCurrentState(0);
       }
     }
-
-    // ENSURE THAT WE ARE IN BASE STATE AFTER TYPING ANY CHARACTER
-    setCurrentState(0);
   };
 
   // Create the buttons / Rerender when state change
