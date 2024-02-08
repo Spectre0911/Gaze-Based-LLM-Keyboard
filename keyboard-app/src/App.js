@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { sendDataToFlask } from "./services/sendDataToFlask";
+import { sentSentenceToGPT } from "./services/sendSentenceToGPT";
 import Switch from "./Switch";
 import "./App.css";
 import TriggerButton from "./triggerButton";
-import SpaceTriggerButton from "./SpaceTrigger";
+import Cursor from "./Cursor";
 
 function getOppositeColor(currentColor) {
   return currentColor === "light-blue-button"
@@ -48,7 +49,7 @@ const darkBlueStates = [
 
 const createHashMap = (arrays) => {
   let hashMap = {};
-
+  hashMap["SPACE"] = 9;
   arrays.forEach((array, arrayIndex) => {
     array.forEach((subArray, subArrayIndex) => {
       subArray.forEach((item, i) => {
@@ -79,6 +80,15 @@ function App({ pred }) {
   const [buttons, setButtons] = useState([]);
   const [selected, setSelected] = useState(Array(10).fill(false));
   const [selectedLetter, setSelectedLetter] = useState("");
+  const [screenSize, setScreenSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  const [cursorPosition, setCursorPosition] = useState({
+    x: screenSize.width / 2,
+    y: screenSize.height / 2,
+  });
+  const [buffering, setBuffering] = useState(false);
 
   const allStates = [lightBlueStates, darkBlueStates];
   const zippedStates = twoDimZip(lightBlueStates, darkBlueStates);
@@ -129,6 +139,11 @@ function App({ pred }) {
   useEffect(() => {
     const handleSpaceBar = () => {
       onDepress(selectedLetter);
+
+      setCursorPosition({
+        x: screenSize.width / 2,
+        y: screenSize.height / 2,
+      });
     };
     const handleKeyDown = (event) => {
       if (event.code === "Space") {
@@ -144,19 +159,19 @@ function App({ pred }) {
   }, [selectedLetter]);
 
   useEffect(() => {
-    const letter = findLetterForPoint(pred, coordinateMap);
+    const letter = findLetterForPoint(cursorPosition, coordinateMap);
     setLookingAt(letter);
+
     // Highlight the letter on the keyboard
     if (letter) {
-      setSelected((_) => {
-        const newSelected = Array(10).fill(false);
-        const index = letterIndexMap[letter];
-        newSelected[index] = true;
-        setSelectedLetter(letter);
-        return newSelected;
-      });
+      setSelectedLetter(letter);
+      setSelected(() =>
+        Array(10)
+          .fill(false)
+          .map((_, index) => letterIndexMap[letter] === index)
+      );
     }
-  }, [pred, coordinateMap]);
+  }, [cursorPosition, coordinateMap]);
 
   const updateCoords = (label, data) => {
     setCoordinateMap((prevMap) => ({
@@ -167,8 +182,6 @@ function App({ pred }) {
 
   // WHEN SPACE BUTTON IS DEPRESSED
   const onSpace = async () => {
-    console.log("Searching for: " + currentWord);
-    console.log("Current sentence: " + currentSentence);
     var nextState = 1;
     // Send currentWord to the backend
     if (currentState === 0) {
@@ -177,8 +190,6 @@ function App({ pred }) {
           currentWord: currentWord,
           currentSentence: currentSentence,
         });
-        console.log("Response recieved");
-        console.log("Response from backend:", response);
         setCurrentWordChoices([currentWord, ...response[1]]);
         if (response[1].length === 1) {
           setCurrentWord(response[1][0].toUpperCase());
@@ -191,8 +202,13 @@ function App({ pred }) {
       // Append space to current sentence
       setCurrentState(nextState);
     } else if (currentState === 1 || currentState === 2) {
-      setCurrentSentence([...allWords, currentWord].join(" "));
       setCurrentState(3);
+      setBuffering(true);
+      const response = await sentSentenceToGPT({
+        sentence: [...allWords, currentWord].join(" "),
+      });
+      setBuffering(false);
+      setCurrentSentence(response);
       setAllWords([]);
       setCurrentWord("");
     } else if (currentState === 3) {
@@ -253,6 +269,14 @@ function App({ pred }) {
 
   // WHEN ANY TRIGGER IS DEPRESSED
   const onDepress = (label) => {
+    if (buffering) {
+      console.log("buffering");
+      return;
+    }
+    if (currentState == 3) {
+      setCurrentSentence("");
+      setCurrentState(0);
+    }
     console.log(label);
     // RESET RIGHT ARROW CLICKS
     setRightArrowCount(0);
@@ -268,10 +292,13 @@ function App({ pred }) {
       }
     } else if (label === "+") {
       onSwitch();
-    } else if (label === "SPACE") {
-      console.log("SPACE");
+    } else if (label === "SPACE" || label === ".") {
       onSpace();
     } else if (label == "AUTO") {
+    } else if (label == "->") {
+      onRightArrow();
+    } else if (label == "<-") {
+      onLeftArrow();
     } else {
       // IF RETURNING FROM A SPACE
       if (currentState != 0) {
@@ -288,7 +315,7 @@ function App({ pred }) {
     setCurrentState(0);
   };
 
-  // Initially create the buttons
+  // Create the buttons / Rerender when state change
   useEffect(() => {
     var i = -1;
     const buttons = buttonLabels.map((labels) => {
@@ -336,6 +363,14 @@ function App({ pred }) {
 
   return (
     <div>
+      <Cursor
+        cursorPosition={cursorPosition}
+        setCursorPosition={setCursorPosition}
+        screenSize={screenSize}
+        setScreenSize={setScreenSize}
+        pred={pred}
+      />
+
       <div className="grid-container">{buttons}</div>
       <TriggerButton
         className={spaceClassName}
@@ -351,8 +386,8 @@ function App({ pred }) {
         flipCard={false}
         flipped={false}
         selected={selected[9]}
-      />{" "}
-      ;
+        buffering={buffering}
+      />
     </div>
   );
 }

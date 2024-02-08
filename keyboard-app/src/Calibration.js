@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Dot from "./Dot";
 import App from "./App";
+
 const Calibration = ({ prediction }) => {
   const [dotsClicked, setDotsClicked] = useState(0);
   const totalDots = 12;

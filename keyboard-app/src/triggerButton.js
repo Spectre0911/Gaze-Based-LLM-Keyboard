@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import "./App.css";
 import ReactCardFlip from "react-card-flip";
+import LoadingIcons from "react-loading-icons";
 
 function TriggerButton({
   className,
@@ -11,6 +12,7 @@ function TriggerButton({
   flipCard,
   flipped,
   selected,
+  buffering = false,
 }) {
   const frontButtonRef = useRef(null);
   const backButtonRef = useRef(null);
@@ -43,7 +45,7 @@ function TriggerButton({
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
-  }, [flipped]);
+  }, [flipped, frontLabel]);
 
   if (flipCard) {
     return (
@@ -65,6 +67,12 @@ function TriggerButton({
           {backLabel}
         </button>
       </ReactCardFlip>
+    );
+  } else if (buffering) {
+    return (
+      <div className={className}>
+        <LoadingIcons.ThreeDots stroke="white" strokeOpacity={0.1}  />
+      </div>
     );
   } else {
     return (

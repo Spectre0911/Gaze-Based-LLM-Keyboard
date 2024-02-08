@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from KeyboardCharacterOptomiser import createWordFrequencyMap, createWordTries
+from keyboardTests import gptWrapper
 from constants import prechosen, alphabet
 
 app = Flask(__name__)
@@ -11,14 +12,6 @@ CORS(app)
 alphabet = set('abcdefghijklmnopqrstuvwxyz')
 allWordTries = createWordTries()
 frequencyMaps = createWordFrequencyMap()
-
-
-@app.route('/api/data', methods=['POST'])
-def get_data():
-    data = request.json
-    # Process your data here
-    response = {"message": "Data received", "yourData": data}
-    return jsonify(response)
 
 
 @app.route('/api/onSpace', methods=['POST'])
@@ -46,6 +39,15 @@ def onSpace():
 
     print(f"{replacedWord}")
     return jsonify(replacedWord.upper(), alternatives)
+
+
+@app.route('/api/onPeriod', methods=['POST'])
+def onPeriod():
+    data = request.json
+    sentence = data["sentence"]
+    gptSentence = gptWrapper(sentence)
+    print(f"GPT ONPERIOD: {gptSentence}")
+    return jsonify(gptSentence)
 
 
 if __name__ == '__main__':

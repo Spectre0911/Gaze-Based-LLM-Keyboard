@@ -123,6 +123,10 @@
   position: fixed;
   bottom: 0;
   left: 0;
+  font-size: 3rem;
+  @media (max-width: 1000px) {
+    font-size: 2rem;
+  }
 }
 
 body {
@@ -132,8 +136,9 @@ body {
 .dot-grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
-  grid-column-gap: 30vw;
-  grid-template-rows: repeat(4, 28vh); /* Three equal rows */
+  grid-column-gap: 47vw;
+  grid-row-gap: 28vh;
+  grid-template-rows: repeat(4, 1fr); /* Three equal rows */
 }
 
 .grid-items {
@@ -148,11 +153,22 @@ body {
   height: 100%;
 }
 
-.calibration-dot {
+.cursorContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f0f0f0; /* Light gray background */
+}
+
+.cursor {
   position: absolute;
-  width: 20px; /* adjust size as needed */
-  height: 20px;
-  background-color: red; /* adjust color as needed */
-  border-radius: 50%;
-  cursor: pointer;
+  width: 40px; /* Adjusted width for better appearance */
+  height: 40px; /* Adjusted height for symmetry */
+  background-color: white; /* A more appealing shade of blue */
+  clip-path: polygon(0 0, 100% 50%, 0 100%); /* Triangle shape for the cursor */
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+  border: 2px solid #2980b9; /* Border for a refined look */
+  z-index: 1000;
+  transition: all 0.1s ease;
+  cursor: none; /* Hides the default cursor when hovering over this element */
 }

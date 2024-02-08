@@ -9,11 +9,6 @@ from openai import OpenAI
 
 client = OpenAI()
 
-# load_dotenv()
-
-
-# openai.api_key = os.getenv("GPT_API_KEY")
-
 
 def scoreSentence(returnedSentence, actualSentence):
     gptWords = returnedSentence.split()
@@ -153,17 +148,12 @@ def gptReplacedSentence(sentence):
 
 
 def gptWrapper(sentence):
-    for i in range(3):
+    for _ in range(3):
         sentence = gptReplacedSentence(sentence)
     return sentence
 
 
 def main():
-    # sentence = "%ars %oo%ed %% on the %i%%%a% ea%% one a capsule o% indi%id%al li%es and stories %et to %e told"
-    # for i in range(5):
-    #     sentence = gptReplacedSentence(sentence)
-
-    # gptWrapper(sentence)
     allWordTries = createWordTries()
     spellSentences(f"{BASE_PATH}/sentences.txt", [prechosen], allWordTries)
 
