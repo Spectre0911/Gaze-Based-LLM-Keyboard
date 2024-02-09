@@ -1,13 +1,8 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  componentDidMount,
-  componentWillUnmount,
-} from "react";
+import React, { useEffect, useState } from "react";
 
 import App from "./App";
 import Calibration from "./Calibration";
+import CenterCursor from "./CenterCursor";
 
 const EyeBlinkTracker = () => {
   const webgazer = window.webgazer;
@@ -16,9 +11,9 @@ const EyeBlinkTracker = () => {
 
   const loadWebGazer = async () => {
     if (window.webgazer) {
-      webgazer.showVideo(false);
-      webgazer.applyKalmanFilter(true);
-      webgazer
+      await webgazer.showVideo(false);
+      await webgazer.applyKalmanFilter(true);
+      await webgazer
         .setGazeListener(function (data, elapsedTime) {
           if (data == null) {
             return;
@@ -28,17 +23,16 @@ const EyeBlinkTracker = () => {
           setPrediction({ x: xprediction, y: yprediction });
         })
         .begin();
-      webgazer.showPredictionPoints(true);
-      webgazer.saveDataAcrossSessions(false);
+      await webgazer.showPredictionPoints(true);
+      await webgazer.saveDataAcrossSessions(false);
     }
   };
 
   useEffect(() => {
-    console.log("loading webgazer");
     loadWebGazer();
   }, []);
 
-  return <Calibration prediction={prediction}></Calibration>;
+  return <CenterCursor prediction={prediction} />;
 };
 
 export default EyeBlinkTracker;

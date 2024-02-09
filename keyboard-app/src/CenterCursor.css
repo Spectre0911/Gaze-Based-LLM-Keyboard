@@ -1,0 +1,30 @@
+:root {
+  --selected: #96ff94;
+}
+
+.tutorial-font {
+  font-size: 2rem;
+  color: white;
+}
+
+.center-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.center-cursor-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  align-self: center;
+  border: 4px solid var(--white);
+}
+
+.center-cursor-button:hover {
+  background-color: var(--selected);
+  border-color: var(--selected);
+}

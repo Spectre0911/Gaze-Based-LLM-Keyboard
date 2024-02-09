@@ -304,52 +304,61 @@ function App({ pred }) {
     }
   };
 
-  // WHEN ANY TRIGGER IS DEPRESSED
   const onDepress = (label) => {
     // Prevent any key from being depressed when information is being collected from GPT
     if (buffering) {
       return;
     }
+
+    let shouldResetState = true; // A flag to determine if state should be reset at the end
+
     // If a key is depressed after the sentence is returned from GPT, reset the sentence
     if (currentState == 3) {
       setCurrentSentence("");
-      setCurrentState(0);
+      setCurrentState(0); // This state reset is specific to this condition
+      shouldResetState = false; // Prevent further resetting
+    }
+
+    // Logic for handling arrows keys
+    if (label == "->") {
+      onRightArrow();
+    } else if (label == "<-") {
+      onLeftArrow();
+    } else {
+      // Depressing any key when the arrows are present, should take the user back to the main screen
+      setRightArrowCount(0);
     }
 
     if (label === "DEL") {
-      // Delete the last character of a word, if a word still exists
       if (currentWord.length > 0) {
         setCurrentWord(currentWord.slice(0, -1));
       } else {
         // If no word exists, get the last word (if one exists)
         if (allWords.length > 0) {
-          var lastWord = allWords[allWords.length - 1];
-          // Remove the last word from the list of words
-          setAllWords(allWords.slice(0, -1));
-          // Set the last word as the current word
+          var lastWord = allWords.pop(); // Directly modify allWords and use the popped word
+          setAllWords(allWords); // Update allWords state after modification
           setCurrentWord(lastWord);
         }
       }
-      setCurrentState(0);
-    } else if (label === "SPACE" || label === ".") {
-      onSpace();
     } else if (label === "+") {
       onSwitch();
-      setCurrentState(0);
+    } else if (label === "SPACE" || label === ".") {
+      onSpace();
     } else if (label == "AUTO") {
-      setCurrentState(0);
+      // AUTO does not imply specific handling besides state reset, which is managed by the flag
     } else {
-      // IF RETURNING FROM A SPACE
       if (currentState != 0) {
-        // WRITE THE CURRENT WORD TO THE LIST OF WORDS
+        // Write the current word to the list of words
         setAllWords([...allWords, currentWord]);
-        // OVERWRITE THE CURRENT WORD
-        setCurrentWord(label);
-        setCurrentState(0);
+        setCurrentWord(label); // Overwrite the current word with the new letter
       } else {
-        setCurrentWord(currentWord + label);
-        setCurrentState(0);
+        setCurrentWord(currentWord + label); // Add the new letter to the current word
       }
+    }
+
+    // Reset currentState to 0 if applicable
+    if (shouldResetState) {
+      setCurrentState(0);
     }
   };
 
@@ -401,25 +410,27 @@ function App({ pred }) {
 
   return (
     <div>
-      <Cursor
-        cursorPosition={cursorPosition}
-        setCursorPosition={setCursorPosition}
-        screenSize={screenSize}
-        setScreenSize={setScreenSize}
-        pred={pred}
-      />
+      <div>
+        <Cursor
+          cursorPosition={cursorPosition}
+          setCursorPosition={setCursorPosition}
+          screenSize={screenSize}
+          setScreenSize={setScreenSize}
+          pred={pred}
+        />
 
-      <div className="grid-container">{buttons}</div>
-      <TriggerButton
-        className={spaceClassName}
-        frontLabel={spaceStates[currentState]}
-        onClick={onSpace}
-        sendCoords={updateCoords}
-        flipCard={false}
-        flipped={false}
-        selected={selected[9]}
-        buffering={buffering}
-      />
+        <div className="grid-container">{buttons}</div>
+        <TriggerButton
+          className={spaceClassName}
+          frontLabel={spaceStates[currentState]}
+          onClick={onSpace}
+          sendCoords={updateCoords}
+          flipCard={false}
+          flipped={false}
+          selected={selected[9]}
+          buffering={buffering}
+        />
+      </div>
     </div>
   );
 }

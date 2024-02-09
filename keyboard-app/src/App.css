@@ -13,6 +13,7 @@
   --white: white;
   --selected: #96ff94;
   --black: black;
+  --dotSize: 40px;
 }
 
 .grid-container {
@@ -130,14 +131,15 @@
 }
 
 body {
-  background-color: #676666; /* Dark gray background */
+  background-color: #5d5959; /* Dark gray background */
 }
 
 .dot-grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
-  grid-column-gap: 47vw;
-  grid-row-gap: 28vh;
+
+  grid-column-gap: 40vw;
+  grid-row-gap: calc((100vh / 3) - var(--dotSize));
   grid-template-rows: repeat(4, 1fr); /* Three equal rows */
 }
 
@@ -171,4 +173,13 @@ body {
   z-index: 1000;
   transition: all 0.1s ease;
   cursor: none; /* Hides the default cursor when hovering over this element */
+}
+
+.dot {
+  width: 30px;
+  height: 30px;
+  border: 2px solid white;
+  border-radius: 10%;
+  color: green;
+  font-size: 1.5rem;
 }

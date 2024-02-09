@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+const mode = 1;
+
 function Cursor({
   cursorPosition,
   setCursorPosition,
@@ -36,12 +38,10 @@ function Cursor({
 
   useEffect(() => {
     const multiplier = 10;
-    const [newDirection, angle] = determineRegion(
-      screenSize.width,
-      screenSize.height,
-      pred.x,
-      pred.y
-    );
+    const [newDirection, angle] =
+      mode === 0
+        ? determineRegion(screenSize.width, screenSize.height, pred.x, pred.y)
+        : moveRelative(pred);
 
     let newX = Math.min(
       Math.max(multiplier * newDirection.x + cursorPosition.x, 0),
@@ -56,6 +56,58 @@ function Cursor({
     setCursorPosition(updatedPos);
     setCursorAngle(angle);
   }, [pred]);
+
+  function calculateAngle(x1, y1, x2, y2) {
+    // Calculate the difference in coordinates
+    var deltaX = x2 - x1;
+    var deltaY = y2 - y1;
+    // Calculate the angle in radians
+    var angleRadians = Math.atan2(deltaY, deltaX);
+    // Convert radians to degrees
+    var angleDegrees = angleRadians * (180 / Math.PI);
+    // Return the angle
+    return angleDegrees;
+  }
+  function generaliseAngle(theta) {
+    let wasNegative = theta < 0;
+    let tempTheta = theta < 0 ? -theta : theta;
+
+    let angles = [0, 45, 90, 135, 180];
+    for (let angle of angles) {
+      if (tempTheta <= angle + 22.5 && tempTheta >= angle - 22.5) {
+        if (wasNegative && angle !== 0 && angle !== 180) {
+          return -angle;
+        }
+        return angle;
+      }
+    }
+
+    throw new Error("Unexpected case: No angle match found.");
+  }
+
+  function calculateDirection(generalAngle) {
+    // Convert angle to radians for trigonometric functions
+    let radians = (generalAngle * Math.PI) / 180;
+
+    // Calculate direction vector components
+    let x = Math.round(Math.cos(radians));
+    let y = Math.round(Math.sin(radians));
+
+    // Normalize vectors for the specific angles used in this scenario
+    // This ensures that the function returns the exact unit vectors expected for these angles
+    return [{ x: x, y: y }, generalAngle];
+  }
+
+  function moveRelative(pred) {
+    let x = pred.x;
+    let y = pred.y;
+    let angle = calculateAngle(cursorPosition.x, cursorPosition.y, x, y);
+    let generalAngle = generaliseAngle(angle);
+    console.log("General Angle: ", generalAngle);
+    let unitDirection = calculateDirection(generalAngle);
+    console.log(unitDirection[0]);
+    return calculateDirection(generalAngle);
+  }
 
   /**
    * Calculates how the cursor moves in relation to where the user in looking at on the screen.
