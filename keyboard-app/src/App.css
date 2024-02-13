@@ -1,7 +1,7 @@
 :root {
   --button-font-size: 4rem;
-  --button-width: 32vw;
-  --button-height: 26vh;
+  --button-width: calc(100vw / 3 - 8px);
+  --button-height: calc(85vh / 3 - 10px);
   --button-min-height: 50px;
   --button-radius: 10px;
   --button-border: 0.25vw solid white;
@@ -13,14 +13,15 @@
   --white: white;
   --selected: #96ff94;
   --black: black;
-  --dotSize: 40px;
+  --dotSize: 30px;
+  --dotSizeBorder: 4px;
 }
 
 .grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
-  grid-column-gap: 2vw;
-  grid-row-gap: 2vh;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
   max-width: 100vw; /* Maximum width */
   max-height: 85vh; /* Maximum height */
 }
@@ -64,22 +65,6 @@
   background-color: #9bb44d;
 }
 
-.dark-blue-button-small {
-  font-size: 3rem;
-  width: 5vw;
-  height: 5vh;
-  border: none;
-  background-color: var(--dark-blue);
-}
-
-.light-blue-button-small {
-  font-size: 3rem;
-  width: 5vw;
-  height: 5vh;
-  border: none;
-  background-color: var(--light-blue);
-}
-
 .red-button {
   background-color: var(--red);
 }
@@ -93,6 +78,32 @@
 }
 .space-button {
   background-color: #ea8c00;
+}
+
+.switch {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: var(--button-height);
+  width: var(--button-width);
+  grid-row-gap: calc((var(--button-height) - 15vh) / 2 - 30px);
+  grid-column-gap: calc((var(--button-width) - 15vw) / 2 - 10px);
+}
+
+.dark-blue-button-small {
+  font-size: 3rem;
+  width: 5vw;
+  height: 5vh;
+  background-color: var(--dark-blue);
+  border: none;
+}
+
+.light-blue-button-small {
+  font-size: 3rem;
+  width: 5vw;
+  height: 5vh;
+  border: none;
+  background-color: var(--light-blue);
 }
 
 .space-button {
@@ -135,12 +146,20 @@ body {
 }
 
 .dot-grid-container {
+  pointer-events: none;
   display: grid;
+  position: absolute;
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
-
   grid-column-gap: 40vw;
-  grid-row-gap: calc((100vh / 3) - var(--dotSize));
+  grid-row-gap: calc(
+    (100vh / 3) - var(--dotSize) - calc(4 * var(--dotSizeBorder))
+  );
   grid-template-rows: repeat(4, 1fr); /* Three equal rows */
+  top: 0; /* Align to the top of the parent */
+  left: 0; /* Align to the left of the parent */
+  right: 0; /* Stretch to the right */
+  bottom: 0; /* Stretch to the bottom */
+  z-index: 10; /* Ensure it overlays other content */
 }
 
 .grid-items {
@@ -176,10 +195,11 @@ body {
 }
 
 .dot {
-  width: 30px;
-  height: 30px;
-  border: 2px solid white;
+  color: white;
+  width: var(--dotSize);
+  height: var(--dotSize);
+  border: var(--dotSizeBorder) solid white;
   border-radius: 10%;
-  color: green;
-  font-size: 1.5rem;
+  font-size: 1rem;
+  background-color: red;
 }

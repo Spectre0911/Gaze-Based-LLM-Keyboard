@@ -33,12 +33,6 @@ const Switch = ({
   });
 
   const switchStyle = {
-    display: "grid",
-    gridTemplateRows: "1fr 1fr 1fr",
-    gridTemplateColumns: "1fr 1fr 1fr",
-    height: "25.5vh",
-    width: "31.5vw",
-    gap: "2.5vh 7.5vw",
     backgroundColor:
       buttonClass === "light-blue-button" ? "#9496ff" : "#3d8ea6",
   };
@@ -61,25 +55,24 @@ const Switch = ({
   }`;
 
   return (
-    <div
+    <button
       ref={frontButtonRef}
       className={
         selected
-          ? "flex-center-button switch-button selected"
-          : "flex-center-button switch-button"
+          ? "switch flex-center-button switch-button selected"
+          : "switch flex-center-button switch-button"
       }
       onClick={onSwitch}
       style={switchStyle}
     >
-      <button className={buttonClassName}>{buttonLabels[0]}</button>
-      <button className={buttonClassName}>{buttonLabels[1]}</button>
-      <button className={buttonClassName}>{buttonLabels[2]}</button>
-      {/* Display currentWord */}
-      <button style={currentWordStyle}>{currentWord}</button>
-      <button className={buttonClassName}>{buttonLabels[3]}</button>
-      <div /> {/* Empty div for spacing, no need for flex: 1 */}
-      <button className={buttonClassName}>{buttonLabels[5]}</button>
-    </div>
+      <div className={buttonClassName}>{buttonLabels[0]}</div>
+      <div className={buttonClassName}>{buttonLabels[1]}</div>
+      <div className={buttonClassName}>{buttonLabels[2]}</div>
+      <div style={currentWordStyle}>{currentWord}</div>
+      <div className={buttonClassName}>{buttonLabels[3]}</div>
+      <div />
+      <div className={buttonClassName}>{buttonLabels[5]}</div>
+    </button>
   );
 };
 

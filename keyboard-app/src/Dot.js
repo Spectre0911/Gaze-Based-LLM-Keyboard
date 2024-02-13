@@ -70,19 +70,18 @@ const Dot = ({ onMaxClicksReached, index, currentDot, setCurrentDotIndex }) => {
 
   // Style that includes dynamic background color
   const dotStyle = {
-    width: "30px",
-    height: "30px",
-    backgroundColor: `rgb(${redValue}, ${greenValue}, 0)`, // RGB with dynamic green component
-    border: "2px solid white",
-    borderRadius: "10%",
+    backgroundColor: `rgb(${redValue}, ${greenValue}, 0)`,
     display: index === currentDot ? "block" : "none",
-    color: "white",
-    fontSize: "1.5rem",
   };
 
   return (
     <div className="grid-items">
-      <button style={dotStyle} onClick={handleClick} ref={dotRef}>
+      <button
+        className="dot"
+        style={dotStyle}
+        onClick={handleClick}
+        ref={dotRef}
+      >
         {secondsPassed}
       </button>
     </div>

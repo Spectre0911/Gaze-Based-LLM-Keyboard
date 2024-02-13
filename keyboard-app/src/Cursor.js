@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 
-const mode = 1;
+// WHY DOES JSX NOT SUPPORT ENUMS!!
+const Mode = {
+  JOYSTICK: 0,
+  RELATIVE8: 1,
+  RELATIVE4: 2,
+};
+
+// The multiplier for the cursor movement
+const multiplier = 20;
 
 function Cursor({
   cursorPosition,
@@ -10,6 +18,7 @@ function Cursor({
   pred,
 }) {
   const [cursorAngle, setCursorAngle] = useState(0);
+  const [mode, setMode] = useState(Mode.RELATIVE4);
 
   useEffect(() => {
     // Reset cursor position on resize to center of screen
@@ -37,11 +46,7 @@ function Cursor({
   }, []);
 
   useEffect(() => {
-    const multiplier = 10;
-    const [newDirection, angle] =
-      mode === 0
-        ? determineRegion(screenSize.width, screenSize.height, pred.x, pred.y)
-        : moveRelative(pred);
+    const [newDirection, angle] = determineMovementType();
 
     let newX = Math.min(
       Math.max(multiplier * newDirection.x + cursorPosition.x, 0),
@@ -57,6 +62,41 @@ function Cursor({
     setCursorAngle(angle);
   }, [pred]);
 
+  /**
+   * For the current mode, determines the movement type to be used
+   *
+   * @returns (Func) - The movement type function to be used
+   */
+  function determineMovementType() {
+    var angles = [0, 45, 90, 135, 180];
+    let thresh = 22.5;
+    switch (mode) {
+      case Mode.JOYSTICK:
+        return determineRegion(
+          screenSize.width,
+          screenSize.height,
+          pred.x,
+          pred.y
+        );
+      case Mode.RELATIVE8:
+        return moveRelative(pred, angles, thresh);
+      case Mode.RELATIVE4:
+        angles = [0, 90, 180];
+        return moveRelative(pred, angles, thresh * 2);
+      default:
+        throw new Error("Invalid mode");
+    }
+  }
+
+  /**
+   * Calculates the angle between two points
+   *
+   * @param {float} x1
+   * @param {float} y1
+   * @param {float} x2
+   * @param {float} y2
+   * @returns
+   */
   function calculateAngle(x1, y1, x2, y2) {
     // Calculate the difference in coordinates
     var deltaX = x2 - x1;
@@ -68,13 +108,21 @@ function Cursor({
     // Return the angle
     return angleDegrees;
   }
-  function generaliseAngle(theta) {
+
+  /**
+   * Rounds the angle to the nearest cardinal direction which are defined in angles
+   *
+   * @param {Float} theta
+   * @param {Float} angles
+   * @param {Float} thresh
+   * @returns
+   */
+  function generaliseAngle(theta, angles, thresh) {
     let wasNegative = theta < 0;
     let tempTheta = theta < 0 ? -theta : theta;
 
-    let angles = [0, 45, 90, 135, 180];
     for (let angle of angles) {
-      if (tempTheta <= angle + 22.5 && tempTheta >= angle - 22.5) {
+      if (tempTheta <= angle + thresh && tempTheta >= angle - thresh) {
         if (wasNegative && angle !== 0 && angle !== 180) {
           return -angle;
         }
@@ -85,6 +133,12 @@ function Cursor({
     throw new Error("Unexpected case: No angle match found.");
   }
 
+  /**
+   * Returns the normalised direction the cursor should move in.
+   *
+   * @param {Float} generalAngle
+   * @returns {}
+   */
   function calculateDirection(generalAngle) {
     // Convert angle to radians for trigonometric functions
     let radians = (generalAngle * Math.PI) / 180;
@@ -93,31 +147,33 @@ function Cursor({
     let x = Math.round(Math.cos(radians));
     let y = Math.round(Math.sin(radians));
 
-    // Normalize vectors for the specific angles used in this scenario
-    // This ensures that the function returns the exact unit vectors expected for these angles
     return [{ x: x, y: y }, generalAngle];
   }
 
-  function moveRelative(pred) {
+  /**
+   * Rather than a centralised joystick approach, this moves the cursor in the direction the user is looking a, relative to the cursor itself.
+   *
+   * @param {Float} pred
+   * @returns
+   */
+  function moveRelative(pred, angles, thresh) {
     let x = pred.x;
     let y = pred.y;
     let angle = calculateAngle(cursorPosition.x, cursorPosition.y, x, y);
-    let generalAngle = generaliseAngle(angle);
-    console.log("General Angle: ", generalAngle);
+    let generalAngle = generaliseAngle(angle, angles, thresh);
     let unitDirection = calculateDirection(generalAngle);
-    console.log(unitDirection[0]);
-    return calculateDirection(generalAngle);
+    return unitDirection;
   }
 
   /**
    * Calculates how the cursor moves in relation to where the user in looking at on the screen.
-   * Also reoreints the cursor so it points in the direction the user is looking at.
+   * Also reorients the cursor so it points in the direction the user is looking at.
    *
-   * @param {The width of the screen} width
-   * @param {The height of the screen}} height
-   * @param {The prediction X-Coordinate} x
-   * @param {The prediction Y-Coordinate} y
-   * @returns [The direction for the cursor to travel in, the angle of the cursor]
+   * @param {Float} width
+   * @param {Float} height
+   * @param {Float} x
+   * @param {Float} y
+   * @returns {Array} [The direction for the cursor to travel in, the angle of the cursor]
    */
   function determineRegion(width, height, x, y) {
     let xDirection = 0;
@@ -154,6 +210,7 @@ function Cursor({
   return (
     <div
       className="cursor"
+      key="cursor"
       style={{
         top: cursorPosition.y,
         left: cursorPosition.x,

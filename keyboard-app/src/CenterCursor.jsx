@@ -60,8 +60,8 @@ const CenterCursor = ({ prediction }) => {
   return cursorCentered | testMode ? (
     <Calibration prediction={prediction} testMode={testMode} />
   ) : (
-    <div class="center-div">
-      <h1 class="tutorial-font">
+    <div className="center-div">
+      <h1 className="tutorial-font">
         {isHovered
           ? "Look at the center of the box and press spacebar"
           : "Center cursor in below box"}
@@ -71,7 +71,7 @@ const CenterCursor = ({ prediction }) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={simulateCenterClick}
-        class={"center-cursor-button"}
+        className={"center-cursor-button"}
       ></button>
     </div>
   );

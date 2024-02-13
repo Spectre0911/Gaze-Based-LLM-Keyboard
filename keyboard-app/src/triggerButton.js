@@ -11,8 +11,9 @@ function TriggerButton({
   sendCoords,
   flipCard,
   selected,
-  flipped = false,
+  flipped,
   buffering = false,
+  fl2 = "NA",
 }) {
   const frontButtonRef = useRef(null);
   const backButtonRef = useRef(null);
@@ -33,7 +34,7 @@ function TriggerButton({
           bottomLeft: { x: rect.left, y: rect.bottom },
           bottomRight: { x: rect.right, y: rect.bottom },
         };
-        if (flipped) {
+        if (flipped && flipCard) {
           sendCoords(backLabel, coords);
         } else {
           sendCoords(frontLabel, coords);

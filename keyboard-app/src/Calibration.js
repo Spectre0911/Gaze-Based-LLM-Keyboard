@@ -18,22 +18,20 @@ const Calibration = ({ prediction, testMode }) => {
     setCurrentDot(order[currentDotIndex]);
   }, [currentDotIndex]);
 
-  if ((dotsClicked === totalDots) | testMode) {
+  if (dotsClicked === totalDots || testMode) {
     return <App pred={prediction} />;
   }
 
   return (
     <div className="dot-grid-container">
       {[...Array(totalDots)].map((_, i) => (
-        <div>
-          <Dot
-            key={i}
-            onMaxClicksReached={handleMaxClicks}
-            index={i}
-            currentDot={currentDot}
-            setCurrentDotIndex={setCurrentDotIndex}
-          />
-        </div>
+        <Dot
+          key={i}
+          onMaxClicksReached={handleMaxClicks}
+          index={i}
+          currentDot={currentDot}
+          setCurrentDotIndex={setCurrentDotIndex}
+        />
       ))}
     </div>
   );

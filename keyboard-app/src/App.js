@@ -21,17 +21,17 @@ function twoDimZip(a, b) {
 }
 
 const lightBlueStates = [
-  ["I", "T", "A", "N", "+", "E", "DEL", "%", "AUTO"],
+  ["I", "T", "A", "N", "+", "E", "DEL", "%", "DEL"],
   ["I", "T", "A", "N", "+", "E", "DEL", "%", "->"],
   ["I", "T", "A", "N", "+", "E", "<-", "%", "->"],
-  ["I", "T", "A", "N", "+", "E", "DEL", "%", "AUTO"],
+  ["I", "T", "A", "N", "+", "E", "DEL", "%", "DEL"],
 ];
 
 const darkBlueStates = [
-  ["D", "O", "S", "L", "+", "R", "DEL", "%", "AUTO"],
+  ["D", "O", "S", "L", "+", "R", "DEL", "%", "DEL"],
   ["D", "O", "S", "L", "+", "R", "DEL", "%", "->"],
   ["D", "O", "S", "L", "+", "R", "<-", "%", "->"],
-  ["D", "O", "S", "L", "+", "R", "DEL", "%", "AUTO"],
+  ["D", "O", "S", "L", "+", "R", "DEL", "%", "DEL"],
 ];
 
 const createHashMap = (arrays) => {
@@ -145,11 +145,8 @@ function App({ pred }) {
   };
 
   useEffect(() => {
-    console.log(`You are in state ${currentState}`);
-
     const handleSpaceBar = () => {
       onDepress(selectedLetter);
-
       setCursorPosition({
         x: screenSize.width / 2,
         y: screenSize.height / 2,
@@ -223,8 +220,6 @@ function App({ pred }) {
 
   // WHEN SPACE BUTTON IS DEPRESSED
   const onSpace = async () => {
-    console.log("Before SPACE: " + currentState);
-
     var nextState = 1;
     // Send currentWord to the backend
     if (currentState === 0) {
@@ -233,11 +228,15 @@ function App({ pred }) {
           currentWord: currentWord,
           currentSentence: currentSentence,
         });
-        setCurrentWordChoices([currentWord, ...response[1]]);
-        if (response[1].length === 1) {
-          setCurrentWord(response[1][0].toUpperCase());
-          setRightArrowCount(1);
-          nextState = 2;
+        setCurrentWordChoices([currentWord]);
+        if (response) {
+          console.log("Response from backend:", response);
+          setCurrentWordChoices([...currentWordChoices, ...response[1]]);
+          if (response[1].length === 1) {
+            setCurrentWord(response[1][0].toUpperCase());
+            setRightArrowCount(1);
+            nextState = 2;
+          }
         }
       } catch (error) {
         console.error("Error sending word to backend:", error);
@@ -247,7 +246,6 @@ function App({ pred }) {
     } else if (currentState === 1 || currentState === 2) {
       setCurrentState(3);
     } else {
-      console.log("RETURNING TO HOME STATE");
       setCurrentSentence("");
       setCurrentState(0);
     }
@@ -261,10 +259,10 @@ function App({ pred }) {
         "Current word: " + currentWordChoices[rightArrowCount + 1].toUpperCase()
       );
       setRightArrowCount(rightArrowCount + 1);
-    }
 
-    if (currentState === 1) {
-      setCurrentState(2);
+      if (currentState === 1) {
+        setCurrentState(2);
+      }
     }
   };
 
@@ -343,6 +341,7 @@ function App({ pred }) {
     } else if (label === "+") {
       onSwitch();
     } else if (label === "SPACE" || label === ".") {
+      shouldResetState = false;
       onSpace();
     } else if (label == "AUTO") {
       // AUTO does not imply specific handling besides state reset, which is managed by the flag
@@ -409,7 +408,7 @@ function App({ pred }) {
   }, [switchFace, currentWord, currentState, lookingAt]);
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <div>
         <Cursor
           cursorPosition={cursorPosition}
@@ -426,7 +425,7 @@ function App({ pred }) {
           onClick={onSpace}
           sendCoords={updateCoords}
           flipCard={false}
-          flipped={false}
+          flipped={switchFace === 0 ? true : false}
           selected={selected[9]}
           buffering={buffering}
         />
