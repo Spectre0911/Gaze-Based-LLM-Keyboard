@@ -120,8 +120,6 @@ def gptReplacedSentence(sentence):
     last_quote_index = response.find(
         '.')
     extracted = response[first_quote_index + 1: last_quote_index]
-    print("GPT Sentence: ")
-    print(extracted)
 
     extractedWords = extracted.split()
     sentenceWords = sentence.split()
@@ -129,11 +127,13 @@ def gptReplacedSentence(sentence):
     zippedWords = list(zip(extractedWords, sentenceWords))
     reversedZippedWords = list(zip(extractedWords[::-1], sentenceWords[::-1]))
 
+    print(zippedWords)
+    print(reversedZippedWords)
+
     forwardPass = compareWords(zippedWords, prechosen)
     backPass = compareWords(reversedZippedWords, prechosen)
 
     newSentence = sentence.split()
-    print(newSentence)
     for index, (w1, match) in enumerate(forwardPass):
         if match:
             newSentence[index] = w1
@@ -141,15 +141,14 @@ def gptReplacedSentence(sentence):
         if match:
             newSentence[-index - 1] = w1
     newSentenceString = " ".join(newSentence)
-    print("New sentence: ")
-    print(newSentenceString)
-    print("\n\n\n")
     return (newSentenceString)
 
 
 def gptWrapper(sentence):
     for _ in range(3):
         sentence = gptReplacedSentence(sentence)
+        if not "%" in sentence:
+            return sentence
     return sentence
 
 

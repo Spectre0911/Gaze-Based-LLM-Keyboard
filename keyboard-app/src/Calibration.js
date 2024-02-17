@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Dot from "./Dot";
+import { sendCalibrationData } from "./services/sendCalibrationData";
 
 const Calibration = ({ prediction, testMode, setCalibrationComplete }) => {
   const totalDots = 15;
@@ -17,11 +18,11 @@ const Calibration = ({ prediction, testMode, setCalibrationComplete }) => {
   const [roundAverages, setroundAverages] = useState([[], [], [], []]);
   const [buttonWidth, setButtonWidth] = useState(0);
 
-  const logCalibration = () => {
+  const logCalibration = async () => {
+    let mode = "3by5";
     const data = roundAverages.map((average, index) => {
       const roundAverage = calculateError(average);
       let calibrationQuality = "";
-
       if (roundAverage < buttonWidth / 8) {
         calibrationQuality = "Excellent calibration";
       } else if (roundAverage < buttonWidth / 4) {
@@ -36,23 +37,11 @@ const Calibration = ({ prediction, testMode, setCalibrationComplete }) => {
         round: index,
         average: roundAverage,
         calibration: calibrationQuality,
+        mode: mode,
       };
     });
 
-    fetch("http://localhost:5000/log-calibration", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Success:", data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    await sendCalibrationData(data);
   };
 
   const handleMaxClicks = () => {
@@ -141,11 +130,13 @@ const Calibration = ({ prediction, testMode, setCalibrationComplete }) => {
     }
   }, [prediction]);
 
-  if (dotsClicked === totalDots || testMode) {
-    logCalibration();
-    setCalibrationComplete(true);
-    return;
-  }
+  useEffect(() => {
+    if (dotsClicked === totalDots || testMode) {
+      logCalibration();
+      setCalibrationComplete(true);
+      return;
+    }
+  }, [dotsClicked]);
 
   return (
     <div

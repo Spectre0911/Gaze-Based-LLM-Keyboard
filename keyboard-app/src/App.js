@@ -224,10 +224,11 @@ function App({ pred }) {
     // Send currentWord to the backend
     if (currentState === 0) {
       try {
-        const response = await sendDataToFlask({
+        let payload = {
           currentWord: currentWord,
           currentSentence: currentSentence,
-        });
+        };
+        const response = await sendDataToFlask(payload);
         setCurrentWordChoices([currentWord]);
         if (response) {
           console.log("Response from backend:", response);

@@ -1,7 +1,6 @@
 export const sentSentenceToGPT = async (data) => {
   try {
-    const response = await fetch("http://127.0.0.1:5000/onPeriod", {
-      mode: "no-cors",
+    const response = await fetch("http://127.0.0.1:5000/api/onPeriod", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -10,6 +9,7 @@ export const sentSentenceToGPT = async (data) => {
     });
     return await response.json();
   } catch (error) {
+    console.log(data);
     console.error("Error sending data to Flask:", error);
   }
 };

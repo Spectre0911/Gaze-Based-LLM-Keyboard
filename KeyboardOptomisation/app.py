@@ -1,13 +1,14 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import csv
+import os
 
 from KeyboardCharacterOptomiser import createWordFrequencyMap, createWordTries
 from keyboardTests import gptWrapper
 from constants import prechosen, alphabet
 
 app = Flask(__name__)
-CORS(app)
-
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 alphabet = set('abcdefghijklmnopqrstuvwxyz')
 allWordTries = createWordTries()
@@ -48,6 +49,24 @@ def onPeriod():
     gptSentence = gptWrapper(sentence)
     print(f"GPT ONPERIOD: {gptSentence}")
     return jsonify(gptSentence)
+
+
+@app.route('/api/logCalibration', methods=['POST'])
+def log_calibration():
+    data = request.json
+    mode = data[0]['mode']
+    file_path = f"calibration_{mode}_log.csv"
+    file_exists = os.path.isfile(file_path)
+    with open(file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        if not file_exists:
+            writer.writerow(['Round', 'Average', 'Calibration'])
+
+        for item in data:
+            writer.writerow(
+                [item['round'], item['average'], item['calibration']])
+
+    return jsonify({"message": "Data logged successfully"}), 200
 
 
 if __name__ == '__main__':
