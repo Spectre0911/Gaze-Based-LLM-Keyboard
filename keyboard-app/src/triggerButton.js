@@ -28,11 +28,15 @@ function TriggerButton({
     const handleResize = () => {
       if (frontButtonRef.current) {
         const rect = frontButtonRef.current.getBoundingClientRect();
+        let topLeft = { x: rect.left, y: rect.top };
+        let topRight = { x: rect.right, y: rect.top };
+        let bottomLeft = { x: rect.left, y: rect.bottom };
+        let bottomRight = { x: rect.right, y: rect.bottom };
         const coords = {
-          topLeft: { x: rect.left, y: rect.top },
-          topRight: { x: rect.right, y: rect.top },
-          bottomLeft: { x: rect.left, y: rect.bottom },
-          bottomRight: { x: rect.right, y: rect.bottom },
+          topLeft: topLeft,
+          topRight: topRight,
+          bottomLeft: bottomLeft,
+          bottomRight: bottomRight,
         };
         if (flipped && flipCard) {
           sendCoords(backLabel, coords);

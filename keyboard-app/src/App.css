@@ -152,9 +152,9 @@ body {
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
   grid-column-gap: 40vw;
   grid-row-gap: calc(
-    (100vh / 3) - var(--dotSize) - calc(4 * var(--dotSizeBorder))
+    (100vh / 4) - var(--dotSize) - calc(2 * var(--dotSizeBorder))
   );
-  grid-template-rows: repeat(4, 1fr); /* Three equal rows */
+  grid-template-rows: repeat(5, 1fr); /* Three equal rows */
   top: 0; /* Align to the top of the parent */
   left: 0; /* Align to the left of the parent */
   right: 0; /* Stretch to the right */
@@ -201,5 +201,4 @@ body {
   border: var(--dotSizeBorder) solid white;
   border-radius: 10%;
   font-size: 1rem;
-  background-color: red;
 }

@@ -4,10 +4,11 @@ import App from "./App";
 import Calibration from "./Calibration";
 import CenterCursor from "./CenterCursor";
 
-const EyeBlinkTracker = () => {
+const EyeTracker = () => {
   const webgazer = window.webgazer;
   // const webgazer = require("webgazer");
   const [prediction, setPrediction] = useState({ x: 0, y: 0 });
+  const [calibrationComplete, setCalibrationComplete] = useState(false);
 
   const loadWebGazer = async () => {
     if (window.webgazer) {
@@ -20,7 +21,7 @@ const EyeBlinkTracker = () => {
           }
           var xprediction = data.x; //these x coordinates are relative to the viewport
           var yprediction = data.y; //these y coordinates are relative to the viewport
-          setPrediction({ x: xprediction, y: yprediction });
+          setPrediction({ x: xprediction, y: yprediction, ts: elapsedTime });
         })
         .begin();
       await webgazer.showPredictionPoints(true);
@@ -32,7 +33,16 @@ const EyeBlinkTracker = () => {
     loadWebGazer();
   }, []);
 
-  return <CenterCursor prediction={prediction} />;
+  if (calibrationComplete) {
+    return <App pred={prediction} />;
+  } else {
+    return (
+      <CenterCursor
+        prediction={prediction}
+        setCalibrationComplete={setCalibrationComplete}
+      />
+    );
+  }
 };
 
-export default EyeBlinkTracker;
+export default EyeTracker;

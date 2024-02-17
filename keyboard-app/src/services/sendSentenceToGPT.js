@@ -1,6 +1,7 @@
 export const sentSentenceToGPT = async (data) => {
   try {
-    const response = await fetch("http://127.0.0.1:5000/api/onPeriod", {
+    const response = await fetch("http://127.0.0.1:5000/onPeriod", {
+      mode: "no-cors",
       method: "POST",
       headers: {
         "Content-Type": "application/json",

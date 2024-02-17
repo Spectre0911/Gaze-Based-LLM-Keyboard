@@ -18,7 +18,7 @@ function Cursor({
   pred,
 }) {
   const [cursorAngle, setCursorAngle] = useState(0);
-  const [mode, setMode] = useState(Mode.RELATIVE4);
+  const [mode, setMode] = useState(Mode.RELATIVE8);
 
   useEffect(() => {
     // Reset cursor position on resize to center of screen
