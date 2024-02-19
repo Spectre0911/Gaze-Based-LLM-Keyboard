@@ -18,14 +18,14 @@ frequencyMaps = createWordFrequencyMap()
 @app.route('/api/onSpace', methods=['POST'])
 def onSpace():
     data = request.json
-
-    print(data)
+    # Get the current word
     currentWord = data["currentWord"].lower()
-    currentSentence = data["currentSentence"].lower()
-    print(f"EXTRACTED {currentWord}")
+    # Get the words of that length
     wordTrie = allWordTries[len(currentWord)]
+    # Get all possible words, that match the spelt word
     alternatives = wordTrie.searchR(
         currentWord, alphabet - prechosen, prechosen)[1]
+    # Check if single word replacement is possible
     replacedWord, replaced = wordTrie.singleWordReplacement(
         currentWord, prechosen)
     if replaced == False:
@@ -38,7 +38,6 @@ def onSpace():
             # Need to add some additional functionality here to handle the case where the word is not in wordlist
             pass
 
-    print(f"{replacedWord}")
     return jsonify(replacedWord.upper(), alternatives)
 
 
@@ -55,7 +54,7 @@ def onPeriod():
 def log_calibration():
     data = request.json
     mode = data[0]['mode']
-    file_path = f"calibration_{mode}_log.csv"
+    file_path = f"data/calibration_{mode}_log.csv"
     file_exists = os.path.isfile(file_path)
     with open(file_path, mode='a', newline='') as file:
         writer = csv.writer(file)

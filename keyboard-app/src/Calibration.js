@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import Dot from "./Dot";
 import { sendCalibrationData } from "./services/sendCalibrationData";
 
-const Calibration = ({ prediction, testMode, setCalibrationComplete }) => {
+const Calibration = ({
+  prediction,
+  keyboardTestMode,
+  setCalibrationComplete,
+}) => {
   const totalDots = 15;
   // const buttonWidth = calc(100vw / 3 - 8px)
 
@@ -131,11 +135,11 @@ const Calibration = ({ prediction, testMode, setCalibrationComplete }) => {
   }, [prediction]);
 
   useEffect(() => {
-    if (dotsClicked === totalDots || testMode) {
-      logCalibration();
+    if (dotsClicked === totalDots || keyboardTestMode) {
       setCalibrationComplete(true);
       return;
     }
+    logCalibration();
   }, [dotsClicked]);
 
   return (

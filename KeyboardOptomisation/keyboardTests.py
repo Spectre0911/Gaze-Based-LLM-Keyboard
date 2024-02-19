@@ -1,13 +1,14 @@
 import csv
 # from dotenv import load_dotenv
 import os
-from KeyboardCharacterOptomiser import createWordTries
+from KeyboardCharacterOptomiser import createWordFrequencyMap, createWordTries
 from Trie import Trie
 from constants import BASE_PATH, alphabet, prechosen
 import csv
 from openai import OpenAI
 
 client = OpenAI()
+frequencyMaps = createWordFrequencyMap()
 
 
 def scoreSentence(returnedSentence, actualSentence):
@@ -47,7 +48,8 @@ def spellSentences(filename, keyboards, allWordTries):
                         singleWordReplacedScore = scoreSentence(
                             singleWordReplaced, line) / wordCount
 
-                        gptSentence = gptWrapper(singleWordReplaced)
+                        gptSentence = gptWrapper(
+                            singleWordReplaced, allWordTries)
                         gptScore = scoreSentence(gptSentence, line) / wordCount
 
                         csvwriter.writerow({
@@ -106,6 +108,7 @@ def compareWords(tuples, keyboard):
 
 
 def gptReplacedSentence(sentence):
+    #  gpt-3.5-turbo-1106
     response = client.chat.completions.create(model="gpt-3.5-turbo-1106",
                                               messages=[
                                                   {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'a', 'd', 'e', 'i', 'l', 'n', 'o', 'r', 's', 't'} DO NOT REUSE ANY OF THEM"},
@@ -127,9 +130,6 @@ def gptReplacedSentence(sentence):
     zippedWords = list(zip(extractedWords, sentenceWords))
     reversedZippedWords = list(zip(extractedWords[::-1], sentenceWords[::-1]))
 
-    print(zippedWords)
-    print(reversedZippedWords)
-
     forwardPass = compareWords(zippedWords, prechosen)
     backPass = compareWords(reversedZippedWords, prechosen)
 
@@ -144,17 +144,36 @@ def gptReplacedSentence(sentence):
     return (newSentenceString)
 
 
-def gptWrapper(sentence):
-    for _ in range(3):
+def gptWrapper(sentence, allWordTries):
+    i = 0
+    print("ENTERED GPT WRAPPER")
+    while i < 2 and "%" in sentence:
         sentence = gptReplacedSentence(sentence)
-        if not "%" in sentence:
-            return sentence
+        i += 1
+    print("ENTERED SENTENCE PROCESSOR")
+    if "%" in sentence:
+        sentence = sentence.split()
+        for index, word in enumerate(sentence):
+            if "%" in word:
+                freqMap = frequencyMaps[len(word)]
+                alternatives = allWordTries[len(word)].searchR(
+                    word, prechosen)[1]
+                alternatives = sorted(
+                    alternatives, key=lambda x: freqMap[x])
+                if len(alternatives) > 0:
+                    sentence[index] = alternatives[0]
+
+        sentence = " ".join(sentence)
+    print(sentence)
     return sentence
 
 
 def main():
     allWordTries = createWordTries()
-    spellSentences(f"{BASE_PATH}/sentences.txt", [prechosen], allWordTries)
+    # sentence = "%is stand %% routine %as hilarious i %as laughing so %ard i almost %ried no %o%e"
+    # gptWrapper(sentence, allWordTries)
+    spellSentences(f"{BASE_PATH}sentences.txt",
+                   [prechosen], allWordTries)
 
 
 if __name__ == "__main__":

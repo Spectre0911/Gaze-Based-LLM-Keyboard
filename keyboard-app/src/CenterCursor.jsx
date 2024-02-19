@@ -2,7 +2,7 @@ import React, { Component, useEffect, useRef, useState } from "react";
 import Calibration from "./Calibration";
 import "./CenterCursor.css";
 
-const testMode = false;
+const keyboardTestMode = true;
 
 const CenterCursor = ({ prediction, setCalibrationComplete }) => {
   const [cursorCentered, setCursorCentered] = useState(false);
@@ -33,10 +33,10 @@ const CenterCursor = ({ prediction, setCalibrationComplete }) => {
     }
   }, [isHovered]);
 
-  return cursorCentered | testMode ? (
+  return cursorCentered | keyboardTestMode ? (
     <Calibration
       prediction={prediction}
-      testMode={testMode}
+      keyboardTestMode={keyboardTestMode}
       setCalibrationComplete={setCalibrationComplete}
     />
   ) : (

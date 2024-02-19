@@ -101,7 +101,7 @@ def onSpace(allWordTries, frequencyMaps, inputStr, singleWordReplacedStr, curWor
         wordTrie = allWordTries[len(speltWord)]
         # Get all possible words, that match the spelt word
         alternatives = wordTrie.searchR(
-            speltWord, alphabet - prechosen, prechosen)[1]
+            speltWord, prechosen)[1]
         # Check if single word replacement is possible
         replacedWord, replaced = wordTrie.singleWordReplacement(
             speltWord, prechosen)

@@ -29,7 +29,7 @@ class Trie:
 
     def singleWordReplacement(self, speltWord, keyboard):
         searchRes = self.searchR(
-            speltWord, alphabet - keyboard, keyboard)
+            speltWord, keyboard)
         wordCount = searchRes[0][0]
         words = searchRes[1]
         if wordCount == 1:
@@ -52,7 +52,7 @@ class Trie:
             [c if c in characterSet else "%" for c in word])
         return normalisedWord
 
-    def searchR(self, word, unknownCharacterSet, characterSet):
+    def searchR(self, word, characterSet):
         """
         Searches for the word in the trie recursively, and returns the words that match the the normalised word and the number of them
 
@@ -79,15 +79,10 @@ class Trie:
             if char == "%":
                 nextWord = word[1:]
                 for child in children:
-                    if child in unknownCharacterSet:
+                    if child not in characterSet:
                         dfs(nextWord, currentWord + [child], children[child])
             elif char in children:
                 dfs(word[1:], currentWord + [char], children[char])
 
         dfs(self.spellWord(word, characterSet), [], self.root)
         return (count, words)
-
-    def searchSR(self, curNode, nextLetter, unknownCharacterSet, characterSet):
-
-        words = []
-        count = [0]

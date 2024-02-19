@@ -1,16 +1,14 @@
 from collections import defaultdict, OrderedDict
+import math
+import random
 from KeyboardCharacterOptomiser import createWordTries
 from Trie import Trie
-from constants import BASE_PATH, alphabet
+from constants import BASE_PATH, alphabet, prechosen
 import matplotlib.pyplot as plt
 import numpy as np
 
-# keyboards = [
-#     {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'd', 'e'},
-#     {'o', 'r', 'n', 'a', 'i', 'c', 't', 's', 'l', 'm', 'd', 'e'},
-# ]
 
-keyboards = [{'l', 'i', 's', 't', 'n', 'a', 'r', 'e'}]
+keyboards = [prechosen]
 
 
 def plot_nested_dict(d):
@@ -51,6 +49,71 @@ def getAllWords():
             words = file.read().split()
             allWords.extend(words)
     return allWords
+
+
+def getAverageKeyStrokeScore(halfs, wordList):
+    # Store the average number of key strokes with respect to word length
+    total = 0
+    for word in wordList:
+        count = 0
+        # Keep track of current half of the switch board
+        currentHalf = 0
+        for c in word:
+            nextHalf = 1 if currentHalf == 0 else 0
+            c = c.upper()
+            # If the character is in the other half, add 2 to the count and switch the current half
+            if c in halfs[nextHalf]:
+                count += 2
+                currentHalf = nextHalf
+            # If the character is in the current half or not on keyboard at all, add 1 to the count
+            else:
+                count += 1
+
+        total += (count / len(word))
+    return total / len(wordList)
+
+
+def mutateHalves(halfs):
+    newHalfs = [halfs[0].copy(), halfs[1].copy()]
+    halfOneChar = random.choice(list(newHalfs[0]))
+    halfTwoChar = random.choice(list(newHalfs[1]))
+    newHalfs[0].remove(halfOneChar)
+    newHalfs[0].add(halfTwoChar)
+    newHalfs[1].remove(halfTwoChar)
+    newHalfs[1].add(halfOneChar)
+    return newHalfs
+
+
+def simulatedAnnealing(halfs, wordList):
+    T = 1000.0  # initial temperature
+    T_min = 50  # minimum temperature
+    alpha = 0.99  # cooling rate
+
+    globalCurMinHalfs = halfs
+    globalCurMinScore = getAverageKeyStrokeScore(globalCurMinHalfs, wordList)
+
+    curMinHalfs = halfs
+    curMinScore = globalCurMinScore
+
+    while T > T_min:
+        tempHalf = mutateHalves(curMinHalfs)
+        tempScore = getAverageKeyStrokeScore(tempHalf, wordList)
+        deltaE = tempScore - curMinScore
+
+        if deltaE < 0:
+            curMinScore = tempScore
+            curMinHalfs = tempHalf
+            if curMinScore < globalCurMinScore:
+                globalCurMinScore = curMinScore
+                globalCurMinHalfs = curMinHalfs.copy()
+
+        elif random.random() < math.exp(-(deltaE * 10000) / T):
+            curMinScore = tempScore
+            curMinHalfs = tempHalf
+        print(
+            f"Temp: {T}, CurMin: {curMinScore}, GlobalMin: {globalCurMinScore},  GlobalMinHalfs: {globalCurMinHalfs}")
+        T *= alpha
+    return globalCurMinHalfs, globalCurMinScore
 
 
 def prettyPrintNestedDict(d):
@@ -123,4 +186,10 @@ def getKeyboardData(allWordTries, sampleWords):
     return count
 
 
-getKeyboardData(createWordTries(), getAllWords())
+# getKeyboardData(createWordTries(), getAllWords())
+halfs = [set(['S', 'R', 'A', 'T', 'E']), set(['N', 'D', 'I', 'L', 'O'])]
+wordList = getAllWords()
+
+print(getAverageKeyStrokeScore(halfs, wordList))
+globalMinHalves, globalMinScore = simulatedAnnealing(halfs, wordList)
+print(globalMinScore == getAverageKeyStrokeScore(globalMinHalves, wordList))
