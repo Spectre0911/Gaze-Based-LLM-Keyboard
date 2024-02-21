@@ -144,7 +144,10 @@ def gptReplacedSentence(sentence):
     return (newSentenceString)
 
 
-def gptWrapper(sentence, allWordTries):
+allWordTries = createWordTries()
+
+
+def gptWrapper(sentence, allWordTries=allWordTries):
     i = 0
     print("ENTERED GPT WRAPPER")
     while i < 2 and "%" in sentence:

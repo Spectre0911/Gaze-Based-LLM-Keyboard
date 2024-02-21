@@ -2,10 +2,10 @@ BASE_PATH = "./Wordlist/"
 alphabet = set('abcdefghijklmnopqrstuvwxyz')
 
 # prechosen = {'l', 'i', 's', 't', 'n', 'a', 'r', 'e'}
-# prechosen = {'o', 't', 's', 'm', 'n', 'e', 'a', 'r', 'l', 'i'}
-prechosen = {'a', 'd', 'e', 'i', 'l', 'n', 'o', 'r', 's', 't'}
+# prechosen = {'a', 'd', 'e', 'i', 'l', 'n', 'o', 'r', 's', 't'}
 
-# prechosen = {'a', 't', 'r', 'l', 'e', 's', 'o', 'n'}
+prechosen = {'a', 't', 'r', 'l', 'e', 's', 'o', 'n'}
+
 # Keyboard {'i', 's', 't', 'a', 'l', 'e', 'n', 'r'} has an average of 46793 words returned where only 1 word was returned 6444 times
 # Keyboard {'i', 's', 't', 'o', 'a', 'l', 'e', 'n', 'r'} has an average of 30957 words returned where only 1 word was returned 6972 times
 # Keyboard {'i', 's', 't', 'o', 'd', 'a', 'l', 'e', 'n', 'r'} has an average of 23493 words returned where only 1 word was returned 7478 times
