@@ -418,8 +418,8 @@ function App({ pred }) {
           setScreenSize={setScreenSize}
           pred={pred}
         />
-
-        <div className="grid-container">{buttons}</div>
+        <div className="first-row">{buttons.slice(0, 3)}</div>
+        <div className="grid-container">{buttons.slice(3, buttons.length)}</div>
         <TriggerButton
           className={spaceClassName}
           frontLabel={spaceStates[currentState]}
