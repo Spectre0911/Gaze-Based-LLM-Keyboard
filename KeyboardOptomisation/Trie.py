@@ -80,9 +80,13 @@ class Trie:
                 nextWord = word[1:]
                 for child in children:
                     if child not in characterSet:
-                        dfs(nextWord, currentWord + [child], children[child])
+                        currentWord.append(child)
+                        dfs(nextWord, currentWord, children[child])
+                        currentWord.pop()
             elif char in children:
-                dfs(word[1:], currentWord + [char], children[char])
+                currentWord.append(char)
+                dfs(word[1:], currentWord, children[char])
+                currentWord.pop()
 
         dfs(self.spellWord(word, characterSet), [], self.root)
         return (count, words)

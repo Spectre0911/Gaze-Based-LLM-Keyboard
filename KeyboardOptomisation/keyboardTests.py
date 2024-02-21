@@ -109,7 +109,7 @@ def compareWords(tuples, keyboard):
 
 def gptReplacedSentence(sentence):
     #  gpt-3.5-turbo-1106
-    response = client.chat.completions.create(model="gpt-3.5-turbo-1106",
+    response = client.chat.completions.create(model="gpt-4-0125-preview",
                                               messages=[
                                                   {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'a', 'd', 'e', 'i', 'l', 'n', 'o', 'r', 's', 't'} DO NOT REUSE ANY OF THEM"},
                                                   {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried.  What do you think the sentence says? Take a deep breath and think about it."},

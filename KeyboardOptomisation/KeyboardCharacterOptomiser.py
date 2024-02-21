@@ -46,13 +46,11 @@ def getSampleWords(k):
     return sampleWords
 
 
-def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, prechosen):
+def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords):
     frequencyMaps = createWordFrequencyMap()
     totalWordCount = sum([len(m) for m in frequencyMaps.values()])
     minWeight = sum([((totalWordCount - frequencyMaps[len(w)]
                     [w])/totalWordCount) for w in sampleWords])
-    # The letters that do not appear on the keyboard
-    remainingAlphabet = alphabet - prechosen
     # Keeps track of the average number of words returned for the each optimal character set
     count = [10000000] * len(characterSets)
     # Keeps track of the optimal character set
@@ -60,12 +58,11 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
 
     for j, kCharSet in enumerate(characterSets):
         for characterSet in kCharSet:
-            unknownCharacterSet = remainingAlphabet - characterSet
             tempCount = 0
             for word in sampleWords:
                 wordLength = len(word)
                 returnedWords = allWordTries[wordLength].searchR(
-                    word, unknownCharacterSet, characterSet)[0][0]
+                    word, characterSet)[0][0]
                 # weightedReturnedWords = returnedWords * \
                 #     (((totalWordCount) -
                 #      frequencyMaps[wordLength][word])/totalWordCount)
@@ -75,10 +72,10 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords, pre
                 count[j] = tempCount
                 cSet[j] = characterSet
 
-    print("----------")
-    for i in range(len(count)):
-        print(
-            f"Keyboard {cSet[i]} has an frequency weighted count of {count[i]} out of a minimum of {len(sampleWords)}")
+    # print("----------")
+    # for i in range(len(count)):
+    #     print(
+    #         f"Keyboard {cSet[i]} has an frequency weighted count of {count[i]} out of a minimum of {len(sampleWords)}")
     return count
 
 
@@ -133,7 +130,6 @@ def calculateAverageWordsReturnedIncremental(allWordTries, sampleWords, prechose
     singleCount = [0] * 26
 
     for j in range(len(prechosen), 26):
-        print("Here")
         combs = generateKLengthCharacterSets(j, prechosen)
         for characterSet in combs:
             unknownCharacterSet = alphabet - characterSet

@@ -14,7 +14,9 @@ def simulatedAnnealing(prechosen, allWordTries, sampleWords):
 
     curMinCharSet = prechosen
     curMinCount = calculateAverageWordsReturnedT(
-        [[curMinCharSet]], allWordTries, sampleWords, curMinCharSet)[0]
+        [[curMinCharSet]], allWordTries, sampleWords)[0]
+
+    print(f"Initial count: {curMinCount} for {curMinCharSet}")
 
     globalMinCharSet = curMinCharSet
     globalMinCount = curMinCount
@@ -22,22 +24,20 @@ def simulatedAnnealing(prechosen, allWordTries, sampleWords):
     while T > T_min:
         newCharSet = mutateChars(curMinCharSet)
         avgWords = calculateAverageWordsReturnedT(
-            [[newCharSet]], allWordTries, sampleWords, newCharSet)[0]
-        deltaE = avgWords - curMinCount
+            [[newCharSet]], allWordTries, sampleWords)[0]
 
+        deltaE = avgWords - curMinCount
         if deltaE < 0:
-            # print("Accepting better solution")
             if avgWords < globalMinCount:
                 globalMinCount = avgWords
                 globalMinCharSet = newCharSet
+                print(globalMinCount, globalMinCharSet)
             curMinCount = avgWords
             curMinCharSet = newCharSet
 
-        elif random.random() < math.exp(-deltaE / T):
-            # print(f"Accepting worse solution with prob {(math.exp(-deltaE / T))}")
+        elif random.random() < math.exp(-deltaE / (T * 20)):
             curMinCount = avgWords
             curMinCharSet = newCharSet
-
         T *= alpha
     print(globalMinCount, globalMinCharSet)
     return globalMinCharSet
@@ -71,7 +71,24 @@ def generate_random_charset(k):
 
 
 allWordTries = createWordTries()
-sampleWords = getSampleWords(10000)
-for i in range(10):
-    prechosen = generate_random_charset(len(prechosen))
-    minCharSet = simulatedAnnealing(prechosen, allWordTries, sampleWords)
+sampleWords = getSampleWords(100000)
+keyboards = []
+# for i in range(10):
+#     vals = simulatedAnnealing(
+#         prechosen, allWordTries, sampleWords)
+#     keyboards.append(vals)
+#     prechosen = generate_random_charset(len(prechosen))
+
+keyboards = [{'a', 't', 'r', 'l', 'e', 's', 'o', 'n'},
+             {'a', 'r', 'l', 'e', 's', 'i', 'o', 'n'},
+             {'a', 'r', 'l', 'e', 's', 'i', 'o', 'n'},
+             {'a', 't', 'r', 'l', 'e', 's', 'o', 'n'},
+             {'d', 'a', 'r', 'l', 'e', 's', 'o', 'n'},
+             {'a', 't', 'r', 'l', 'e', 's', 'i', 'n'},
+             {'u', 'a', 't', 'r', 'e', 's', 'o', 'n'},
+             {'u', 'a', 't', 'r', 'l', 'e', 's', 'n'},
+             {'a', 't', 'r', 'l', 'e', 's', 'i', 'n'},
+             {'u', 'a', 'r', 'l', 'e', 's', 'o', 'n'}]
+
+[print(board, calculateAverageWordsReturnedT([[board]],
+       allWordTries, sampleWords)) for board in keyboards]

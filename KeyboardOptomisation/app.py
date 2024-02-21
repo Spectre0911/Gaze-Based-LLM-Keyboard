@@ -24,7 +24,7 @@ def onSpace():
     wordTrie = allWordTries[len(currentWord)]
     # Get all possible words, that match the spelt word
     alternatives = wordTrie.searchR(
-        currentWord, alphabet - prechosen, prechosen)[1]
+        currentWord, alphabet - prechosen)[1]
     # Check if single word replacement is possible
     replacedWord, replaced = wordTrie.singleWordReplacement(
         currentWord, prechosen)
