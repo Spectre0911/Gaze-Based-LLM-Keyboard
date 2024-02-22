@@ -6,9 +6,24 @@ import CenterCursor from "./CenterCursor";
 
 const EyeTracker = () => {
   const webgazer = window.webgazer;
+  const GazeCloudAPI = window.GazeCloudAPI;
   // const webgazer = require("webgazer");
   const [prediction, setPrediction] = useState({ x: 0, y: 0 });
-  const [calibrationComplete, setCalibrationComplete] = useState(false);
+  const [calibrationComplete, setCalibrationComplete] = useState(true);
+  const mode = 1;
+
+  useEffect(() => {
+    GazeCloudAPI.StartEyeTracking();
+  }, []);
+
+  GazeCloudAPI.OnCalibrationComplete = function () {
+    console.log("gaze Calibration Complete");
+    setCalibrationComplete(true);
+  };
+
+  GazeCloudAPI.OnResult = function (GazeData) {
+    setPrediction({ x: GazeData.docX, y: GazeData.docY });
+  };
 
   const loadWebGazer = async () => {
     if (window.webgazer) {
@@ -30,19 +45,24 @@ const EyeTracker = () => {
   };
 
   useEffect(() => {
-    loadWebGazer();
+    if (mode == 0) {
+      loadWebGazer();
+    } else {
+      GazeCloudAPI.StartEyeTracking();
+    }
   }, []);
 
   if (calibrationComplete) {
     return <App pred={prediction} />;
-  } else {
-    return (
-      <CenterCursor
-        prediction={prediction}
-        setCalibrationComplete={setCalibrationComplete}
-      />
-    );
   }
+  // else {
+  // return (
+  //   <CenterCursor
+  //     prediction={prediction}
+  //     setCalibrationComplete={setCalibrationComplete}
+  //   />
+  // );
 };
+// };
 
 export default EyeTracker;

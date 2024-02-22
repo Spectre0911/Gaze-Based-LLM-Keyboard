@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { sendDataToFlask } from "./services/sendDataToFlask";
 import { sentSentenceToGPT } from "./services/sendSentenceToGPT";
-import Switch from "./Switch";
 import "./App.css";
 import TriggerButton from "./triggerButton";
 import Cursor from "./Cursor";
-
-function getOppositeColor(currentColor) {
-  return currentColor === "light-blue-button"
-    ? "dark-blue-button"
-    : "light-blue-button";
-}
 
 function twoDimZip(a, b) {
   return a.map(function (ai, i) {
@@ -20,25 +13,9 @@ function twoDimZip(a, b) {
   });
 }
 
-// "{'i', 's', 't', 'o', 'a', 'l', 'e', 'n', 'r'}
-
-const lightBlueStates = [
-  ["A", "T", "R", "L", "E", "%", "S", "O", "N", "I", "DEL", "DEL"],
-  ["A", "T", "R", "L", "E", "%", "S", "O", "N", "I", "DEL", "->"],
-  ["A", "T", "R", "L", "E", "%", "S", "O", "N", "I", "<-", "->"],
-];
-
-const darkBlueStates = [
-  ["X", "X", "X", "X", "X", "%", "N", "X", "X", "X", "DEL", "DEL"],
-  ["X", "X", "X", "X", "X", "%", "N", "X", "X", "->", "DEL", "DEL"],
-  ["X", "X", "X", "X", "X", "%", "N", "<-", "X", "->", "DEL", "DEL"],
-  ["X", "X", "X", "X", "X", "%", "N", "X", "X", "X", "DEL", "DEL"],
-];
-
 const createHashMap = (arrays) => {
   let hashMap = {};
-  hashMap["SPACE"] = 9;
-  hashMap["."] = 9;
+
   arrays.forEach((array, arrayIndex) => {
     array.forEach((subArray, subArrayIndex) => {
       subArray.forEach((item, i) => {
@@ -52,13 +29,10 @@ const createHashMap = (arrays) => {
   return hashMap;
 };
 
-const letterIndexMap = createHashMap([lightBlueStates, darkBlueStates]);
-
 function App({ pred }) {
   const [coordinateMap, setCoordinateMap] = useState({});
-  const [switchFace, setSwitchFace] = useState(0);
   const [currentState, setCurrentState] = useState(0);
-  const [buttonClass, setButtonClass] = useState("light-blue-button");
+  const [buttonClass, setButtonClass] = useState("dark-blue-button");
   const [rightArrowCount, setRightArrowCount] = useState(0);
   const [currentWord, setCurrentWord] = useState("");
   const [currentWordChoices, setCurrentWordChoices] = useState([]);
@@ -66,7 +40,7 @@ function App({ pred }) {
   const [allWords, setAllWords] = useState([]);
   const [lookingAt, setLookingAt] = useState("");
   const [buttons, setButtons] = useState([]);
-  const [selected, setSelected] = useState(Array(10).fill(false));
+  const [selected, setSelected] = useState(Array(13).fill(false));
   const [selectedLetter, setSelectedLetter] = useState("");
   const [screenSize, setScreenSize] = useState({
     width: window.innerWidth,
@@ -77,24 +51,38 @@ function App({ pred }) {
     y: screenSize.height / 2,
   });
   const [buffering, setBuffering] = useState(false);
-  const allStates = [lightBlueStates, darkBlueStates];
-  const zippedStates = twoDimZip(lightBlueStates, darkBlueStates);
+  const [minus, setMinus] = useState(3);
   const spaceStates = ["SPACE", ".", ".", currentSentence];
-  var buttonLabels = zippedStates[currentState];
+
   var spaceClassName =
     currentState === 0
       ? "flex-center-button space-button"
       : currentState === 3
       ? "flex-center-button green-space-button"
       : "flex-center-button red-space-button";
+  var spaceName = spaceStates[currentState];
+  const lightBlueStates = [
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL", spaceName, "DEL"],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL", spaceName, "->"],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "->"],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", spaceName],
+  ];
+
+  const darkBlueStates = [
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL", spaceName, "DEL"],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL", spaceName, "->"],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "->"],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", spaceName],
+  ];
+
+  const letterIndexMap = createHashMap([lightBlueStates, darkBlueStates]);
+  const zippedStates = twoDimZip(lightBlueStates, darkBlueStates);
+
+  var buttonLabels = zippedStates[currentState];
 
   function findLetterForPoint(point, map) {
-    let validKeys = [
-      ...allStates[switchFace][currentState],
-      spaceStates[currentState],
-    ];
+    let validKeys = lightBlueStates[currentState];
     let validKeysSet = new Set(validKeys);
-
     for (const [letter, coords] of Object.entries(map)) {
       if (!validKeysSet.has(letter)) {
         continue;
@@ -113,7 +101,8 @@ function App({ pred }) {
   const getButtonConfig = (label, i) => {
     let className = "flex-center-button";
     let onClick;
-    let flip = false;
+    let vertAlign;
+    let horAlign;
 
     switch (label) {
       case "DEL":
@@ -136,16 +125,33 @@ function App({ pred }) {
         className += " purple-button";
         onClick = onRightArrow;
         break;
+      case "SPACE":
+      case ".":
+      case currentSentence:
+        className = spaceClassName;
+        onClick = onSpace;
+        break;
       default:
         className += ` ${buttonClass}`;
         onClick = onDepress.bind(this, label);
-        flip = true;
     }
-    if (i < 4) {
-      className += " first-row-button";
+    if (i == 0 || i == 4 || i == 7 || i == 10) {
+      vertAlign = "center";
+      horAlign = "flex-start";
+    } else if (i == 6 || i == 9 || i == 12 || i == 3) {
+      vertAlign = "center";
+      horAlign = "flex-end";
+    }
+    if (i > 9) {
+      vertAlign = "flex-end";
     }
 
-    return { className, onClick, flip };
+    if (i < 4) {
+      className += " first-row-button";
+      vertAlign = "flex-start";
+    }
+
+    return { className, onClick, vertAlign, horAlign };
   };
 
   useEffect(() => {
@@ -172,12 +178,11 @@ function App({ pred }) {
   useEffect(() => {
     const letter = findLetterForPoint(cursorPosition, coordinateMap);
     setLookingAt(letter);
-
     // Highlight the letter on the keyboard
     if (letter) {
       setSelectedLetter(letter);
       setSelected(() =>
-        Array(10)
+        Array(13)
           .fill(false)
           .map((_, index) => letterIndexMap[letter] === index)
       );
@@ -285,28 +290,6 @@ function App({ pred }) {
     setRightArrowCount(rightArrowCount - 1);
   };
 
-  // WHEN SWITCH IS CLICKED
-  const onSwitch = () => {
-    setRightArrowCount(0);
-    setCoordinateMap({});
-
-    if (currentState !== 0) {
-      setAllWords([...allWords, currentWord]);
-      setCurrentWord("");
-    }
-
-    setSwitchFace((prevSwitchFace) => (prevSwitchFace === 1 ? 0 : 1));
-    setButtonClass((prevClass) =>
-      prevClass === "light-blue-button"
-        ? "dark-blue-button"
-        : "light-blue-button"
-    );
-    if (currentState !== 0) {
-      console.log("FORCE TRANSITION");
-      setCurrentState(0);
-    }
-  };
-
   const onDepress = (label) => {
     // Prevent any key from being depressed when information is being collected from GPT
     if (buffering) {
@@ -343,8 +326,6 @@ function App({ pred }) {
           setCurrentWord(lastWord);
         }
       }
-    } else if (label === "+") {
-      onSwitch();
     } else if (label === "SPACE" || label === ".") {
       shouldResetState = false;
       onSpace();
@@ -373,44 +354,28 @@ function App({ pred }) {
       var [frontLabel, backLabel] = labels;
       i += 1;
 
-      if (frontLabel === "+") {
-        return (
-          <Switch
-            key="Switch"
-            buttonClass={getOppositeColor(buttonClass)}
-            buttonLabels={allStates[switchFace === 0 ? 1 : 0][0]}
-            currentWord={currentWord}
-            onSwitch={onSwitch}
-            sendCoords={updateCoords}
-            selected={selected[i]}
-          />
-        );
-      }
-
       let strokeLabel = frontLabel;
 
-      if (switchFace === 1) {
-        strokeLabel = backLabel;
-      }
-
-      const { className, onClick, flip } = getButtonConfig(strokeLabel, i);
+      const { className, onClick, vertAlign, horAlign } = getButtonConfig(
+        strokeLabel,
+        i
+      );
 
       return (
         <TriggerButton
           className={className}
           frontLabel={backLabel}
-          backLabel={frontLabel}
           onClick={onClick}
           sendCoords={updateCoords}
-          flipCard={flip}
-          flipped={switchFace === 0 ? true : false}
           selected={selected[i]}
+          verticalAlign={vertAlign}
+          horizontalAlign={horAlign}
         />
       );
     });
 
     setButtons(buttons);
-  }, [switchFace, currentWord, currentState, lookingAt]);
+  }, [currentWord, currentState, lookingAt]);
 
   return (
     <div style={{ position: "relative" }}>
@@ -425,22 +390,14 @@ function App({ pred }) {
         <div className="first-row">{buttons.slice(0, 4)}</div>
 
         <div className="grid-container">
-          {buttons.slice(4, buttons.length - 2)}
+          {buttons.slice(4, buttons.length - (currentState === 3 ? 1 : 3))}
         </div>
 
         <div className="space-row">
-          {buttons[buttons.length - 2]}
-          <TriggerButton
-            className={spaceClassName}
-            frontLabel={spaceStates[currentState]}
-            onClick={onSpace}
-            sendCoords={updateCoords}
-            flipCard={false}
-            flipped={switchFace === 0 ? true : false}
-            selected={selected[9]}
-            buffering={buffering}
-          />
-          {buttons[buttons.length - 1]}
+          {buttons.slice(
+            buttons.length - (currentState === 3 ? 1 : 3),
+            buttons.length
+          )}
         </div>
       </div>
     </div>

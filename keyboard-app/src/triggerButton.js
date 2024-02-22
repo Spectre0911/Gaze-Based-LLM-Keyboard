@@ -1,22 +1,16 @@
 import React, { useRef, useEffect } from "react";
 import "./App.css";
-import ReactCardFlip from "react-card-flip";
-import LoadingIcons from "react-loading-icons";
 
 function TriggerButton({
   className,
   onClick,
   frontLabel,
-  backLabel,
   sendCoords,
-  flipCard,
   selected,
-  flipped,
-  buffering = false,
-  fl2 = "NA",
+  verticalAlign = "center",
+  horizontalAlign = "center",
 }) {
   const frontButtonRef = useRef(null);
-  const backButtonRef = useRef(null);
 
   var className = selected ? `${className} selected` : className;
 
@@ -38,11 +32,8 @@ function TriggerButton({
           bottomLeft: bottomLeft,
           bottomRight: bottomRight,
         };
-        if (flipped && flipCard) {
-          sendCoords(backLabel, coords);
-        } else {
-          sendCoords(frontLabel, coords);
-        }
+
+        sendCoords(frontLabel, coords);
       }
     };
 
@@ -51,47 +42,23 @@ function TriggerButton({
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
-  }, [flipped, frontLabel]);
+  }, [frontLabel]);
 
-  if (flipCard) {
-    return (
-      <ReactCardFlip isFlipped={flipped} flipDirection="vertical">
-        <button
-          ref={frontButtonRef}
-          onClick={onClick}
-          key={frontLabel}
-          className={className}
-        >
-          {frontLabel}
-        </button>
-        <button
-          ref={backButtonRef}
-          onClick={onClick}
-          key={backLabel}
-          className={className}
-        >
-          {backLabel}
-        </button>
-      </ReactCardFlip>
-    );
-  } else if (buffering) {
-    return (
-      <div className={className}>
-        <LoadingIcons.ThreeDots stroke="white" strokeOpacity={0.1} />
-      </div>
-    );
-  } else {
-    return (
-      <button
-        ref={frontButtonRef}
-        onClick={onClick}
-        key={frontLabel}
-        className={className}
-      >
-        {frontLabel === "->" ? fa : frontLabel == "<-" ? ba : frontLabel}
-      </button>
-    );
-  }
+  useEffect(() => {
+    console.log("SPACE");
+  }, [selected]);
+
+  return (
+    <button
+      ref={frontButtonRef}
+      onClick={onClick}
+      key={frontLabel}
+      className={className}
+      style={{ justifyContent: horizontalAlign, alignItems: verticalAlign }}
+    >
+      {frontLabel === "->" ? fa : frontLabel == "<-" ? ba : frontLabel}
+    </button>
+  );
 }
 
 export default TriggerButton;
