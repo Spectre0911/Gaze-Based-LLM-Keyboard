@@ -104,7 +104,7 @@ const Dot = ({
   // Style that includes dynamic background color
   const dotStyle = {
     backgroundColor: `rgb(${redValue}, ${greenValue}, 0)`,
-    display: index === currentDot ? "block" : "none",
+    display: index === currentDot ? "block" : "none ",
   };
 
   return (

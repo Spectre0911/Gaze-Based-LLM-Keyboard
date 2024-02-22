@@ -20,18 +20,19 @@ function twoDimZip(a, b) {
   });
 }
 
+// "{'i', 's', 't', 'o', 'a', 'l', 'e', 'n', 'r'}
+
 const lightBlueStates = [
-  ["R", "T", "A", "E", "%", "S", "DEL", "+", "DEL"],
-  ["R", "T", "A", "E", "%", "S", "DEL", "+", "->"],
-  ["R", "T", "A", "E", "%", "S", "<-", "+", "->"],
-  ["R", "T", "A", "E", "%", "S", "DEL", "+", "DEL"],
+  ["A", "T", "R", "L", "E", "%", "S", "O", "N", "I", "DEL", "DEL"],
+  ["A", "T", "R", "L", "E", "%", "S", "O", "N", "I", "DEL", "->"],
+  ["A", "T", "R", "L", "E", "%", "S", "O", "N", "I", "<-", "->"],
 ];
 
 const darkBlueStates = [
-  ["D", "O", "I", "L", "%", "N", "DEL", "+", "DEL"],
-  ["D", "O", "I", "L", "%", "N", "DEL", "+", "->"],
-  ["D", "O", "I", "L", "%", "N", "<-", "+", "->"],
-  ["D", "O", "I", "L", "%", "N", "DEL", "+", "DEL"],
+  ["X", "X", "X", "X", "X", "%", "N", "X", "X", "X", "DEL", "DEL"],
+  ["X", "X", "X", "X", "X", "%", "N", "X", "X", "->", "DEL", "DEL"],
+  ["X", "X", "X", "X", "X", "%", "N", "<-", "X", "->", "DEL", "DEL"],
+  ["X", "X", "X", "X", "X", "%", "N", "X", "X", "X", "DEL", "DEL"],
 ];
 
 const createHashMap = (arrays) => {
@@ -109,7 +110,7 @@ function App({ pred }) {
     }
   }
 
-  const getButtonConfig = (label) => {
+  const getButtonConfig = (label, i) => {
     let className = "flex-center-button";
     let onClick;
     let flip = false;
@@ -139,6 +140,9 @@ function App({ pred }) {
         className += ` ${buttonClass}`;
         onClick = onDepress.bind(this, label);
         flip = true;
+    }
+    if (i < 4) {
+      className += " first-row-button";
     }
 
     return { className, onClick, flip };
@@ -389,7 +393,7 @@ function App({ pred }) {
         strokeLabel = backLabel;
       }
 
-      const { className, onClick, flip } = getButtonConfig(strokeLabel);
+      const { className, onClick, flip } = getButtonConfig(strokeLabel, i);
 
       return (
         <TriggerButton
@@ -418,18 +422,26 @@ function App({ pred }) {
           setScreenSize={setScreenSize}
           pred={pred}
         />
-        <div className="first-row">{buttons.slice(0, 3)}</div>
-        <div className="grid-container">{buttons.slice(3, buttons.length)}</div>
-        <TriggerButton
-          className={spaceClassName}
-          frontLabel={spaceStates[currentState]}
-          onClick={onSpace}
-          sendCoords={updateCoords}
-          flipCard={false}
-          flipped={switchFace === 0 ? true : false}
-          selected={selected[9]}
-          buffering={buffering}
-        />
+        <div className="first-row">{buttons.slice(0, 4)}</div>
+
+        <div className="grid-container">
+          {buttons.slice(4, buttons.length - 2)}
+        </div>
+
+        <div className="space-row">
+          {buttons[buttons.length - 2]}
+          <TriggerButton
+            className={spaceClassName}
+            frontLabel={spaceStates[currentState]}
+            onClick={onSpace}
+            sendCoords={updateCoords}
+            flipCard={false}
+            flipped={switchFace === 0 ? true : false}
+            selected={selected[9]}
+            buffering={buffering}
+          />
+          {buttons[buttons.length - 1]}
+        </div>
       </div>
     </div>
   );

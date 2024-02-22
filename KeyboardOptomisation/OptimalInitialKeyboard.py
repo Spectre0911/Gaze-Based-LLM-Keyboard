@@ -72,23 +72,23 @@ def generate_random_charset(k):
 
 allWordTries = createWordTries()
 sampleWords = getSampleWords(100000)
-keyboards = []
+# keyboards = []
 # for i in range(10):
 #     vals = simulatedAnnealing(
 #         prechosen, allWordTries, sampleWords)
 #     keyboards.append(vals)
 #     prechosen = generate_random_charset(len(prechosen))
 
-keyboards = [{'a', 't', 'r', 'l', 'e', 's', 'o', 'n'},
-             {'a', 'r', 'l', 'e', 's', 'i', 'o', 'n'},
-             {'a', 'r', 'l', 'e', 's', 'i', 'o', 'n'},
-             {'a', 't', 'r', 'l', 'e', 's', 'o', 'n'},
-             {'d', 'a', 'r', 'l', 'e', 's', 'o', 'n'},
-             {'a', 't', 'r', 'l', 'e', 's', 'i', 'n'},
-             {'u', 'a', 't', 'r', 'e', 's', 'o', 'n'},
-             {'u', 'a', 't', 'r', 'l', 'e', 's', 'n'},
-             {'a', 't', 'r', 'l', 'e', 's', 'i', 'n'},
-             {'u', 'a', 'r', 'l', 'e', 's', 'o', 'n'}]
 
-[print(board, calculateAverageWordsReturnedT([[board]],
-       allWordTries, sampleWords)) for board in keyboards]
+keyboards = [{'t', 'e', 'r', 'o', 'l', 's', 'a', 'n', 'i'},
+             {'t', 'e', 'r', 'u', 'l', 's', 'a', 'n', 'i'},
+             {'t', 'e', 'r', 'u', 'o', 'l', 's', 'a', 'n'},
+             {'t', 'e', 'r', 'd', 'o', 'l', 's', 'a', 'i'},
+             {'t', 'e', 'r', 'd', 'l', 's', 'a', 'n', 'i'},
+             {'t', 'e', 'm', 'r', 'o', 'l', 's', 'a', 'n'},
+             {'t', 'e', 'r', 'd', 'l', 's', 'a', 'c', 'i'},
+             {'t', 'e', 'r', 'd', 'o', 'l', 's', 'a', 'n'}]
+
+
+[calculateAverageWordsReturnedT([[board]],
+                                allWordTries, sampleWords) for board in keyboards]

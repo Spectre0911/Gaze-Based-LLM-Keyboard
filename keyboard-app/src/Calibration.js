@@ -7,11 +7,13 @@ const Calibration = ({
   keyboardTestMode,
   setCalibrationComplete,
 }) => {
-  const totalDots = 15;
+  const totalDots = 20;
   // const buttonWidth = calc(100vw / 3 - 8px)
 
   const [dotsClicked, setDotsClicked] = useState(0);
-  const order = [0, 1, 2, 5, 8, 11, 14, 13, 12, 9, 6, 3, 4, 7, 10];
+  const order = [
+    0, 1, 2, 3, 7, 11, 15, 19, 18, 17, 16, 12, 8, 4, 5, 6, 10, 14, 13, 9,
+  ];
   const [currentDotIndex, setCurrentDotIndex] = useState(0);
   const [currentDot, setCurrentDot] = useState(0);
   const [firstEllapsed, setFirstEllapsed] = useState(0);

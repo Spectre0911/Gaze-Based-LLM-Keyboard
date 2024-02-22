@@ -51,6 +51,7 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords):
     totalWordCount = sum([len(m) for m in frequencyMaps.values()])
     minWeight = sum([((totalWordCount - frequencyMaps[len(w)]
                     [w])/totalWordCount) for w in sampleWords])
+    singleCount = [0] * 26
     # Keeps track of the average number of words returned for the each optimal character set
     count = [10000000] * len(characterSets)
     # Keeps track of the optimal character set
@@ -59,6 +60,7 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords):
     for j, kCharSet in enumerate(characterSets):
         for characterSet in kCharSet:
             tempCount = 0
+            tempSingleWord = 0
             for word in sampleWords:
                 wordLength = len(word)
                 returnedWords = allWordTries[wordLength].searchR(
@@ -67,15 +69,19 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords):
                 #     (((totalWordCount) -
                 #      frequencyMaps[wordLength][word])/totalWordCount)
                 tempCount += returnedWords
+                if returnedWords == 1:
+                    tempSingleWord += 1
             currentCount = count[j]
             if tempCount < currentCount:
                 count[j] = tempCount
                 cSet[j] = characterSet
+                singleCount[j] = tempSingleWord
 
     # print("----------")
     # for i in range(len(count)):
     #     print(
     #         f"Keyboard {cSet[i]} has an frequency weighted count of {count[i]} out of a minimum of {len(sampleWords)}")
+    print(f"{characterSets[0]} {count[0]} {singleCount[0]}")
     return count
 
 
