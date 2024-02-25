@@ -29,7 +29,7 @@ const createHashMap = (arrays) => {
   return hashMap;
 };
 
-function App({ pred }) {
+function App({ pred, trialSentence }) {
   const [coordinateMap, setCoordinateMap] = useState({});
   const [currentState, setCurrentState] = useState(0);
   const [buttonClass, setButtonClass] = useState("dark-blue-button");
@@ -51,7 +51,6 @@ function App({ pred }) {
     y: screenSize.height / 2,
   });
   const [buffering, setBuffering] = useState(false);
-  const [minus, setMinus] = useState(3);
   const spaceStates = ["SPACE", ".", ".", currentSentence];
 
   var spaceClassName =
@@ -62,15 +61,43 @@ function App({ pred }) {
       : "flex-center-button red-space-button";
   var spaceName = spaceStates[currentState];
   const lightBlueStates = [
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL", spaceName, "DEL"],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL", spaceName, "->"],
+    [
+      "E",
+      "R",
+      "T",
+      "O",
+      "A",
+      "%",
+      "S",
+      "L",
+      "N",
+      "I",
+      "DEL ",
+      spaceName,
+      "DEL",
+    ],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL ", spaceName, "->"],
     ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "->"],
     ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", spaceName],
   ];
 
   const darkBlueStates = [
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL", spaceName, "DEL"],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL", spaceName, "->"],
+    [
+      "E",
+      "R",
+      "T",
+      "O",
+      "A",
+      "%",
+      "S",
+      "L",
+      "N",
+      "I",
+      "DEL ",
+      spaceName,
+      "DEL",
+    ],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL ", spaceName, "->"],
     ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "->"],
     ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", spaceName],
   ];
@@ -106,8 +133,9 @@ function App({ pred }) {
 
     switch (label) {
       case "DEL":
+      case "DEL ":
         className += " red-button";
-        onClick = onDepress.bind(this, label);
+        onClick = onDepress.bind(this, "DEL");
         break;
       case "AUTO":
         className += " green-auto-button";
@@ -136,8 +164,10 @@ function App({ pred }) {
         onClick = onDepress.bind(this, label);
     }
     if (i == 0 || i == 4 || i == 7 || i == 10) {
+      if (currentState !== 3) {
+        horAlign = "flex-start";
+      }
       vertAlign = "center";
-      horAlign = "flex-start";
     } else if (i == 6 || i == 9 || i == 12 || i == 3) {
       vertAlign = "center";
       horAlign = "flex-end";
@@ -149,6 +179,14 @@ function App({ pred }) {
     if (i < 4) {
       className += " first-row-button";
       vertAlign = "flex-start";
+    }
+
+    if (i == 4 || i == 6 || i == 7 || i == 9) {
+      className += " n-row-edge-button";
+    }
+
+    if (i == 5 || i == 8) {
+      className += " n-row-button";
     }
 
     return { className, onClick, vertAlign, horAlign };
@@ -315,7 +353,7 @@ function App({ pred }) {
       setRightArrowCount(0);
     }
 
-    if (label === "DEL") {
+    if (label === "DEL" || label === "DEL ") {
       if (currentWord.length > 0) {
         setCurrentWord(currentWord.slice(0, -1));
       } else {
@@ -351,7 +389,7 @@ function App({ pred }) {
   useEffect(() => {
     var i = -1;
     const buttons = buttonLabels.map((labels) => {
-      var [frontLabel, backLabel] = labels;
+      var [frontLabel, _] = labels;
       i += 1;
 
       let strokeLabel = frontLabel;
@@ -364,12 +402,14 @@ function App({ pred }) {
       return (
         <TriggerButton
           className={className}
-          frontLabel={backLabel}
+          frontLabel={frontLabel}
           onClick={onClick}
           sendCoords={updateCoords}
           selected={selected[i]}
           verticalAlign={vertAlign}
           horizontalAlign={horAlign}
+          currentWord={currentWord}
+          trialWord={trialSentence.split(" ")[allWords.length]}
         />
       );
     });

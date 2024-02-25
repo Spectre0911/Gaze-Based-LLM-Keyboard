@@ -1,19 +1,33 @@
 import React, { useEffect, useState } from "react";
 
 import App from "./App";
-import Calibration from "./Calibration";
 import CenterCursor from "./CenterCursor";
+import _ from "lodash";
+
+const trialMode = true;
+const trialSentences = [
+  "The quick brown fox jumps over the lazy dog",
+  "Sphinx of black quartz judge my vow",
+  "The five boxing wizards jump quickly",
+  "How vexingly quick daft zebras jump",
+];
 
 const EyeTracker = () => {
   const webgazer = window.webgazer;
   const GazeCloudAPI = window.GazeCloudAPI;
   // const webgazer = require("webgazer");
   const [prediction, setPrediction] = useState({ x: 0, y: 0 });
-  const [calibrationComplete, setCalibrationComplete] = useState(true);
-  const mode = 1;
+  const [calibrationComplete, setCalibrationComplete] = useState(false);
+  const [trialOrder, setTrialOrder] = useState([0, 1, 2, 3]);
+  const [trialIndex, setTrialIndex] = useState(0);
+  const mode = 0;
 
   useEffect(() => {
-    GazeCloudAPI.StartEyeTracking();
+    GazeCloudAPI.ApiKey = "AppKeyTrial";
+  }, []);
+
+  useEffect(() => {
+    setTrialOrder(_.shuffle(trialOrder));
   }, []);
 
   GazeCloudAPI.OnCalibrationComplete = function () {
@@ -47,22 +61,28 @@ const EyeTracker = () => {
   useEffect(() => {
     if (mode == 0) {
       loadWebGazer();
-    } else {
+    } else if (mode == 1) {
       GazeCloudAPI.StartEyeTracking();
+    } else {
+      setCalibrationComplete(true);
     }
   }, []);
 
   if (calibrationComplete) {
-    return <App pred={prediction} />;
+    return (
+      <App
+        pred={prediction}
+        trialSentence={trialMode ? trialSentences[trialOrder[trialIndex]] : " "}
+      />
+    );
+  } else {
+    return (
+      <CenterCursor
+        prediction={prediction}
+        setCalibrationComplete={setCalibrationComplete}
+      />
+    );
   }
-  // else {
-  // return (
-  //   <CenterCursor
-  //     prediction={prediction}
-  //     setCalibrationComplete={setCalibrationComplete}
-  //   />
-  // );
 };
-// };
 
 export default EyeTracker;

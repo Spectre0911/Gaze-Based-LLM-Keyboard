@@ -35,7 +35,6 @@ const Calibration = ({
       } else {
         calibrationQuality = "Poor calibration";
       }
-
       return {
         round: index,
         average: roundAverage,
@@ -43,7 +42,6 @@ const Calibration = ({
         mode: mode,
       };
     });
-
     await sendCalibrationData(data);
   };
 
@@ -138,8 +136,11 @@ const Calibration = ({
       setCalibrationComplete(true);
       return;
     }
-    logCalibration();
   }, [dotsClicked]);
+
+  useEffect(() => {
+    logCalibration();
+  }, [currentRound]);
 
   return (
     <div
@@ -148,19 +149,6 @@ const Calibration = ({
         position: "relative",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          zIndex: 2,
-          textAlign: "center",
-          left: "calc(50vw - 1em)",
-          top: "50vh",
-          fontSize: "2em",
-        }}
-      >
-        {accuracy.toFixed(2)}
-      </div>
-
       {[...Array(totalDots)].map((_, i) => (
         <Dot
           onMaxClicksReached={handleMaxClicks}

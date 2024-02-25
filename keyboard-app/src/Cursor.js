@@ -8,7 +8,7 @@ const Mode = {
 };
 
 // The multiplier for the cursor movement
-const multiplier = 20;
+const multiplier = 40;
 
 function Cursor({
   cursorPosition,
