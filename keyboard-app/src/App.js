@@ -1,35 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { sendDataToFlask } from "./services/sendDataToFlask";
-import { sentSentenceToGPT } from "./services/sendSentenceToGPT";
+import { sendSentenceToGPT } from "./services/sendSentenceToGPT";
 import "./App.css";
 import TriggerButton from "./triggerButton";
 import Cursor from "./Cursor";
 
-function twoDimZip(a, b) {
-  return a.map(function (ai, i) {
-    return ai.map(function (e, j) {
-      return [e, b[i][j]];
-    });
-  });
-}
-
-const createHashMap = (arrays) => {
+const createHashMap = (array) => {
   let hashMap = {};
 
-  arrays.forEach((array, arrayIndex) => {
-    array.forEach((subArray, subArrayIndex) => {
-      subArray.forEach((item, i) => {
-        if (!hashMap[item]) {
-          hashMap[item] = i;
-        }
-      });
+  array.forEach((subArray, subArrayIndex) => {
+    subArray.forEach((item, i) => {
+      if (!hashMap[item]) {
+        hashMap[item] = i;
+      }
     });
   });
 
   return hashMap;
 };
 
-function App({ pred, trialSentence }) {
+function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
   const [coordinateMap, setCoordinateMap] = useState({});
   const [currentState, setCurrentState] = useState(0);
   const [buttonClass, setButtonClass] = useState("dark-blue-button");
@@ -51,7 +41,8 @@ function App({ pred, trialSentence }) {
     y: screenSize.height / 2,
   });
   const [buffering, setBuffering] = useState(false);
-  const spaceStates = ["SPACE", ".", ".", currentSentence];
+  const [firstDepress, setFirstDepress] = useState(false);
+  const [startTime, setStartTime] = useState(null);
 
   var spaceClassName =
     currentState === 0
@@ -59,8 +50,9 @@ function App({ pred, trialSentence }) {
       : currentState === 3
       ? "flex-center-button green-space-button"
       : "flex-center-button red-space-button";
-  var spaceName = spaceStates[currentState];
-  const lightBlueStates = [
+  const spaceStates = ["SPACE", ".", ".", currentSentence];
+  const spaceName = spaceStates[currentState];
+  const boardStates = [
     [
       "E",
       "R",
@@ -81,34 +73,11 @@ function App({ pred, trialSentence }) {
     ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", spaceName],
   ];
 
-  const darkBlueStates = [
-    [
-      "E",
-      "R",
-      "T",
-      "O",
-      "A",
-      "%",
-      "S",
-      "L",
-      "N",
-      "I",
-      "DEL ",
-      spaceName,
-      "DEL",
-    ],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL ", spaceName, "->"],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "->"],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", spaceName],
-  ];
-
-  const letterIndexMap = createHashMap([lightBlueStates, darkBlueStates]);
-  const zippedStates = twoDimZip(lightBlueStates, darkBlueStates);
-
-  var buttonLabels = zippedStates[currentState];
+  const letterIndexMap = createHashMap(boardStates);
+  var buttonLabels = boardStates[currentState];
 
   function findLetterForPoint(point, map) {
-    let validKeys = lightBlueStates[currentState];
+    let validKeys = boardStates[currentState];
     let validKeysSet = new Set(validKeys);
     for (const [letter, coords] of Object.entries(map)) {
       if (!validKeysSet.has(letter)) {
@@ -163,12 +132,12 @@ function App({ pred, trialSentence }) {
         className += ` ${buttonClass}`;
         onClick = onDepress.bind(this, label);
     }
-    if (i == 0 || i == 4 || i == 7 || i == 10) {
+    if (i === 0 || i === 4 || i === 7 || i === 10) {
       if (currentState !== 3) {
         horAlign = "flex-start";
       }
       vertAlign = "center";
-    } else if (i == 6 || i == 9 || i == 12 || i == 3) {
+    } else if (i === 6 || i === 9 || i === 12 || i === 3) {
       vertAlign = "center";
       horAlign = "flex-end";
     }
@@ -181,11 +150,11 @@ function App({ pred, trialSentence }) {
       vertAlign = "flex-start";
     }
 
-    if (i == 4 || i == 6 || i == 7 || i == 9) {
+    if (i === 4 || i === 6 || i === 7 || i === 9) {
       className += " n-row-edge-button";
     }
 
-    if (i == 5 || i == 8) {
+    if (i === 5 || i === 8) {
       className += " n-row-button";
     }
 
@@ -211,7 +180,7 @@ function App({ pred, trialSentence }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedLetter, currentState]);
+  }, [selectedLetter, currentState, currentWord]);
 
   useEffect(() => {
     const letter = findLetterForPoint(cursorPosition, coordinateMap);
@@ -231,16 +200,17 @@ function App({ pred, trialSentence }) {
     if (currentState !== 3) {
       return;
     }
+    setFirstDepress(false);
     // Set buffering true at the start of the effect
     setBuffering(true);
-
+    let duration = (Date.now() - startTime) / 1000;
     // Combine words to form the sentence for GPT
     const sentence = [...allWords, currentWord].join(" ");
 
     // Define the asynchronous function inside the useEffect
     const sendSentence = async () => {
       try {
-        const response = await sentSentenceToGPT({ sentence });
+        const response = await sendSentenceToGPT({ sentence, duration });
         // After the async operation, update the state based on the response
         setCurrentSentence(response);
         setAllWords([]);
@@ -251,6 +221,7 @@ function App({ pred, trialSentence }) {
       } finally {
         // Ensure buffering is turned off after the operation completes or fails
         setBuffering(false);
+        setStartTime(null);
       }
     };
 
@@ -295,7 +266,10 @@ function App({ pred, trialSentence }) {
       setCurrentState(3);
     } else {
       setCurrentSentence("");
+      setCurrentWord("");
+      setRightArrowCount(0);
       setCurrentState(0);
+      setCalibrationComplete(false);
     }
   };
 
@@ -334,25 +308,30 @@ function App({ pred, trialSentence }) {
       return;
     }
 
+    if (!firstDepress) {
+      setFirstDepress(true);
+      setStartTime(Date.now());
+    }
+
     let shouldResetState = true; // A flag to determine if state should be reset at the end
 
     // If a key is depressed after the sentence is returned from GPT, reset the sentence
-    if (currentState == 3) {
+    if (currentState === 3) {
       setCurrentSentence("");
       setCurrentState(0); // This state reset is specific to this condition
       shouldResetState = false; // Prevent further resetting
     }
 
-    // Logic for handling arrows keys
-    if (label == "->") {
+    // Handling arrows keys
+    if (label === "->") {
       onRightArrow();
-    } else if (label == "<-") {
+    } else if (label === "<-") {
       onLeftArrow();
     } else {
       // Depressing any key when the arrows are present, should take the user back to the main screen
       setRightArrowCount(0);
     }
-
+    // Handling DEL keys
     if (label === "DEL" || label === "DEL ") {
       if (currentWord.length > 0) {
         setCurrentWord(currentWord.slice(0, -1));
@@ -364,12 +343,14 @@ function App({ pred, trialSentence }) {
           setCurrentWord(lastWord);
         }
       }
-    } else if (label === "SPACE" || label === ".") {
+    }
+    // Handling SPACE / Period keys
+    else if (label === "SPACE" || label === ".") {
       shouldResetState = false;
       onSpace();
-    } else if (label == "AUTO") {
-      // AUTO does not imply specific handling besides state reset, which is managed by the flag
-    } else {
+    }
+    // Handles character depression
+    else {
       if (currentState != 0) {
         // Write the current word to the list of words
         setAllWords([...allWords, currentWord]);
@@ -388,28 +369,36 @@ function App({ pred, trialSentence }) {
   // Create the buttons / Rerender when state change
   useEffect(() => {
     var i = -1;
-    const buttons = buttonLabels.map((labels) => {
-      var [frontLabel, _] = labels;
+    const buttons = buttonLabels.map((label) => {
       i += 1;
 
-      let strokeLabel = frontLabel;
+      let strokeLabel = label;
 
       const { className, onClick, vertAlign, horAlign } = getButtonConfig(
         strokeLabel,
         i
       );
 
+      let currentTrialWord;
+      if (trialMode) {
+        let trialWords = trialSentence.split(" ");
+
+        if (allWords.length < trialWords.length) {
+          currentTrialWord = trialWords[allWords.length];
+        }
+      }
+
       return (
         <TriggerButton
           className={className}
-          frontLabel={frontLabel}
+          frontLabel={label}
           onClick={onClick}
           sendCoords={updateCoords}
           selected={selected[i]}
           verticalAlign={vertAlign}
           horizontalAlign={horAlign}
           currentWord={currentWord}
-          trialWord={trialSentence.split(" ")[allWords.length]}
+          trialWord={currentTrialWord}
         />
       );
     });

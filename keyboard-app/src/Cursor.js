@@ -8,7 +8,7 @@ const Mode = {
 };
 
 // The multiplier for the cursor movement
-const multiplier = 40;
+const multiplier = 30;
 
 function Cursor({
   cursorPosition,
@@ -18,7 +18,7 @@ function Cursor({
   pred,
 }) {
   const [cursorAngle, setCursorAngle] = useState(0);
-  const [mode, setMode] = useState(Mode.RELATIVE8);
+  const mode = Mode.RELATIVE8;
 
   useEffect(() => {
     // Reset cursor position on resize to center of screen

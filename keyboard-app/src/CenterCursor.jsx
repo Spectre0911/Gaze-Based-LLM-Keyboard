@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Calibration from "./Calibration";
 import "./CenterCursor.css";
 
-const keyboardTestMode = true;
+const keyboardTestMode = false;
 
-const CenterCursor = ({ prediction, setCalibrationComplete }) => {
+const CenterCursor = ({ prediction, setCalibrationComplete, order }) => {
   const [cursorCentered, setCursorCentered] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const dotRef = useRef(null);
@@ -40,18 +40,23 @@ const CenterCursor = ({ prediction, setCalibrationComplete }) => {
       setCalibrationComplete={setCalibrationComplete}
     />
   ) : (
-    <div className="center-div">
-      <h1 className="tutorial-font">
-        {isHovered
-          ? "Look at the center of the box and press spacebar"
-          : "Center cursor in below box"}
-      </h1>
-      <button
-        ref={dotRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className={"center-cursor-button"}
-      ></button>
+    <div>
+      <div className="center-div">
+        <h1 className="tutorial-font">
+          {isHovered
+            ? "Look at the center of the box"
+            : "Center cursor in below box"}
+        </h1>
+        <button
+          ref={dotRef}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className={"center-cursor-button"}
+        ></button>
+        <h1 className="tutorial-font">
+          {isHovered ? "Press SPACE" : order.join("")}
+        </h1>
+      </div>
     </div>
   );
 };

@@ -15,7 +15,6 @@ const Calibration = ({
   const [currentDot, setCurrentDot] = useState(0);
   const [firstEllapsed, setFirstEllapsed] = useState(0);
   const [predictions, setPredictions] = useState([]);
-  const [accuracy, setAccuracy] = useState(0);
   const [currentCenter, setCurrentCenter] = useState({ x: 0, y: 0 });
   const [currentRound, setCurrentRound] = useState(0);
   const [roundAverages, setroundAverages] = useState([[], [], [], []]);
@@ -98,9 +97,7 @@ const Calibration = ({
         return prev + 1;
       });
     }
-  }, [currentDotIndex]);
-
-  useEffect(() => {}, [roundAverages]);
+  }, [currentDotIndex, currentRound]);
 
   useEffect(() => {
     // When the current dot changes, set a lower bound, time threshold for the dots
@@ -115,12 +112,6 @@ const Calibration = ({
       let newPrev = [...prev];
       newPrev[currentRound] = subArray;
       return newPrev;
-    });
-
-    // Also clear the current Predictions
-    setPredictions((prevPredictions) => {
-      setAccuracy(currentError);
-      return [];
     });
   }, [currentDot]);
 
@@ -139,7 +130,9 @@ const Calibration = ({
   }, [dotsClicked]);
 
   useEffect(() => {
-    logCalibration();
+    if (currentRound === 3) {
+      logCalibration();
+    }
   }, [currentRound]);
 
   return (
@@ -151,6 +144,7 @@ const Calibration = ({
     >
       {[...Array(totalDots)].map((_, i) => (
         <Dot
+          key={i}
           onMaxClicksReached={handleMaxClicks}
           index={i}
           currentDot={currentDot}

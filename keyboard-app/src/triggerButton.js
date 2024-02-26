@@ -16,7 +16,7 @@ function TriggerButton({
 }) {
   const frontButtonRef = useRef(null);
 
-  var className = selected ? `${className} selected` : className;
+  className = selected ? `${className} selected` : className;
 
   let fa = <i className="fa-solid fa-arrow-right"></i>;
   let ba = <i className="fa-solid fa-arrow-left"></i>;
@@ -84,13 +84,13 @@ function TriggerButton({
       >
         <div className="wildcard-grid">
           <div style={{ fontSize: "3rem", color: "white" }}>
-            {trialWord.length > 0 ? colourWord(0) : currentWord}
+            {trialWord ? colourWord(0) : currentWord}
           </div>
           <div></div>
           <div>%</div>
           <div></div>
           <div style={{ fontSize: "3rem", color: "white" }}>
-            {colourWord(1)}
+            {trialWord ? colourWord(1) : ""}
           </div>
         </div>
       </button>

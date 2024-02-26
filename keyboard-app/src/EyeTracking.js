@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-
 import App from "./App";
 import CenterCursor from "./CenterCursor";
 import _ from "lodash";
+import TrialComplete from "./trialComplete";
 
 const trialMode = true;
 const trialSentences = [
@@ -15,7 +15,6 @@ const trialSentences = [
 const EyeTracker = () => {
   const webgazer = window.webgazer;
   const GazeCloudAPI = window.GazeCloudAPI;
-  // const webgazer = require("webgazer");
   const [prediction, setPrediction] = useState({ x: 0, y: 0 });
   const [calibrationComplete, setCalibrationComplete] = useState(false);
   const [trialOrder, setTrialOrder] = useState([0, 1, 2, 3]);
@@ -23,8 +22,12 @@ const EyeTracker = () => {
   const mode = 0;
 
   useEffect(() => {
-    GazeCloudAPI.ApiKey = "AppKeyTrial";
-  }, []);
+    if (!calibrationComplete && trialIndex < trialOrder.length) {
+      setTrialIndex((prev) => {
+        return prev + 1;
+      });
+    }
+  }, [calibrationComplete, trialIndex]);
 
   useEffect(() => {
     setTrialOrder(_.shuffle(trialOrder));
@@ -68,11 +71,22 @@ const EyeTracker = () => {
     }
   }, []);
 
+  if (trialIndex >= trialOrder.length) {
+    return <TrialComplete />;
+  }
+
   if (calibrationComplete) {
+    let trialSentence = trialMode
+      ? trialSentences[trialOrder[trialIndex]]
+      : null;
+
+    console.log("trial sentence", trialSentence);
     return (
       <App
         pred={prediction}
-        trialSentence={trialMode ? trialSentences[trialOrder[trialIndex]] : " "}
+        trialMode={trialMode}
+        trialSentence={trialSentence}
+        setCalibrationComplete={setCalibrationComplete}
       />
     );
   } else {
@@ -80,6 +94,7 @@ const EyeTracker = () => {
       <CenterCursor
         prediction={prediction}
         setCalibrationComplete={setCalibrationComplete}
+        order={trialOrder}
       />
     );
   }
