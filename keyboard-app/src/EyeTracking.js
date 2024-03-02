@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { cloneElement, useEffect, useState } from "react";
 import App from "./App";
 import CenterCursor from "./CenterCursor";
 import _ from "lodash";
 import TrialComplete from "./trialComplete";
 
-const trialMode = true;
+const trialMode = false;
 const trialSentences = [
   "The quick brown fox jumps over the lazy dog",
   "Sphinx of black quartz judge my vow",
@@ -18,16 +18,17 @@ const EyeTracker = () => {
   const [prediction, setPrediction] = useState({ x: 0, y: 0 });
   const [calibrationComplete, setCalibrationComplete] = useState(false);
   const [trialOrder, setTrialOrder] = useState([0, 1, 2, 3]);
-  const [trialIndex, setTrialIndex] = useState(0);
+  const [trialIndex, setTrialIndex] = useState(-2);
   const mode = 0;
 
   useEffect(() => {
     if (!calibrationComplete && trialIndex < trialOrder.length) {
       setTrialIndex((prev) => {
+        console.log(prev);
         return prev + 1;
       });
     }
-  }, [calibrationComplete, trialIndex]);
+  }, [calibrationComplete]);
 
   useEffect(() => {
     setTrialOrder(_.shuffle(trialOrder));
@@ -61,15 +62,20 @@ const EyeTracker = () => {
     }
   };
 
+  const stopWebGazer = async () => {
+    await webgazer.clearData();
+  };
+
   useEffect(() => {
     if (mode == 0) {
+      stopWebGazer();
       loadWebGazer();
     } else if (mode == 1) {
       GazeCloudAPI.StartEyeTracking();
     } else {
       setCalibrationComplete(true);
     }
-  }, []);
+  }, [trialIndex]);
 
   if (trialIndex >= trialOrder.length) {
     return <TrialComplete />;
@@ -80,7 +86,6 @@ const EyeTracker = () => {
       ? trialSentences[trialOrder[trialIndex]]
       : null;
 
-    console.log("trial sentence", trialSentence);
     return (
       <App
         pred={prediction}

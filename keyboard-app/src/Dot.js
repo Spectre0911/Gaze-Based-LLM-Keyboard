@@ -92,7 +92,7 @@ const Dot = ({
       } else {
         const timer = setTimeout(() => {
           setSecondsPassed((prev) => prev - 1);
-        }, 500);
+        }, 400);
 
         // Return a cleanup function to clear the timeout if the component unmounts
         // or if the dependencies of useEffect change before the timer is completed.

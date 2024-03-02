@@ -83,13 +83,13 @@ function TriggerButton({
         style={{ justifyContent: horizontalAlign, alignItems: verticalAlign }}
       >
         <div className="wildcard-grid">
-          <div style={{ fontSize: "3rem", color: "white" }}>
+          <div key={0} style={{ fontSize: "3rem", color: "white" }}>
             {trialWord ? colourWord(0) : currentWord}
           </div>
-          <div></div>
+          <div key={1}></div>
           <div>%</div>
-          <div></div>
-          <div style={{ fontSize: "3rem", color: "white" }}>
+          <div key={2}></div>
+          <div key={3} tyle={{ fontSize: "3rem", color: "white" }}>
             {trialWord ? colourWord(1) : ""}
           </div>
         </div>

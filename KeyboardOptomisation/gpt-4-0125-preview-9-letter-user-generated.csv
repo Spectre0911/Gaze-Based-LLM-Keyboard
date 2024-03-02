@@ -1,0 +1,31 @@
+Original,SpeltSentence,SpeltSentenceScore,SingleWordReplaced,SingleWordReplacedScore,GPT,GPTScore
+well i can either call you in one minute or tomorrow which would work better,%ell i %an eit%er %all %o% in one %in%te or to%orro% %%i%% %o%l% %or% %etter,0.26666666666666666,%ell i %an either %all %o% in one %in%te or tomorrow %%i%% %o%l% %or% %etter,0.4,well i can either call you in one minute or tomorrow which would work better,1.0
+man is fluent in yappenese,%an is %l%ent in %a%%enese,0.4,%an is fluent in %a%%enese,0.6,dan is fluent in %a%%enese,0.6
+thanks for updating my name on the certificate but please can you use the correct spelling of my first name on all correspondence with me including this,t%an%s %or %%%atin% %% na%e on t%e %erti%i%ate %%t %lease %an %o% %se t%e %orre%t s%ellin% o% %% %irst na%e on all %orres%on%en%e %it% %e in%l%%in% t%is,0.1111111111111111,thanks %or %%%atin% %% na%e on the certificate %%t please %an %o% %se the correct s%ellin% o% %% %irst na%e on all correspondence %it% %e including this,0.4444444444444444,thanks for %%%atin% my name on the certificate but please can you use the correct spelling of my first name on all correspondence with me including this,0.9629629629629629
+deceptively low,%e%e%ti%el% lo%,0.0,%e%e%ti%el% lo%,0.0,%e%e%ti%el% log,0.0
+its part and parcel dont you think,its %art an% %ar%el %ont %o% t%in%,0.14285714285714285,its %art an% %ar%el %ont %o% t%in%,0.14285714285714285,its part and parcel dont you think,1.0
+skill issue,s%ill iss%e,0.0,s%ill issue,0.5,skill issue,1.0
+or informally create set l of vertices representing end points of intervals and set r of vertices representing intervals and create edges between l and r where the end point is within the interval,or in%or%all% %reate set l o% %erti%es re%resentin% en% %oints o% inter%als an% set r o% %erti%es re%resentin% inter%als an% %reate e%%es %et%een l an% r %%ere t%e en% %oint is %it%in t%e inter%al,0.23529411764705882,or informally %reate set l o% %erti%es representing en% %oints o% intervals an% set r o% %erti%es representing intervals an% %reate e%%es %et%een l an% r %%ere the en% %oint is %it%in the interval,0.47058823529411764,or informally create set l of vertices representing end points of intervals and set r of vertices representing intervals and create edges between l and r where the end point is within the interval,1.0
+can this coursework be done in python,%an t%is %o%rse%or% %e %one in %%t%on,0.14285714285714285,%an this %o%rse%or% %e %one in %%t%on,0.2857142857142857,can this %o%rse%or% be done in python,0.8571428571428571
+what time do you want to meet up tomorrow,%%at ti%e %o %o% %ant to %eet %% to%orro%,0.1111111111111111,%%at ti%e %o %o% %ant to %eet %% tomorrow,0.2222222222222222,what time do you want to meet up tomorrow,1.0
+i will be back soon,i %ill %e %a%% soon,0.4,i %ill %e %a%% soon,0.4,i will be back soon,1.0
+based,%ase%,0.0,%ase%,0.0,based,1.0
+i dont like javascript,i %ont li%e %a%as%ri%t,0.25,i %ont li%e %a%as%ri%t,0.25,i dont like javascript,1.0
+the quick brown fox jumped over the lazy dog,t%e %%i%% %ro%n %o% %%%%e% o%er t%e la%% %o%,0.0,the %%i%% %ro%n %o% %%%%e% o%er the la%% %o%,0.2222222222222222,the quick brown fox jumped over the lazy dog,1.0
+the housing market is very expensive at the moment,t%e %o%sin% %ar%et is %er% e%%ensi%e at t%e %o%ent,0.2222222222222222,the housing %ar%et is %er% expensive at the %o%ent,0.6666666666666666,the housing market is very expensive at the moment,1.0
+so true,so tr%e,0.5,so true,1.0,so true,1.0
+how the turntables yas queen slay girl you cooking yessir,%o% t%e t%rnta%les %as %%een sla% %irl %o% %oo%in% %essir,0.0,%o% the t%rnta%les %as queen sla% girl %o% %oo%in% %essir,0.3,you the turntables was queen slay girl you cooking messir,0.7
+its a dog eat dog world,its a %o% eat %o% %orl%,0.5,its a %o% eat %o% world,0.6666666666666666,its a dog eat dog world,1.0
+wagwan bossy,%a%%an %oss%,0.0,%a%%an %oss%,0.0,madman bossy,0.5
+hello please find the attached document as requested,%ello %lease %in% t%e atta%%e% %o%%%ent as re%%este%,0.125,%ello please %in% the atta%%e% document as requested,0.625,hello please find the attached document as requested,1.0
+deez nuts,%ee% n%ts,0.0,%ee% nuts,0.5,keep nuts,0.5
+oh i see,o% i see,0.6666666666666666,o% i see,0.6666666666666666,oh i see,1.0
+oh right,o% ri%%t,0.0,o% ri%%t,0.0,of right,0.5
+oh god,o% %o%,0.0,o% %o%,0.0,of fox,0.0
+for fucks sake,%or %%%%s sa%e,0.0,%or %%%%s sa%e,0.0,for ducks sake,0.6666666666666666
+the rata are invading,t%e rata are in%a%in%,0.5,the rata are invading,1.0,the rata are invading,1.0
+your mum,%o%r %%%,0.0,%o%r %%%,0.0,your why,0.5
+fuck you,%%%% %o%,0.0,%%%% %o%,0.0,much you,0.5
+hello,%ello,0.0,%ello,0.0,hello,1.0
+i want taylor swifts flyer miles,i %ant ta%lor s%i%ts %l%er %iles,0.16666666666666666,i %ant taylor shifts %l%er %iles,0.3333333333333333,i want taylor shifts bluer miles,0.6666666666666666
+bing bang bong,%in% %an% %on%,0.0,%in% %an% %on%,0.0,mind wand wonk,0.0

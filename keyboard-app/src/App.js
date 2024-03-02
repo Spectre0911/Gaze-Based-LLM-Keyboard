@@ -204,6 +204,7 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
     // Set buffering true at the start of the effect
     setBuffering(true);
     let duration = (Date.now() - startTime) / 1000;
+    let wordsPerMinute = (allWords.length + 1) / (duration / 60);
     // Combine words to form the sentence for GPT
     const sentence = [...allWords, currentWord].join(" ");
 
@@ -222,12 +223,15 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
         // Ensure buffering is turned off after the operation completes or fails
         setBuffering(false);
         setStartTime(null);
+        if (trialMode) {
+          setCalibrationComplete(false);
+        }
       }
     };
 
     // Call the async function
     sendSentence();
-  }, [currentState]); // Depen
+  }, [currentState]);
 
   const updateCoords = (label, data) => {
     setCoordinateMap((prevMap) => ({
@@ -269,7 +273,6 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
       setCurrentWord("");
       setRightArrowCount(0);
       setCurrentState(0);
-      setCalibrationComplete(false);
     }
   };
 

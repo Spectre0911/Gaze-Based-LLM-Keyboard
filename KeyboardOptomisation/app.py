@@ -32,7 +32,6 @@ def onSpace():
         freqMap = frequencyMaps[len(currentWord)]
         alternatives = sorted(
             alternatives, key=lambda x: freqMap[x])
-        print(f"ALTERNATIVES: {alternatives}")
         if len(alternatives) > 0:
             replacedWord = alternatives[0]
         else:
@@ -46,8 +45,10 @@ def onSpace():
 def onPeriod():
     data = request.json
     sentence = data["sentence"]
+    duration = data["duration"]
     gptSentence = gptWrapper(sentence)
     print(f"GPT ONPERIOD: {gptSentence}")
+    print(f"DURATION: {duration}")
     return jsonify(gptSentence)
 
 

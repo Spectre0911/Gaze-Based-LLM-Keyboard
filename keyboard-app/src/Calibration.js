@@ -97,7 +97,7 @@ const Calibration = ({
         return prev + 1;
       });
     }
-  }, [currentDotIndex, currentRound]);
+  }, [currentDotIndex]);
 
   useEffect(() => {
     // When the current dot changes, set a lower bound, time threshold for the dots
