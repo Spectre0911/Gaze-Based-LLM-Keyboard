@@ -30,6 +30,10 @@ for model_idx, (model, data) in enumerate(zip(models, fullData)):
     for letter_idx, (letterCount, df) in enumerate(zip(letter_counts, data)):
         meanVal = df["GPTScore"].mean()
         stdVal = df["GPTScore"].std()
+        stdVal = df["GPTScore"].std()
+
+        print(model_idx, meanVal, stdVal)
+
         label = f"{model}-{letterCount}"
         data_stats.append((meanVal, stdVal, label))
 
@@ -38,7 +42,9 @@ color_palette = plt.cm.Set2(np.linspace(0, 1, len(letter_counts)))
 color_map = {letter_count: color for letter_count,
              color in zip(letter_counts, color_palette)}
 
-fig, ax = plt.subplots(figsize=(10, 10))  # Adjust the figsize as necessary
+fig, ax = plt.subplots(figsize=(12, 12))  # Adjust the figsize as necessary
+ax.patch.set_alpha(0)
+fig.patch.set_alpha(0)
 
 # Positions of the bars on the x-axis
 positions = np.arange(len(data_stats))
@@ -60,6 +66,10 @@ legend_elements = [Line2D([0], [0], color=color_map[letter_count], lw=4,
                           label=f'Letters: {letter_count}') for letter_count in letter_counts]
 ax.legend(handles=legend_elements, title='Legend',
           bbox_to_anchor=(1.05, 1), loc='upper left')
-plt.yticks(np.arange(0, 1.1, 0.02))
+
+fig.savefig('transparent_background.png',
+            transparent=True, bbox_inches='tight')
+
+plt.yticks(np.arange(0, 1.1, 0.05))
 plt.tight_layout()
 plt.show()
