@@ -15,7 +15,7 @@
   --black: black;
   --dotSize: 30px;
   --dotSizeBorder: 4px;
-  --space-height: 21vh;
+  --space-height: 23vh;
 }
 
 .grid-container {
@@ -57,7 +57,7 @@
 
 .first-row-button {
   width: calc(100vw / 4 - 8px);
-  height: calc(var(--button-height) - 6vh);
+  height: calc(var(--button-height) - 8vh);
 }
 
 .first-row-edge-button {

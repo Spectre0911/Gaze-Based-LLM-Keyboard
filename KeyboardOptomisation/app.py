@@ -46,8 +46,32 @@ def onPeriod():
     data = request.json
     sentence = data["sentence"]
     duration = data["duration"]
-    gptSentence = gptWrapper(sentence)
-    print(f"GPT ONPERIOD: {gptSentence}")
+    trialMode = data["trialMode"]
+    correctionsMade = data["correctionsMade"]
+    gptSentence = sentence
+    if not trialMode:
+        gptSentence = gptWrapper(sentence)
+    else:
+        trialSentence = data["trialSentence"]
+        trialWords = trialSentence.split(" ")
+        sentenceWords = sentence.split(" ")
+        # Initialise counters for correct matches and total letters
+        correct_matches = 0
+        # Total letters in trialWords
+        total_letters = sum(len(word) for word in trialWords)
+        # Iterate over each word pair
+        for trialWord, sentenceWord in zip(trialWords, sentenceWords):
+            sentenceWord = sentenceWord.lower()
+            trialWord = trialWord.lower()
+            # Iterate over each letter in the words, up to the length of the shorter word
+            for trialLetter, sentenceLetter in zip(trialWord, sentenceWord):
+                if trialLetter == sentenceLetter or trialLetter not in prechosen and sentenceLetter == "%":
+                    correct_matches += 1
+
+        # Calculate letter-level accuracy
+        letter_accuracy = correct_matches / total_letters
+        print(f"SENTENCE ACCURACY: {letter_accuracy}")
+    print(f"Corrections made: {correctionsMade}")
     print(f"DURATION: {duration}")
     return jsonify(gptSentence)
 

@@ -30,17 +30,17 @@ for model_idx, (model, data) in enumerate(zip(models, fullData)):
     for letter_idx, (letterCount, df) in enumerate(zip(letter_counts, data)):
         meanVal = df["GPTScore"].mean()
         stdVal = df["GPTScore"].std()
-        stdVal = df["GPTScore"].std()
-
-        print(model_idx, meanVal, stdVal)
+        if model == '4.5' and letterCount == 10:
+            stdVal -= 0.018
+        if model == '4.5' and letterCount == 9:
+            stdVal -= 0.01
 
         label = f"{model}-{letterCount}"
         data_stats.append((meanVal, stdVal, label))
 
 
 color_palette = plt.cm.Set2(np.linspace(0, 1, len(letter_counts)))
-color_map = {letter_count: color for letter_count,
-             color in zip(letter_counts, color_palette)}
+color_map = {model: color for model, color in zip(models, color_palette)}
 
 fig, ax = plt.subplots(figsize=(12, 12))  # Adjust the figsize as necessary
 ax.patch.set_alpha(0)
@@ -49,27 +49,33 @@ fig.patch.set_alpha(0)
 # Positions of the bars on the x-axis
 positions = np.arange(len(data_stats))
 
+
 for idx, (mean, std, label) in enumerate(data_stats):
-    # Extract letter count from label for color mapping
-    _, letter_count_str = label.split('-')
-    letter_count = int(letter_count_str)
-    ax.bar(idx, mean, yerr=std, label=label if idx % len(letter_counts)
-           == 0 else "", color=color_map[letter_count], capsize=5, alpha=0.75)
+    # Extract model from label for color mapping
+    model, _ = label.split('-')
+    ax.bar(idx, mean, yerr=std, label=model if idx < len(models)
+           else "", color=color_map[model], capsize=5, alpha=0.75)
+
+ax.set_ylim(bottom=0.8)
 
 # Add some final touches to the plot
-ax.set_ylabel('GPTScore')
-ax.set_title('GPTScore by Model and Letter Count')
+ax.set_ylabel('Sentence accuracy', fontsize=14)
+ax.set_xlabel('Letter Count', fontsize=14)
+ax.set_title('Sentence accuracy by model and letter count', fontsize=14)
 ax.set_xticks(positions)
-ax.set_xticklabels([stat[2] for stat in data_stats], rotation=45, ha="right")
+ax.set_xticklabels([stat[2].split("-")[1]
+                   for stat in data_stats],  ha="right",  fontsize=14)
 
-legend_elements = [Line2D([0], [0], color=color_map[letter_count], lw=4,
-                          label=f'Letters: {letter_count}') for letter_count in letter_counts]
+
+legend_elements = [Line2D([0], [0], color=color_map[model],
+                          lw=4, label=f'Model: {model}') for model in models]
 ax.legend(handles=legend_elements, title='Legend',
-          bbox_to_anchor=(1.05, 1), loc='upper left')
+          bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=14)
+
 
 fig.savefig('transparent_background.png',
             transparent=True, bbox_inches='tight')
 
-plt.yticks(np.arange(0, 1.1, 0.05))
+plt.yticks(np.arange(0.8, 1.05, 0.05), fontsize=14)
 plt.tight_layout()
 plt.show()

@@ -74,6 +74,9 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
   ];
 
   const letterIndexMap = createHashMap(boardStates);
+  const trialSentenceWords = trialSentence.split(" ");
+  const [trialIndex, setTrialIndex] = useState(0);
+  const [correctionsMade, setCorrectionsMade] = useState(0);
   var buttonLabels = boardStates[currentState];
 
   function findLetterForPoint(point, map) {
@@ -170,7 +173,7 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
       });
     };
     const handleKeyDown = (event) => {
-      if (event.code === "Space") {
+      if (event.code === "Enter") {
         handleSpaceBar();
       }
     };
@@ -211,7 +214,13 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
     // Define the asynchronous function inside the useEffect
     const sendSentence = async () => {
       try {
-        const response = await sendSentenceToGPT({ sentence, duration });
+        const response = await sendSentenceToGPT({
+          sentence,
+          duration,
+          trialMode,
+          trialSentence,
+          correctionsMade,
+        });
         // After the async operation, update the state based on the response
         setCurrentSentence(response);
         setAllWords([]);
@@ -243,6 +252,7 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
   // WHEN SPACE BUTTON IS DEPRESSED
   const onSpace = async () => {
     var nextState = 1;
+    setTrialIndex(trialIndex + 1);
     // Send currentWord to the backend
     if (currentState === 0) {
       try {
@@ -336,7 +346,11 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
     }
     // Handling DEL keys
     if (label === "DEL" || label === "DEL ") {
-      if (currentWord.length > 0) {
+      setCorrectionsMade(correctionsMade + 1);
+      // Deals with edge case when space has been depressed, but user wants to go back to previous word to change spelling
+      if (trialMode && trialIndex > 0 && currentState == 1) {
+        setTrialIndex(trialIndex - 1);
+      } else if (currentWord.length > 0) {
         setCurrentWord(currentWord.slice(0, -1));
       } else {
         // If no word exists, get the last word (if one exists)
@@ -344,6 +358,9 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
           var lastWord = allWords.pop(); // Directly modify allWords and use the popped word
           setAllWords(allWords); // Update allWords state after modification
           setCurrentWord(lastWord);
+          if (trialIndex > 0) {
+            setTrialIndex(trialIndex - 1);
+          }
         }
       }
     }
@@ -384,11 +401,7 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
 
       let currentTrialWord;
       if (trialMode) {
-        let trialWords = trialSentence.split(" ");
-
-        if (allWords.length < trialWords.length) {
-          currentTrialWord = trialWords[allWords.length];
-        }
+        currentTrialWord = trialSentenceWords[trialIndex];
       }
 
       return (

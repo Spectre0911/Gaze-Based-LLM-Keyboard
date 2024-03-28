@@ -2,9 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import Calibration from "./Calibration";
 import "./CenterCursor.css";
 
-const keyboardTestMode = false;
+const keyboardTestMode = true;
 
-const CenterCursor = ({ prediction, setCalibrationComplete, order }) => {
+const CenterCursor = ({
+  prediction,
+  setCalibrationComplete,
+  order,
+  setRecalibrate,
+}) => {
   const [cursorCentered, setCursorCentered] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const dotRef = useRef(null);
@@ -20,7 +25,7 @@ const CenterCursor = ({ prediction, setCalibrationComplete, order }) => {
   useEffect(() => {
     if (!cursorCentered) {
       const handleKeyDown = (event) => {
-        if (event.code === "Space" && isHovered) {
+        if (event.code === "Enter" && isHovered) {
           setCursorCentered(true);
         }
       };
@@ -38,6 +43,7 @@ const CenterCursor = ({ prediction, setCalibrationComplete, order }) => {
       prediction={prediction}
       keyboardTestMode={keyboardTestMode}
       setCalibrationComplete={setCalibrationComplete}
+      setRecalibrate={setRecalibrate}
     />
   ) : (
     <div>
@@ -54,7 +60,7 @@ const CenterCursor = ({ prediction, setCalibrationComplete, order }) => {
           className={"center-cursor-button"}
         ></button>
         <h1 className="tutorial-font">
-          {isHovered ? "Press SPACE" : order.join("")}
+          {isHovered ? "Press ENTER" : order.join("")}
         </h1>
       </div>
     </div>

@@ -6,6 +6,7 @@ const Calibration = ({
   prediction,
   keyboardTestMode,
   setCalibrationComplete,
+  setRecalibrate,
 }) => {
   const totalDots = 15;
 
@@ -125,6 +126,7 @@ const Calibration = ({
   useEffect(() => {
     if (dotsClicked === totalDots || keyboardTestMode) {
       setCalibrationComplete(true);
+      setRecalibrate(false);
       return;
     }
   }, [dotsClicked]);

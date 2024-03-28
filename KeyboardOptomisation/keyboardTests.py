@@ -153,10 +153,8 @@ allWordTries = createWordTries()
 
 def gptWrapper(sentence, allWordTries=allWordTries):
     i = 0
-    print("ENTERED GPT WRAPPER")
     while i < 2 and "%" in sentence:
         sentence = gptReplacedSentence(sentence)
-        print(sentence)
         i += 1
     if "%" in sentence:
         sentence = sentence.split()
@@ -171,7 +169,6 @@ def gptWrapper(sentence, allWordTries=allWordTries):
                     sentence[index] = alternatives[0]
 
         sentence = " ".join(sentence)
-    print(sentence)
     return sentence
 
 

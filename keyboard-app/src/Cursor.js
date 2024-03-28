@@ -8,7 +8,7 @@ const Mode = {
 };
 
 // The multiplier for the cursor movement
-const multiplier = 30;
+const multiplier = 20;
 
 function Cursor({
   cursorPosition,
@@ -147,6 +147,12 @@ function Cursor({
     let x = Math.round(Math.cos(radians));
     let y = Math.round(Math.sin(radians));
 
+    if (x !== 0 && y !== 0) {
+      const norm = Math.sqrt(2);
+      x /= norm;
+      y /= norm;
+    }
+
     return [{ x: x, y: y }, generalAngle];
   }
 
@@ -185,14 +191,20 @@ function Cursor({
     } else if (x >= (2 * width) / 3) {
       xDirection = 1;
     }
-
     // Determine y direction
     if (y < height / 3) {
       yDirection = -1;
     } else if (y >= (2 * height) / 3) {
       yDirection = 1;
     }
+    if (xDirection !== 0 && yDirection !== 0) {
+      const norm = Math.sqrt(2);
+      xDirection /= norm;
+      yDirection /= norm;
+      console.log("Diagonal");
+    }
 
+    console.log("X: " + xDirection + " Y: " + yDirection);
     // Calculate the angle based on x and y direction
     let angle = 0;
     if (xDirection === 0 && yDirection === 0) {

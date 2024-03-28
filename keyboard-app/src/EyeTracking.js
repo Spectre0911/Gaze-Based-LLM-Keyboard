@@ -1,10 +1,17 @@
-import React, { cloneElement, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import App from "./App";
 import CenterCursor from "./CenterCursor";
 import _ from "lodash";
 import TrialComplete from "./trialComplete";
 
-const trialMode = false;
+const trialMode = true;
+/*
+8.8
+7.2
+7.4
+7.2
+8.8
+*/
 const trialSentences = [
   "The quick brown fox jumps over the lazy dog",
   "Sphinx of black quartz judge my vow",
@@ -17,6 +24,7 @@ const EyeTracker = () => {
   const GazeCloudAPI = window.GazeCloudAPI;
   const [prediction, setPrediction] = useState({ x: 0, y: 0 });
   const [calibrationComplete, setCalibrationComplete] = useState(false);
+  const [recalibrate, setRecalibrate] = useState(false);
   const [trialOrder, setTrialOrder] = useState([0, 1, 2, 3]);
   const [trialIndex, setTrialIndex] = useState(-2);
   const mode = 0;
@@ -32,6 +40,7 @@ const EyeTracker = () => {
 
   useEffect(() => {
     setTrialOrder(_.shuffle(trialOrder));
+    setTrialOrder([2, 1, 0, 3]);
   }, []);
 
   GazeCloudAPI.OnCalibrationComplete = function () {
@@ -81,17 +90,17 @@ const EyeTracker = () => {
     return <TrialComplete />;
   }
 
-  if (calibrationComplete) {
+  if (calibrationComplete && !recalibrate) {
     let trialSentence = trialMode
       ? trialSentences[trialOrder[trialIndex]]
       : null;
-
     return (
       <App
         pred={prediction}
         trialMode={trialMode}
         trialSentence={trialSentence}
         setCalibrationComplete={setCalibrationComplete}
+        setRecalibrate={setRecalibrate}
       />
     );
   } else {
@@ -100,6 +109,7 @@ const EyeTracker = () => {
         prediction={prediction}
         setCalibrationComplete={setCalibrationComplete}
         order={trialOrder}
+        setRecalibrate={setRecalibrate}
       />
     );
   }
