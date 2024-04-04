@@ -3,20 +3,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-df358 = pd.read_csv('./Data/3.5-turbo-1106-8-letter.csv')
-df359 = pd.read_csv('./Data/3.5-turbo-1106-9-letter.csv')
-df350 = pd.read_csv('./Data/3.5-turbo-1106-10-letter.csv')
+df358 = pd.read_csv('./Data/358.csv')
+df359 = pd.read_csv('./Data/359.csv')
+df350 = pd.read_csv('./Data/350.csv')
 
-dfFT8 = pd.read_csv('./Data/ft-9-letter.csv')
-dfFT9 = pd.read_csv('./Data/ft-9-letter.csv')
-
+dfft359 = pd.read_csv('./Data/ft359.csv')
 
 df458 = pd.read_csv(
-    './Data/gpt-4-0125-preview-8-letter.csv')
+    './Data/458.csv')
 df459 = pd.read_csv(
-    './Data/gpt-4-0125-preview-9-letter.csv')
+    './Data/459.csv')
 df450 = pd.read_csv(
-    './Data/gpt-4-0125-preview-10-letter.csv')
+    './Data/450.csv')
 
 
 data35 = [df358, df359, df350]

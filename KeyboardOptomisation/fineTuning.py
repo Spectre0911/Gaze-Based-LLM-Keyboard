@@ -29,9 +29,9 @@ def process_file(input_file_path):
             # Create a new conversation for each line
             conversation = {
                 "messages": [
-                    {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'a', 'd', 'e', 'i', 'l', 'n', 'o', 'r', 's', 't' DO NOT REUSE ANY OF THEM"},
+                    {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'a', 't', 'r', 'l', 'e', 's', 'o', 'n' DO NOT REUSE ANY OF THEM"},
                     {"role": "user", "content": f"Current sentence: {speltSentence}"},
-                    {"role": "assistant", "content": f"Based on the sentence and the available letters, it appears that the sentence might say: {sentence}"}
+                    {"role": "assistant", "content": f"Based on the sentence and the available letters, it appears that the sentence might say:  \"{sentence}\" "}
                 ]
             }
 
