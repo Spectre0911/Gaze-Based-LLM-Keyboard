@@ -7,6 +7,10 @@ df358 = pd.read_csv('./Data/3.5-turbo-1106-8-letter.csv')
 df359 = pd.read_csv('./Data/3.5-turbo-1106-9-letter.csv')
 df350 = pd.read_csv('./Data/3.5-turbo-1106-10-letter.csv')
 
+dfFT8 = pd.read_csv('./Data/ft-9-letter.csv')
+dfFT9 = pd.read_csv('./Data/ft-9-letter.csv')
+
+
 df458 = pd.read_csv(
     './Data/gpt-4-0125-preview-8-letter.csv')
 df459 = pd.read_csv(
@@ -17,6 +21,10 @@ df450 = pd.read_csv(
 
 data35 = [df358, df359, df350]
 data45 = [df458, df459, df450]
+
+# data35 = [dfFT9, dfFT9, dfFT9]
+# data45 = [df459, df459, df459]
+
 fullData = [data35, data45]
 
 global_min = min(df["GPTScore"].min() for data in fullData for df in data)
@@ -30,11 +38,6 @@ for model_idx, (model, data) in enumerate(zip(models, fullData)):
     for letter_idx, (letterCount, df) in enumerate(zip(letter_counts, data)):
         meanVal = df["GPTScore"].mean()
         stdVal = df["GPTScore"].std()
-        if model == '4.5' and letterCount == 10:
-            stdVal -= 0.018
-        if model == '4.5' and letterCount == 9:
-            stdVal -= 0.01
-
         label = f"{model}-{letterCount}"
         data_stats.append((meanVal, stdVal, label))
 

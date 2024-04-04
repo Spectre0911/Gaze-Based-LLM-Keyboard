@@ -108,16 +108,11 @@ def compareWords(tuples, keyboard):
 
 
 def gptReplacedSentence(sentence):
-    #  gpt-3.5-turbo-1106
-    response = client.chat.completions.create(model="gpt-4-0125-preview",
+    response = client.chat.completions.create(model="ft:gpt-3.5-turbo-0125:momo:relations-board:99DR1T1t",
                                               messages=[
-                                                  {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'a', 'd', 'e', 'i', 'l', 'n', 'o', 'r', 's', 't'} DO NOT REUSE ANY OF THEM"},
-                                                  {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried.  What do you think the sentence says? Take a deep breath and think about it."},
-                                                  {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\""},
-                                                  {"role": "user",
-                                                      "content": f"Current sentence: {sentence}"},
-
-                                              ])
+                                                  {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'i', 's', 't', 'o', 'a', 'l', 'e', 'n', 'r' DO NOT REUSE ANY OF THEM"},
+                                                  {"role": "user", "content": f"Current sentence: {sentence}"}]
+                                              )
     response = response.choices[0].message.content
     first_quote_index = response.find('"')
     last_quote_index = response.find(
@@ -174,7 +169,7 @@ def gptWrapper(sentence, allWordTries=allWordTries):
 
 def main():
     allWordTries = createWordTries()
-    spellSentences(f"{BASE_PATH}userGenerated.txt",
+    spellSentences(f"{BASE_PATH}sentences.txt",
                    [prechosen], allWordTries)
 
 

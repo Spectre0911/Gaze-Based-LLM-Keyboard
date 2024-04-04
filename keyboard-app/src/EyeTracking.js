@@ -25,11 +25,12 @@ const EyeTracker = () => {
   const [prediction, setPrediction] = useState({ x: 0, y: 0 });
   const [calibrationComplete, setCalibrationComplete] = useState(false);
   const [recalibrate, setRecalibrate] = useState(false);
-  const [trialOrder, setTrialOrder] = useState([0, 1, 2, 3]);
+  const [trialOrder, setTrialOrder] = useState([0, 1, 2, 3, 0]);
   const [trialIndex, setTrialIndex] = useState(-2);
   const mode = 0;
 
   useEffect(() => {
+    setRecalibrate(false);
     if (!calibrationComplete && trialIndex < trialOrder.length) {
       setTrialIndex((prev) => {
         console.log(prev);
@@ -39,8 +40,8 @@ const EyeTracker = () => {
   }, [calibrationComplete]);
 
   useEffect(() => {
-    setTrialOrder(_.shuffle(trialOrder));
-    setTrialOrder([2, 1, 0, 3]);
+    // setTrialOrder(_.shuffle(trialOrder));
+    setTrialOrder([0, 1, 2, 3, 0]);
   }, []);
 
   GazeCloudAPI.OnCalibrationComplete = function () {
@@ -76,6 +77,7 @@ const EyeTracker = () => {
   };
 
   useEffect(() => {
+    console.log("in here");
     if (mode == 0) {
       stopWebGazer();
       loadWebGazer();
@@ -84,7 +86,7 @@ const EyeTracker = () => {
     } else {
       setCalibrationComplete(true);
     }
-  }, [trialIndex]);
+  }, [trialIndex, recalibrate]);
 
   if (trialIndex >= trialOrder.length) {
     return <TrialComplete />;
@@ -104,6 +106,9 @@ const EyeTracker = () => {
       />
     );
   } else {
+    if (recalibrate) {
+      setTrialIndex(trialIndex - 1);
+    }
     return (
       <CenterCursor
         prediction={prediction}

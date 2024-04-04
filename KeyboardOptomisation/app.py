@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request
+import google.generativeai as genai
 from flask_cors import CORS
 import csv
 import os
 
 from KeyboardCharacterOptomiser import createWordFrequencyMap, createWordTries
-from keyboardTests import gptWrapper
+from KeyboardOptomisation.GPTAlgorithm import gptWrapper
 from constants import prechosen, alphabet
 
 app = Flask(__name__)

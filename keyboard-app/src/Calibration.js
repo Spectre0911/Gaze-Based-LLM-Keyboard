@@ -126,7 +126,6 @@ const Calibration = ({
   useEffect(() => {
     if (dotsClicked === totalDots || keyboardTestMode) {
       setCalibrationComplete(true);
-      setRecalibrate(false);
       return;
     }
   }, [dotsClicked]);

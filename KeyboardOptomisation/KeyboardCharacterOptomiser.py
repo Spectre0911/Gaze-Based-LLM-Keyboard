@@ -65,9 +65,9 @@ def calculateAverageWordsReturnedT(characterSets, allWordTries, sampleWords):
                 wordLength = len(word)
                 returnedWords = allWordTries[wordLength].searchR(
                     word, characterSet)[0][0]
-                # weightedReturnedWords = returnedWords * \
-                #     (((totalWordCount) -
-                #      frequencyMaps[wordLength][word])/totalWordCount)
+                weightedReturnedWords = returnedWords * \
+                    (((totalWordCount) -
+                     frequencyMaps[wordLength][word])/totalWordCount)
                 tempCount += returnedWords
                 if returnedWords == 1:
                     tempSingleWord += 1

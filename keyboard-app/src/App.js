@@ -19,7 +19,13 @@ const createHashMap = (array) => {
   return hashMap;
 };
 
-function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
+function App({
+  pred,
+  trialMode,
+  trialSentence,
+  setCalibrationComplete,
+  setRecalibrate,
+}) {
   const [coordinateMap, setCoordinateMap] = useState({});
   const [currentState, setCurrentState] = useState(0);
   const [buttonClass, setButtonClass] = useState("dark-blue-button");
@@ -175,6 +181,9 @@ function App({ pred, trialMode, trialSentence, setCalibrationComplete }) {
     const handleKeyDown = (event) => {
       if (event.code === "Enter") {
         handleSpaceBar();
+      }
+      if (event.code === "KeyC") {
+        setRecalibrate(true);
       }
     };
 
