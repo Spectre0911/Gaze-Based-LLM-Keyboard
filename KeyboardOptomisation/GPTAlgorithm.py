@@ -111,19 +111,27 @@ def compareWords(tuples, keyboard):
 
 
 def gptReplacedSentence(sentence):
+    prechosenStr = str(prechosen)[1:-1]
     messages = [
-        {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'a', 'd', 'e', 'i', 'l', 'n', 'o', 'r', 's', 't' DO NOT REUSE ANY OF THEM"},
+        {"role": "system", "content": f"You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED {prechosenStr} DO NOT REUSE ANY OF THEM"},
         {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried.  What do you think the sentence says? Take a deep breath and think about it."},
+        {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\""},
+        {"role": "user",
+         "content": f"Current sentence: {sentence}. What do you think the sentence says? Take a deep breath and think about it."},
+    ]
+    messagestt = [
+        {"role": "system", "content": f"You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED {prechosenStr} DO NOT REUSE ANY OF THEM"},
+        {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried.  What do you think the sentence says?"},
         {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\""},
         {"role": "user",
          "content": f"Current sentence: {sentence}"},
     ]
     ftMessages = [
-        {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'i', 's', 't', 'o', 'a', 'l', 'e', 'n', 'r' DO NOT REUSE ANY OF THEM"},
-        {"role": "user", "content": f"Current sentence: {sentence}"}]
+        {"role": "system", "content": f"You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'i', 's', 't', 'o', 'a', 'l', 'e', 'n', 'r' DO NOT REUSE ANY OF THEM"},
+        {"role": "user", "content": f"Current sentence: {sentence}. What do you think the sentence says? Take a deep breath and think about it."}]
 
     response = client.chat.completions.create(
-        model="ft:gpt-3.5-turbo-0125:momo:final-relations:9AFq2EEL", messages=ftMessages)
+        model="ft:gpt-3.5-turbo-0125:momo:charlotte2:9AKp7xmS", messages=ftMessages)
 
     response = response.choices[0].message.content
     first_quote_index = response.find('"')
@@ -187,3 +195,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+allWordTries = createWordTries()
+gptWrapper(
+    "%", allWordTries)
+
+prechosenStr = str(prechosen)
+print(prechosenStr[1:-1])

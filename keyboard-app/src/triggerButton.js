@@ -13,8 +13,22 @@ function TriggerButton({
   trialWord,
   verticalAlign = "center",
   horizontalAlign = "center",
+  currentWordChoices = [],
+  rightArrowCount,
 }) {
   const frontButtonRef = useRef(null);
+
+  let prevWord = "NA";
+  let nextWord = "NA";
+
+  if (rightArrowCount < currentWordChoices.length - 1) {
+    nextWord = currentWordChoices[rightArrowCount + 1];
+  }
+  if (rightArrowCount > 0) {
+    prevWord = currentWordChoices[rightArrowCount - 1];
+  }
+
+  console.log(prevWord, nextWord);
 
   className = selected ? `${className} selected` : className;
 
@@ -105,7 +119,11 @@ function TriggerButton({
       className={className}
       style={{ justifyContent: horizontalAlign, alignItems: verticalAlign }}
     >
-      {frontLabel === "->" ? fa : frontLabel == "<-" ? ba : frontLabel}
+      {frontLabel === "->"
+        ? prevWord
+        : frontLabel == "<-"
+        ? nextWord
+        : frontLabel}
     </button>
   );
 }

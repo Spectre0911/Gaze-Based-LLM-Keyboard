@@ -270,13 +270,12 @@ function App({
           currentSentence: currentSentence,
         };
         const response = await sendDataToFlask(payload);
-        setCurrentWordChoices([currentWord]);
         if (response) {
           console.log("Response from backend:", response);
-          setCurrentWordChoices([...currentWordChoices, ...response[1]]);
+          setCurrentWordChoices([currentWord, ...response[1]]);
           if (response[1].length === 1) {
             setCurrentWord(response[1][0].toUpperCase());
-            setRightArrowCount(1);
+            setRightArrowCount(0);
             nextState = 2;
           }
         }
@@ -424,6 +423,8 @@ function App({
           horizontalAlign={horAlign}
           currentWord={currentWord}
           trialWord={currentTrialWord}
+          currentWordChoices={currentWordChoices}
+          rightArrowCount={rightArrowCount}
         />
       );
     });

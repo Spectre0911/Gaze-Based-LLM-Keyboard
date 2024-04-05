@@ -5,7 +5,7 @@ import csv
 import os
 
 from KeyboardCharacterOptomiser import createWordFrequencyMap, createWordTries
-from KeyboardOptomisation.GPTAlgorithm import gptWrapper
+from GPTAlgorithm import gptWrapper
 from constants import prechosen, alphabet
 
 app = Flask(__name__)

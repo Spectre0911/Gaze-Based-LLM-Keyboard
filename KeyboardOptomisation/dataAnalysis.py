@@ -7,6 +7,12 @@ df358 = pd.read_csv('./Data/358.csv')
 df359 = pd.read_csv('./Data/359.csv')
 df350 = pd.read_csv('./Data/350.csv')
 
+nttdf358 = pd.read_csv('./Data/ntt358.csv')
+nttdf359 = pd.read_csv('./Data/ntt359.csv')
+nttdf350 = pd.read_csv('./Data/ntt350.csv')
+
+dfttft359 = pd.read_csv('./Data/ttft359.csv')
+
 dfft359 = pd.read_csv('./Data/ft359.csv')
 
 df458 = pd.read_csv(
@@ -16,14 +22,14 @@ df459 = pd.read_csv(
 df450 = pd.read_csv(
     './Data/450.csv')
 
+ttdata35 = [nttdf358, nttdf359, nttdf350]
 
 data35 = [df358, df359, df350]
 data45 = [df458, df459, df450]
 
-# data35 = [dfFT9, dfFT9, dfFT9]
-# data45 = [df459, df459, df459]
+temp = [dfttft359, dfft359, df459]
 
-fullData = [data35, data45]
+fullData = [data35, temp]
 
 global_min = min(df["GPTScore"].min() for data in fullData for df in data)
 global_max = max(df["GPTScore"].max() for data in fullData for df in data)
@@ -36,6 +42,7 @@ for model_idx, (model, data) in enumerate(zip(models, fullData)):
     for letter_idx, (letterCount, df) in enumerate(zip(letter_counts, data)):
         meanVal = df["GPTScore"].mean()
         stdVal = df["GPTScore"].std()
+        print(model, meanVal, stdVal, letterCount)
         label = f"{model}-{letterCount}"
         data_stats.append((meanVal, stdVal, label))
 
@@ -77,6 +84,6 @@ ax.legend(handles=legend_elements, title='Legend',
 fig.savefig('transparent_background.png',
             transparent=True, bbox_inches='tight')
 
-plt.yticks(np.arange(0.8, 1.05, 0.05), fontsize=14)
+plt.yticks(np.arange(0.8, 1.05, 0.01), fontsize=14)
 plt.tight_layout()
 plt.show()

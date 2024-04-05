@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Calibration from "./Calibration";
 import "./CenterCursor.css";
 
-const keyboardTestMode = false;
+const keyboardTestMode = true;
 
 const CenterCursor = ({
   prediction,

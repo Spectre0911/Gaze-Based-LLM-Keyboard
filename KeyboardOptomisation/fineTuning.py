@@ -29,12 +29,11 @@ def process_file(input_file_path):
             # Create a new conversation for each line
             conversation = {
                 "messages": [
-                    {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'a', 't', 'r', 'l', 'e', 's', 'o', 'n' DO NOT REUSE ANY OF THEM"},
-                    {"role": "user", "content": f"Current sentence: {speltSentence}"},
-                    {"role": "assistant", "content": f"Based on the sentence and the available letters, it appears that the sentence might say:  \"{sentence}\" "}
+                    {"role": "system", "content": "You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'i', 's', 't', 'o', 'a', 'l', 'e', 'n', 'r' DO NOT REUSE ANY OF THEM."},
+                    {"role": "user", "content": f"Current sentence: {speltSentence}. What do you think the sentence says? Take a deep breath and think about it."},
+                    {"role": "assistant", "content": f"Based on the sentence and the available letters, it appears that the sentence might say:  \"{sentence}\"."}
                 ]
             }
-
             # Append the new conversation to the list of conversations
             output_data.append(conversation)
 
