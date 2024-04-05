@@ -22,13 +22,13 @@ function TriggerButton({
   let nextWord = "NA";
 
   if (rightArrowCount < currentWordChoices.length - 1) {
-    nextWord = currentWordChoices[rightArrowCount + 1];
+    nextWord = currentWordChoices[rightArrowCount];
   }
-  if (rightArrowCount > 0) {
+  if (currentWordChoices.length > 0 && rightArrowCount >= 0) {
     prevWord = currentWordChoices[rightArrowCount - 1];
   }
 
-  console.log(prevWord, nextWord);
+  console.log(prevWord, nextWord, currentWordChoices);
 
   className = selected ? `${className} selected` : className;
 
@@ -120,9 +120,9 @@ function TriggerButton({
       style={{ justifyContent: horizontalAlign, alignItems: verticalAlign }}
     >
       {frontLabel === "->"
-        ? prevWord
+        ? nextWord.toUpperCase()
         : frontLabel == "<-"
-        ? nextWord
+        ? prevWord.toUpperCase()
         : frontLabel}
     </button>
   );

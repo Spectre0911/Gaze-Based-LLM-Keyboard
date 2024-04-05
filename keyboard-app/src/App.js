@@ -272,11 +272,13 @@ function App({
         const response = await sendDataToFlask(payload);
         if (response) {
           console.log("Response from backend:", response);
-          setCurrentWordChoices([currentWord, ...response[1]]);
           if (response[1].length === 1) {
+            setCurrentWordChoices([currentWord]);
             setCurrentWord(response[1][0].toUpperCase());
-            setRightArrowCount(0);
+            setRightArrowCount(1);
             nextState = 2;
+          } else {
+            setCurrentWordChoices([...response[1]]);
           }
         }
       } catch (error) {
