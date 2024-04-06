@@ -427,12 +427,13 @@ function App({
           trialWord={currentTrialWord}
           currentWordChoices={currentWordChoices}
           rightArrowCount={rightArrowCount}
+          buffering={buffering}
         />
       );
     });
 
     setButtons(buttons);
-  }, [currentWord, currentState, lookingAt]);
+  }, [currentWord, currentState, lookingAt, buffering]);
 
   return (
     <div style={{ position: "relative" }}>

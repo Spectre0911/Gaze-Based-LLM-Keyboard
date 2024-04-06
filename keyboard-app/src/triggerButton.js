@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import "./App.css";
+import LoadingIcons from "react-loading-icons";
 
 const prechosen = new Set(["R", "E", "L", "A", "T", "I", "O", "N", "S"]);
 
@@ -15,12 +16,13 @@ function TriggerButton({
   horizontalAlign = "center",
   currentWordChoices = [],
   rightArrowCount,
+  buffering,
 }) {
   const frontButtonRef = useRef(null);
 
   let prevWord = "NA";
   let nextWord = "NA";
-
+  frontLabel = frontLabel.toUpperCase();
   if (rightArrowCount < currentWordChoices.length - 1) {
     nextWord = currentWordChoices[rightArrowCount];
   }
@@ -111,6 +113,12 @@ function TriggerButton({
     );
   }
 
+  if (
+    className == "flex-center-button green-space-button" &&
+    buffering == true
+  ) {
+    frontLabel = <LoadingIcons.ThreeDots stroke="white" strokeOpacity={0.1} />;
+  }
   return (
     <button
       ref={frontButtonRef}

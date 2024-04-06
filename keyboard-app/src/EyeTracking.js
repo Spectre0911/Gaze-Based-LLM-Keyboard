@@ -4,7 +4,7 @@ import CenterCursor from "./CenterCursor";
 import _ from "lodash";
 import TrialComplete from "./trialComplete";
 
-const trialMode = true;
+const trialMode = false;
 /*
 8.8
 7.2
@@ -93,9 +93,7 @@ const EyeTracker = () => {
   }
 
   if (calibrationComplete && !recalibrate) {
-    let trialSentence = trialMode
-      ? trialSentences[trialOrder[trialIndex]]
-      : null;
+    let trialSentence = trialMode ? trialSentences[trialOrder[trialIndex]] : "";
     return (
       <App
         pred={prediction}
