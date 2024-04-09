@@ -53,7 +53,7 @@ function TriggerButton({
 
     let colouredWord = zippedLetters.map((pair, _) => {
       if (pair[0] === pair[1] || (pair[0] === "%" && !prechosen.has(pair[1]))) {
-        return <span style={{ color: "white" }}>{pair[mode]}</span>;
+        return <span style={{ color: "#000000" }}>{pair[mode]}</span>;
       } else {
         return <span style={{ color: "#ff9496" }}>{pair[mode]}</span>;
       }
@@ -99,13 +99,13 @@ function TriggerButton({
         style={{ justifyContent: horizontalAlign, alignItems: verticalAlign }}
       >
         <div className="wildcard-grid">
-          <div key={0} style={{ fontSize: "3rem", color: "white" }}>
+          <div key={0} style={{ fontSize: "3rem", color: "black" }}>
             {trialWord ? colourWord(0) : currentWord}
           </div>
           <div key={1}></div>
           <div>%</div>
           <div key={2}></div>
-          <div key={3} tyle={{ fontSize: "3rem", color: "white" }}>
+          <div key={3} tyle={{ fontSize: "3rem", color: "black" }}>
             {trialWord ? colourWord(1) : ""}
           </div>
         </div>

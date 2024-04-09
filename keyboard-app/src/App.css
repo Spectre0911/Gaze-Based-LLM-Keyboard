@@ -4,13 +4,13 @@
   --button-height: calc(85vh / 3 - 10px);
   --button-min-height: 50px;
   --button-radius: 10px;
-  --button-border: 0.25vw solid white;
-  --purple: #ff9496;
-  --light-blue: #8987dc;
-  --dark-blue: #3d8ea6;
+  --button-border: 0.3vw solid black;
+  --purple: #fda0d3;
+  --light-blue: #7a82e4;
+  --dark-blue: #4a9fc9;
   --green: #00d1a0;
-  --red: #d94d4d;
-  --white: white;
+  --red: #fe7f6e;
+  --white: black;
   --selected: #96ff94;
   --black: black;
   --dotSize: 30px;
@@ -41,7 +41,7 @@
   top: 20px;
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
-  grid-column-gap: 10px;
+  grid-column-gap: 12px;
   grid-row-gap: 10px;
 }
 
@@ -69,11 +69,11 @@
 }
 
 .n-row-edge-button {
-  width: calc(100vw / (3.5) - 8px);
+  width: calc(100vw / (3.5) - 6px);
 }
 
 .selected {
-  color: var(--selected);
+  /* color: var(--selected); */
   border-color: var(--selected);
 }
 
@@ -170,7 +170,7 @@
 }
 
 body {
-  background-color: #5d5959; /* Dark gray background */
+  background-color: #787878; /* Dark gray background */
 }
 
 .dot-grid-container {
