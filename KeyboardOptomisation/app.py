@@ -50,7 +50,6 @@ def onPeriod():
     trialMode = data["trialMode"]
     correctionsMade = data["correctionsMade"]
     gptSentence = sentence
-    print(sentence)
     if not trialMode:
         gptSentence = gptWrapper(sentence)
     else:
