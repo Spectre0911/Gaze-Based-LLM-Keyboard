@@ -160,6 +160,7 @@ def gptReplacedSentence(sentence):
         if match:
             newSentence[-index - 1] = w1
     newSentenceString = " ".join(newSentence)
+
     return (newSentenceString)
 
 
@@ -175,9 +176,10 @@ def gptWrapper(sentence, allWordTries=allWordTries):
         sentence = sentence.split()
         for index, word in enumerate(sentence):
             if "%" in word:
-                freqMap = frequencyMaps[len(word)]
-                alternatives = allWordTries[len(word)].searchR(
-                    word, prechosen)[1]
+                wordLength = len(word)
+                freqMap = frequencyMaps[wordLength]
+                alternatives = allWordTries[wordLength].searchR(
+                    word.lower(), prechosen)[1]
                 alternatives = sorted(
                     alternatives, key=lambda x: freqMap[x])
                 if len(alternatives) > 0:

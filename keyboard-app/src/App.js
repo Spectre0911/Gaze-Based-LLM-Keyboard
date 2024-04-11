@@ -210,6 +210,7 @@ function App({
   }, [cursorPosition, coordinateMap]);
 
   useEffect(() => {
+    console.log("Current state: ", currentState);
     if (currentState !== 3) {
       return;
     }
@@ -290,7 +291,7 @@ function App({
       }
       // Append space to current sentence
       setCurrentState(nextState);
-    } else if (currentState === 1 || currentState === 2) {
+    } else if (currentState === 1 || currentState === 2 || currentState === 4) {
       setCurrentState(3);
     } else {
       setCurrentSentence("");
@@ -353,7 +354,7 @@ function App({
     let shouldResetState = true; // A flag to determine if state should be reset at the end
 
     // If a key is depressed after the sentence is returned from GPT, reset the sentence
-    if (currentState === 3) {
+    if (currentState === 3 || currentState === 4) {
       setCurrentSentence("");
       setCurrentState(0); // This state reset is specific to this condition
       shouldResetState = false; // Prevent further resetting

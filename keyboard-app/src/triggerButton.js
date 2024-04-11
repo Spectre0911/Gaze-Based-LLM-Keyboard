@@ -35,8 +35,6 @@ function TriggerButton({
     prevWord = currentWordChoices[rightArrowCount - 1];
   }
 
-  console.log(rightArrowCount, prevWord, nextWord, currentWordChoices);
-
   className = selected ? `${className} selected` : className;
 
   let fa = <i className="fa-solid fa-arrow-right"></i>;
