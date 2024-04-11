@@ -22,15 +22,20 @@ function TriggerButton({
 
   let prevWord = "NA";
   let nextWord = "NA";
-  frontLabel = frontLabel.toUpperCase();
-  if (rightArrowCount < currentWordChoices.length - 1) {
-    nextWord = currentWordChoices[rightArrowCount];
+  if (frontLabel) {
+    frontLabel = frontLabel.toUpperCase();
   }
-  if (currentWordChoices.length > 0 && rightArrowCount >= 0) {
+
+  if (rightArrowCount < currentWordChoices.length - 1) {
+    if (currentWordChoices.length > 0 && rightArrowCount >= 0) {
+      nextWord = currentWordChoices[rightArrowCount + 1];
+    }
+  }
+  if (rightArrowCount > 0) {
     prevWord = currentWordChoices[rightArrowCount - 1];
   }
 
-  console.log(prevWord, nextWord, currentWordChoices);
+  console.log(rightArrowCount, prevWord, nextWord, currentWordChoices);
 
   className = selected ? `${className} selected` : className;
 

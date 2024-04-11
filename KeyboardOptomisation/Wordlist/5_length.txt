@@ -3955,7 +3955,6 @@ esset
 houre
 rhyme
 julio
-bello
 havia
 deare
 idler
@@ -6000,7 +5999,6 @@ trina
 betel
 undan
 bally
-dello
 haire
 peons
 ravin
@@ -6363,7 +6361,6 @@ mandi
 welnu
 golly
 jeugd
-kello
 fulke
 gueux
 valse
@@ -8096,3 +8093,4 @@ lyste
 minas
 ruhte
 setze
+jello

@@ -56,7 +56,7 @@ function App({
       : currentState === 3
       ? "flex-center-button green-space-button"
       : "flex-center-button red-space-button";
-  const spaceStates = ["SPACE", ".", ".", currentSentence];
+  const spaceStates = ["SPACE", ".", ".", currentSentence, "."];
   const spaceName = spaceStates[currentState];
   const boardStates = [
     [
@@ -77,6 +77,7 @@ function App({
     ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL ", spaceName, "->"],
     ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "->"],
     ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", spaceName],
+    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "DEL"],
   ];
 
   const letterIndexMap = createHashMap(boardStates);
@@ -270,15 +271,18 @@ function App({
           currentSentence: currentSentence,
         };
         const response = await sendDataToFlask(payload);
+        let matches = response[1];
         if (response) {
           console.log("Response from backend:", response);
           if (response[1].length === 1) {
             setCurrentWordChoices([currentWord]);
-            setCurrentWord(response[1][0].toUpperCase());
+            setCurrentWord(matches[0].toUpperCase());
             setRightArrowCount(1);
-            nextState = 2;
+            nextState = 4;
           } else {
-            setCurrentWordChoices([...response[1]]);
+            setRightArrowCount(0);
+            setCurrentWordChoices([currentWord, ...matches]);
+            console.log("in here");
           }
         }
       } catch (error) {
@@ -308,6 +312,9 @@ function App({
       if (currentState === 1) {
         setCurrentState(2);
       }
+      if (rightArrowCount === currentWordChoices.length - 2) {
+        setCurrentState(4);
+      }
     }
   };
 
@@ -317,6 +324,13 @@ function App({
       setCurrentState(1);
     } else if (rightArrowCount === 0) {
       setCurrentState(0);
+    }
+    if (currentState == 4) {
+      if (currentWordChoices.length == 1) {
+        setCurrentState(0);
+      } else {
+        setCurrentState(2);
+      }
     }
     setCurrentWord(currentWordChoices[rightArrowCount - 1].toUpperCase());
     console.log(

@@ -1,7 +1,7 @@
 :root {
   --button-font-size: 4rem;
   --button-width: calc(100vw / 3 - 8px);
-  --button-height: calc(85vh / 3 - 10px);
+  --button-height: calc(85vh / 3 - 8px);
   --button-min-height: 50px;
   --button-radius: 10px;
   --button-border: 0.3vw solid black;
