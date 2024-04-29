@@ -36,7 +36,6 @@ def onSpace():
         if len(alternatives) > 0:
             replacedWord = alternatives[0]
         else:
-            # Need to add some additional functionality here to handle the case where the word is not in wordlist
             pass
 
     return jsonify(replacedWord.upper(), alternatives)

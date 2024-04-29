@@ -1,0 +1,220 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import spearmanr
+from sklearn.linear_model import LinearRegression
+import numpy as np
+from scipy.stats import kendalltau, zscore
+
+
+def load_data_from_excel(file_path, sheet_name=0):
+    """ Load data from Excel file. """
+    return pd.read_excel(file_path, sheet_name=sheet_name)
+
+# Function to plot Words Per Minute vs. Round
+
+
+def plot_wpm_per_round(data):
+    """ 
+    Plot Words Per Minute for each user across rounds with dots for each data point,
+    and print the minimum and maximum WPM achieved by each user.
+    """
+    fig, ax = plt.subplots(figsize=(10, 6))
+    wpm_stats = {}
+
+    for user, group in data.groupby("User"):
+        ax.plot(group["Round"], group["Words Per Minute"],
+                'o-', label=f'User {user}')
+        min_wpm = group["Words Per Minute"].min()
+        max_wpm = group["Words Per Minute"].max()
+        wpm_stats[user] = (min_wpm, max_wpm)
+
+    ax.set_xlabel("Round")
+    ax.set_ylabel("Words Per Minute")
+    ax.set_title("Words Per Minute vs. Round for Each User")
+    ax.legend()
+    plt.show()
+
+    for user, (min_wpm, max_wpm) in wpm_stats.items():
+        print(f'User {user} - Min WPM: {min_wpm}, Max WPM: {max_wpm}')
+
+
+def plot_avg_wpm_per_round(data):
+    """ 
+    Plot average Words Per Minute per round with dots for each data point and error bars representing the standard deviation.
+    """
+    # Calculate the mean and standard deviation for WPM per round
+    stats = data.groupby("Round")["Words Per Minute"].agg(["mean", "std"])
+
+    # Plotting
+    plt.figure(figsize=(8, 5))
+    plt.errorbar(
+        stats.index, stats['mean'], yerr=stats['std'], fmt='o-', ecolor='red', capsize=5)
+    plt.xlabel("Round")
+    plt.ylabel("Average Words Per Minute")
+    plt.title("Average Words Per Minute per Round with Error Bars")
+    plt.grid(True)
+    plt.show()
+
+
+def plot_mistakes_per_round(data):
+    """ Plot Mistakes for each user across rounds with dots for each data point. """
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for user, group in data.groupby("User"):
+        ax.plot(group["Round"], group["Mistakes"], 'o-', label=f'User {user}')
+    ax.set_xlabel("Round")
+    ax.set_ylabel("Mistakes")
+    ax.set_title("Mistakes vs. Round for Each User")
+    ax.legend()
+    plt.show()
+
+
+def plot_avg_mistakes_per_round(data):
+    """ Plot average Mistakes per round with dots for each data point. """
+    avg_mistakes = data.groupby("Round")["Mistakes"].mean()
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(avg_mistakes.index, avg_mistakes.values, 'o-')
+    plt.xlabel("Round")
+    plt.ylabel("Average Mistakes")
+    plt.title("Average Mistakes per Round")
+    plt.show()
+
+
+def detect_outliers(data, column_name):
+    """Detect outliers in a specified column using z-scores."""
+    # Calculate z-scores for the specified column
+    z_scores = zscore(data[column_name])
+
+    # Identify outliers (z-score > 3 or < -3 are often considered outliers)
+    outliers = data[(z_scores > 3) | (z_scores < -3)]
+
+    return outliers
+
+
+def test_wpm_trend(data):
+    """
+    Test the trend of Words Per Minute (WPM) over rounds using Spearman correlation.
+
+    Parameters:
+        data (DataFrame): DataFrame containing WPM data.
+
+    Returns:
+        tuple: Spearman correlation coefficient (rho) and p-value.
+    """
+    # Calculate the average WPM for each round
+    avg_wpm_per_round = data.groupby('Round')['Words Per Minute'].mean()
+    print("Average wpm per Round:\n", avg_wpm_per_round)
+
+    # Compute the Spearman correlation coefficient and p-value
+    rho, p_value = spearmanr(
+        avg_wpm_per_round.index.tolist(), avg_wpm_per_round.values.tolist())
+    # Return the Spearman correlation coefficient and p-value
+    return rho, p_value
+
+
+def test_mistakes_trend(data):
+    # Aggregate mistakes per round
+    avg_mistakes_per_round = data.groupby('Round')['Mistakes'].mean()
+    print("Average Mistakes per Round:\n", avg_mistakes_per_round)
+    rho, p_value = spearmanr(
+        avg_mistakes_per_round.index.tolist(), avg_mistakes_per_round.values.tolist())
+    return rho, p_value
+
+
+def fit_power_law(data, target_col, group_col='Round'):
+    """
+    Fits a power law model to the specified target data across different rounds or groups using a logarithmic transformation and linear regression.
+
+    Args:
+        data (DataFrame): DataFrame containing the columns for grouping and target variable.
+        group_col (str): Column name to group the data by (e.g., 'Round').
+        target_col (str): Column name of the target variable to fit the model to (e.g., 'Words Per Minute').
+
+    Returns:
+        tuple: Contains scale factor (T1), power law exponent (alpha), and the transformed data.
+    """
+    # Group data by the specified group column, calculate mean of the target column, and reset index for the DataFrame
+    aggregated_data = data.groupby(group_col)[target_col].mean().reset_index()
+    # Add a column for the logarithm of the group column
+    aggregated_data['log_Group'] = np.log(aggregated_data[group_col])
+    # Add a column for the logarithm of mean target variable
+    aggregated_data['log_Target'] = np.log(aggregated_data[target_col])
+    # Initialise and fit the linear regression model using the logarithmic columns
+    model = LinearRegression()
+    model.fit(aggregated_data[['log_Group']], aggregated_data['log_Target'])
+    # Calculate T1 from the exponential of the intercept
+    T1 = np.exp(model.intercept_)
+    # Calculate alpha as the negative of the regression coefficient
+    alpha = -model.coef_[0]
+    # Return the scale factor, exponent, and the aggregated data
+    return T1, alpha, aggregated_data
+
+
+def plot_power_law_fit(aggregated_data, column, T1, alpha):
+    # Calculate rounds and fitted values
+    rounds = np.arange(1, aggregated_data['Round'].max() + 1)
+    fit_values = T1 * rounds**(-alpha)
+
+    # Calculate R^2
+    y_obs = aggregated_data[column]
+    ss_res = np.sum((y_obs - fit_values)**2)  # Residual sum of squares
+    ss_tot = np.sum((y_obs - np.mean(y_obs))**2)  # Total sum of squares
+    r_squared = 1 - (ss_res / ss_tot)
+
+    # Plotting
+    plt.figure(figsize=(10, 5))
+    plt.scatter(aggregated_data['Round'], y_obs,
+                color='blue', label='Average WPM per Round')
+    plt.plot(rounds, fit_values, 'r-',
+             label=f'Power Law Fit: T1={T1:.2f}, alpha={-alpha:.2f}')
+    plt.xlabel('Round')
+    plt.ylabel(column)
+    plt.title(f'Power Law Fit to {column}')
+    plt.legend()
+    print("R^2:", r_squared)
+    # plt.annotate(f'R² = {r_squared:.3f}', xy=(0.05, 0.95), xycoords='axes fraction', fontsize=12,
+    #              bbox=dict(boxstyle="round,pad=0.3", edgecolor='b', facecolor='w'))
+    plt.show()
+
+
+def plot_power_law_fit_mistakes(aggregated_data, T1, alpha):
+    # Calculate rounds and fitted values
+    rounds = np.arange(1, aggregated_data['Round'].max() + 1)
+    fit_values = T1 * rounds**(-alpha)
+
+    # Calculate R^2 for mistakes column
+    # Ensure the column name 'mistakes' is correct
+    y_obs = aggregated_data['Mistakes']
+    ss_res = np.sum((y_obs - fit_values)**2)  # Residual sum of squares
+    ss_tot = np.sum((y_obs - np.mean(y_obs))**2)  # Total sum of squares
+    r_squared = 1 - (ss_res / ss_tot)
+
+    # Plotting
+    plt.figure(figsize=(10, 5))
+    plt.scatter(aggregated_data['Round'], y_obs,
+                color='blue', label='Average Mistakes per Round')
+    plt.plot(rounds, fit_values, 'r-',
+             label=f'Power Law Fit: T1={T1:.2f}, alpha={-alpha:.2f}')
+    plt.xlabel('Round')
+    plt.ylabel('Mistakes')
+    plt.title('Power Law Fit to Mistakes')
+    plt.legend()
+    plt.annotate(f'R² = {r_squared:.3f}', xy=(0.05, 0.95), xycoords='axes fraction', fontsize=12,
+                 bbox=dict(boxstyle="round,pad=0.3", edgecolor='b', facecolor='w'))
+    plt.show()
+
+
+# Example usage (commented out to prevent execution)
+data = load_data_from_excel("Dissertation.xlsx")
+# plot_wpm_per_round(data)
+# plot_avg_wpm_per_round(data)
+# plot_mistakes_per_round(data)
+# plot_avg_mistakes_per_round(data)
+
+# T1, alpha, aggregated_data = fit_power_law(data,  'Words Per Minute')
+# plot_power_law_fit(aggregated_data, 'Words Per Minute', T1, alpha)
+
+# T1, alpha, aggregated_data = fit_power_law(data, 'Mistakes')
+# plot_power_law_fit_mistakes(aggregated_data, T1, alpha)
+print(test_wpm_trend(data))
+print(test_mistakes_trend(data))

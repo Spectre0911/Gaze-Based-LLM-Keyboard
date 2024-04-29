@@ -60,24 +60,24 @@ function App({
   const spaceName = spaceStates[currentState];
   const boardStates = [
     [
-      "E",
       "R",
-      "T",
-      "O",
-      "A",
-      "%",
-      "S",
+      "E",
       "L",
-      "N",
+      "A",
+      "T",
+      "%",
       "I",
+      "O",
+      "N",
+      "S",
       "DEL ",
       spaceName,
       "DEL",
     ],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "DEL ", spaceName, "->"],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "->"],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", spaceName],
-    ["E", "R", "T", "O", "A", "%", "S", "L", "N", "I", "<-", spaceName, "DEL"],
+    ["R", "E", "L", "A", "T", "%", "I", "O", "N", "S", "DEL ", spaceName, "->"],
+    ["R", "E", "L", "A", "T", "%", "I", "O", "N", "S", "<-", spaceName, "->"],
+    ["R", "E", "L", "A", "T", "%", "I", "O", "N", "S", spaceName],
+    ["R", "E", "L", "A", "T", "%", "I", "O", "N", "S", "<-", spaceName, "DEL"],
   ];
 
   const letterIndexMap = createHashMap(boardStates);
@@ -142,9 +142,13 @@ function App({
         className += ` ${buttonClass}`;
         onClick = onDepress.bind(this, label);
     }
-    if (i === 0 || i === 4 || i === 7 || i === 10) {
-      if (currentState !== 3) {
-        horAlign = "flex-start";
+    if (i === 0 || i === 4 || i === 7) {
+      horAlign = "flex-start";
+      vertAlign = "center";
+    } else if (i === 10) {
+      horAlign = "flex-start";
+      if (currentState == 3) {
+        horAlign = "center";
       }
       vertAlign = "center";
     } else if (i === 6 || i === 9 || i === 12 || i === 3) {
@@ -210,7 +214,6 @@ function App({
   }, [cursorPosition, coordinateMap]);
 
   useEffect(() => {
-    console.log("Current state: ", currentState);
     if (currentState !== 3) {
       return;
     }
@@ -413,16 +416,17 @@ function App({
 
   // Create the buttons / Rerender when state change
   useEffect(() => {
+    console.log("--------------------");
     var i = -1;
     const buttons = buttonLabels.map((label) => {
       i += 1;
 
-      let strokeLabel = label;
-
       const { className, onClick, vertAlign, horAlign } = getButtonConfig(
-        strokeLabel,
+        label,
         i
       );
+
+      console.log(label, horAlign, vertAlign);
 
       let currentTrialWord;
       if (trialMode) {
@@ -446,6 +450,32 @@ function App({
         />
       );
     });
+
+    // const buttons = [];
+
+    // for (let i = -1; i < buttons.length; i++) {
+    //   let label = buttonLabels[i];
+    //   const { className, onClick, vertAlign, horAlign } = getButtonConfig(
+    //     label,
+    //     i
+    //   );
+    //   buttons.push(
+    //     <TriggerButton
+    //       className={className}
+    //       frontLabel={label}
+    //       onClick={onClick}
+    //       sendCoords={updateCoords}
+    //       selected={selected[i]}
+    //       verticalAlign={vertAlign}
+    //       horizontalAlign={horAlign}
+    //       currentWord={currentWord}
+    //       trialWord={trialSentenceWords[trialIndex]}
+    //       currentWordChoices={currentWordChoices}
+    //       rightArrowCount={rightArrowCount}
+    //       buffering={buffering}
+    //     />
+    //   );
+    // }
 
     setButtons(buttons);
   }, [currentWord, currentState, lookingAt, buffering]);

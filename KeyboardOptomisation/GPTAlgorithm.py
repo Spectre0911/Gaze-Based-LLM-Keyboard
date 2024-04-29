@@ -7,6 +7,7 @@ from constants import BASE_PATH, alphabet, prechosen
 import csv
 from openai import OpenAI
 
+
 client = OpenAI()
 frequencyMaps = createWordFrequencyMap()
 
@@ -106,52 +107,82 @@ def compareWords(tuples, keyboard):
         newTuples.append((w1, match))
     return newTuples
 
-# ft:gpt-3.5-turbo-0125:momo:relations:9AFIMoLa
-# "gpt-4-0125-preview
-
 
 def gptReplacedSentence(sentence):
     prechosenStr = str(prechosen)[1:-1]
-    messages = [
-        {"role": "system", "content": f"You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED {prechosenStr} DO NOT REUSE ANY OF THEM"},
-        {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried.  What do you think the sentence says? Take a deep breath and think about it."},
-        {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\""},
-        {"role": "user",
-         "content": f"Current sentence: {sentence}. What do you think the sentence says? Take a deep breath and think about it."},
-    ]
     messagestt = [
         {"role": "system", "content": f"You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED {prechosenStr} DO NOT REUSE ANY OF THEM"},
+        {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried.  What do you think the sentence says? Take a deep breath and work on this problem step-by-step."},
+        {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"his stand-up routine was hilarious; i was laughing so hard i almost cried.\""},
+        {"role": "user",
+         "content": f"Current sentence: {sentence}. What do you think the sentence says? Take a deep breath and work on this problem step-by-step."},
+    ]
+
+    messagesntt = [
+        {"role": "system", "content": f"You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED {prechosenStr} DO NOT REUSE ANY OF THEM. "},
         {"role": "user", "content": "Current sentence: %is stand %% routine %as hilarious i %as laughing so %ard i almost %ried.  What do you think the sentence says?"},
         {"role": "assistant", "content": "Based on the sentence and the available letters, it appears that the sentence might say: \"His stand-up routine was hilarious; I was laughing so hard I almost cried.\""},
         {"role": "user",
          "content": f"Current sentence: {sentence}"},
     ]
     ftMessages = [
-        {"role": "system", "content": f"You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'i', 's', 't', 'o', 'a', 'l', 'e', 'n', 'r' DO NOT REUSE ANY OF THEM"},
-        {"role": "user", "content": f"Current sentence: {sentence}. What do you think the sentence says? Take a deep breath and think about it."}]
+        {"role": "system", "content": f"You are playing a variation on hangman where you try to guess a sentence, YOU HAVE ALREADY GUESSED 'r', 'e', 'l', 'a', 't', 'i', 'o', 'n', 's' DO NOT REUSE ANY OF THEM"},
+        {"role": "user", "content": f"Current sentence: {sentence}. What do you think the sentence says?"}]
+
+    firstMessage = [{"role": "user", "content": "{sentence}, replace % to make sentence coherent"},
+                    ]
+
+    # response = client.chat.completions.create(
+    #     model="ft:gpt-3.5-turbo-0125:momo:charlotte2:9AKp7xmS", messages=ftMessages)
+
+    # ft: gpt-3.5-turbo-0125: momo: ms-relations: 9G5YVIyT
 
     response = client.chat.completions.create(
-        model="ft:gpt-3.5-turbo-0125:momo:charlotte2:9AKp7xmS", messages=ftMessages)
+        model="ft:gpt-3.5-turbo-0125:momo:ms-relations:9G5YVIyT", messages=ftMessages)
 
     response = response.choices[0].message.content
+    normalisedString = extractSentence(response)
+
+    newSentence = matchWords(sentence, normalisedString)
+    newSentenceString = " ".join(newSentence)
+
+    return (newSentenceString)
+
+
+def extractSentence(response):
+    """
+    Extract and normalise a substring from 'response' between the first quote and the first period.
+`
+    Args:
+    - response (str): The string to process.
+
+    Returns:
+    - str: Normalised substring containing only alphabetic characters and spaces.
+    """
+    # Find the index of the first double quote in the string
     first_quote_index = response.find('"')
-    last_quote_index = response.find(
-        '.')
-    sentenceString = response[first_quote_index + 1: last_quote_index]
-    # Remove all punctuation
-    normalisedString = ''.join(
-        char for char in sentenceString if (char.isalpha() or char.isspace()))
+    # Find the index of the first period in the string
+    last_quote_index = response.find('.')
+    # Extract the substring from after the first quote to just before the first period
+    sentence_string = response[first_quote_index + 1: last_quote_index]
+
+    # Normalise the extracted substring by keeping only alphabetic characters and spaces
+    normalised_string = ''.join(
+        char for char in sentence_string if (char.isalpha() or char.isspace())
+    )
+
+    # Return the normalised string
+    return normalised_string
+
+
+def matchWords(sentence, normalisedString):
     extracted = normalisedString
     extractedWords = extracted.split()
-
     sentenceWords = sentence.split()
-
     zippedWords = list(zip(extractedWords, sentenceWords))
     reversedZippedWords = list(zip(extractedWords[::-1], sentenceWords[::-1]))
-
     forwardPass = compareWords(zippedWords, prechosen)
     backPass = compareWords(reversedZippedWords, prechosen)
-
     newSentence = sentence.split()
     for index, (w1, match) in enumerate(forwardPass):
         if match:
@@ -159,9 +190,7 @@ def gptReplacedSentence(sentence):
     for index, (w1,  match) in enumerate(backPass):
         if match:
             newSentence[-index - 1] = w1
-    newSentenceString = " ".join(newSentence)
-
-    return (newSentenceString)
+    return newSentence
 
 
 allWordTries = createWordTries()
@@ -198,9 +227,9 @@ def main():
 if __name__ == "__main__":
     main()
 
-allWordTries = createWordTries()
-gptWrapper(
-    "%", allWordTries)
+# allWordTries = createWordTries()
+# gptWrapper(
+#     "%", allWordTries)
 
-prechosenStr = str(prechosen)
-print(prechosenStr[1:-1])
+# prechosenStr = str(prechosen)
+# print(prechosenStr[1:-1])

@@ -90,3 +90,20 @@ class Trie:
 
         dfs(self.spellWord(word, characterSet), [], self.root)
         return (count, words)
+
+    def calculate_average_branching_factor(self):
+        total_children = 0
+        non_leaf_nodes = 0
+
+        def traverse(node):
+            nonlocal total_children, non_leaf_nodes
+            if node.children:
+                non_leaf_nodes += 1
+                total_children += len(node.children)
+                for child in node.children.values():
+                    traverse(child)
+
+        traverse(self.root)
+        if non_leaf_nodes == 0:
+            return 0
+        return total_children / non_leaf_nodes

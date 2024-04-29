@@ -1,12 +1,12 @@
 :root {
   --button-font-size: 4rem;
   --button-width: calc(100vw / 3 - 8px);
-  --button-height: calc(85vh / 3 - 8px);
+  --button-height: calc(85vh / 3 - 9px);
   --button-min-height: 50px;
   --button-radius: 10px;
   --button-border: 0.3vw solid black;
   --purple: #fda0d3;
-  --light-blue: #7a82e4;
+  --light-blue: #868de9;
   --dark-blue: #4a9fc9;
   --green: #00d1a0;
   --red: #fe7f6e;
@@ -24,7 +24,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
   grid-column-gap: 10px;
-  grid-row-gap: 10px;
+  grid-row-gap: 8px;
   max-width: 100vw; /* Maximum width */
 }
 

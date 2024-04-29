@@ -4,7 +4,7 @@ import CenterCursor from "./CenterCursor";
 import _ from "lodash";
 import TrialComplete from "./trialComplete";
 
-const trialMode = false;
+const trialMode = true;
 /*
 8.8
 7.2
@@ -17,6 +17,8 @@ const trialSentences = [
   "Sphinx of black quartz judge my vow",
   "The five boxing wizards jump quickly",
   "How vexingly quick daft zebras jump",
+  "Pack my box with five dozen liquor jugs",
+  "The quick brown fox jumps over the lazy dog",
 ];
 
 const EyeTracker = () => {

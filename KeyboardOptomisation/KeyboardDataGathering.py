@@ -187,9 +187,38 @@ def getKeyboardData(allWordTries, sampleWords):
 
 
 # getKeyboardData(createWordTries(), getAllWords())
-halfs = [set(['S', 'R', 'A', 'T', 'E']), set(['N', 'D', 'I', 'L', 'O'])]
-wordList = getAllWords()
+# halfs = [set(['S', 'R', 'A', 'T', 'E']), set(['N', 'D', 'I', 'L', 'O'])]
+# wordList = getAllWords()
 
-print(getAverageKeyStrokeScore(halfs, wordList))
-globalMinHalves, globalMinScore = simulatedAnnealing(halfs, wordList)
-print(globalMinScore == getAverageKeyStrokeScore(globalMinHalves, wordList))
+# print(getAverageKeyStrokeScore(halfs, wordList))
+# globalMinHalves, globalMinScore = simulatedAnnealing(halfs, wordList)
+# print(globalMinScore == getAverageKeyStrokeScore(globalMinHalves, wordList))
+
+
+allWordTries = createWordTries()
+letterCount = defaultdict(int)
+# Count the frequency of each letter
+allWords = getAllWords()
+totalCharacter = 0
+for word in allWords:
+    totalCharacter += len(word)
+    for letter in word:
+        if letter in prechosen:
+            letterCount[letter.upper()] += 1
+        else:
+            # All non-prechosen letters are counted under '%'
+            letterCount["%"] += 1
+
+# Define the specific order for the letters
+order = ['R', 'E', 'L', 'A', 'T', 'I', 'O', 'N', 'S', '%']
+
+# Reorder the data according to the specified order
+letters = order
+frequencies = [letterCount[letter] / totalCharacter for letter in letters]
+
+plt.figure(figsize=(10, 5))
+plt.bar(letters, frequencies, color='skyblue')
+plt.xlabel('Letters')
+plt.ylabel('Frequency (%)')
+plt.title('Relative Frequency of Selected Letters in Wordlist')
+plt.show()

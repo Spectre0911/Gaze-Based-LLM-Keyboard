@@ -89,13 +89,12 @@ function Cursor({
   }
 
   /**
-   * Calculates the angle between two points
-   *
+   * Calculates the angle between two points.
    * @param {float} x1
    * @param {float} y1
    * @param {float} x2
    * @param {float} y2
-   * @returns
+   * @returns {float} - The angle between the two points in degrees.
    */
   function calculateAngle(x1, y1, x2, y2) {
     // Calculate the difference in coordinates
@@ -112,7 +111,7 @@ function Cursor({
   /**
    * Rounds the angle to the nearest cardinal direction which are defined in angles
    *
-   * @param {Float} theta
+   * @param {Float} thetacan
    * @param {Float} angles
    * @param {Float} thresh
    * @returns
@@ -120,7 +119,6 @@ function Cursor({
   function generaliseAngle(theta, angles, thresh) {
     let wasNegative = theta < 0;
     let tempTheta = theta < 0 ? -theta : theta;
-
     for (let angle of angles) {
       if (tempTheta <= angle + thresh && tempTheta >= angle - thresh) {
         if (wasNegative && angle !== 0 && angle !== 180) {
@@ -129,44 +127,47 @@ function Cursor({
         return angle;
       }
     }
-
-    throw new Error("Unexpected case: No angle match found.");
   }
 
   /**
-   * Returns the normalised direction the cursor should move in.
+   * Calculates the normalized direction vector for cursor movement based on a given angle.
    *
-   * @param {Float} generalAngle
-   * @returns {}
+   * @param {Float} generalAngle - The angle in degrees for which to calculate the direction.
+   * @returns {Array} - Contains an object with normalized x and y components of the direction vector, and the angle itself.
    */
   function calculateDirection(generalAngle) {
-    // Convert angle to radians for trigonometric functions
+    // Convert the angle from degrees to radians
     let radians = (generalAngle * Math.PI) / 180;
-
-    // Calculate direction vector components
+    // Compute the direction vector components using trigonometric functions
     let x = Math.round(Math.cos(radians));
     let y = Math.round(Math.sin(radians));
-
+    // Normalize the direction vector if both components are non-zero
     if (x !== 0 && y !== 0) {
       const norm = Math.sqrt(2);
       x /= norm;
       y /= norm;
     }
-
+    // Return the direction vector and the original angle
     return [{ x: x, y: y }, generalAngle];
   }
 
   /**
-   * Rather than a centralised joystick approach, this moves the cursor in the direction the user is looking a, relative to the cursor itself.
+   * Moves the cursor relative to a gaze prediction point by calculating the angle from the current cursor position to the gaze point, snapping
+   * it to the nearest cardinal direction using a threshold, and determining the movement direction.
    *
-   * @param {Float} pred
-   * @returns
+   * @param {Object} pred - Contains the x and y coordinates of the gaze prediction.
+   * @param {Array<Float>} angles - List of cardinal angles in degrees.
+   * @param {Float} thresh - Threshold to snap to the nearest angle.
+   * @returns {Object} - Direction vector for cursor movement with x and y components.
    */
   function moveRelative(pred, angles, thresh) {
     let x = pred.x;
     let y = pred.y;
+    // Calculate angle from cursor to gaze point
     let angle = calculateAngle(cursorPosition.x, cursorPosition.y, x, y);
+    // Snap angle to nearest cardinal direction
     let generalAngle = generaliseAngle(angle, angles, thresh);
+    // Determine movement direction
     let unitDirection = calculateDirection(generalAngle);
     return unitDirection;
   }
@@ -175,8 +176,8 @@ function Cursor({
    * Calculates how the cursor moves in relation to where the user in looking at on the screen.
    * Also reorients the cursor so it points in the direction the user is looking at.
    *
-   * @param {Float} width
-   * @param {Float} height
+   * @param {Float} width The width of the target device
+   * @param {Float} height The height of the target device
    * @param {Float} x
    * @param {Float} y
    * @returns {Array} [The direction for the cursor to travel in, the angle of the cursor]

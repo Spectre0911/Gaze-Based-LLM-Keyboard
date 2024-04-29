@@ -107,6 +107,37 @@ def createWordTries():
     return trieDict
 
 
+def create_single_trie():
+    """
+    Creates a single Trie object and populates it with words from multiple files, where each file contains words of a specific length.
+
+    Args:
+        base_path (str): The base path where word files are located. Files should be named as '1_length.txt', '2_length.txt', etc.
+
+    Returns:
+        Trie: A Trie object populated with words from all specified files.
+
+    Raises:
+        FileNotFoundError: If any expected word file is not found.
+        IOError: If there is an error reading from the files.
+    """
+    trie = Trie.Trie()
+
+    for i in range(1, 19):
+        file_path = f"{BASE_PATH}{i}_length.txt"
+        try:
+            with open(file_path, 'r') as file:
+                words = file.read().split()
+                for word in words:
+                    trie.insert(word)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"The file {file_path} was not found.")
+        except IOError:
+            raise IOError(f"Error reading from {file_path}.")
+
+    return trie
+
+
 def createWordFrequencyMap():
     """
     Creates an map of maps where each index i represents a map of words of length i and their frequency.
@@ -167,9 +198,9 @@ def generateKLengthCharacterSets(k, prechosen):
     return [set(prechosen) | set(c) for c in combinations(consonants, k - len(prechosen))]
 
 
-if __name__ == '__main__':
-    calculateAverageWordsReturnedIncremental(
-        createWordTries(), getSampleWords(10000), prechosen)
+# if __name__ == '__main__':
+#     calculateAverageWordsReturnedIncremental(
+#         createWordTries(), getSampleWords(10000), prechosen)
     # print("GENERATING CHARACTER SETS....")
     # arr = []
     # for i in range(len(prechosen), 26):
@@ -186,3 +217,14 @@ if __name__ == '__main__':
     # print("CALCULATING AVERAGE POSITION OF WORD FOR CHARACTER SET...")
     # count = calculateAverageWordsReturnedT(arr, allWordTries, sampleWords, prechosen)[0]
     # print("COMPLETE")
+
+
+wordTries = createWordTries()
+wordTrie = create_single_trie()
+
+for k in wordTries.keys():
+    print(
+        f"Trie of length {k} has branching factor of {wordTries[k].calculate_average_branching_factor()}")
+
+print("Single trie has branching factor of ",
+      wordTrie.calculate_average_branching_factor())
