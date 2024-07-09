@@ -132,11 +132,6 @@ def gptReplacedSentence(sentence):
     firstMessage = [{"role": "user", "content": "{sentence}, replace % to make sentence coherent"},
                     ]
 
-    # response = client.chat.completions.create(
-    #     model="ft:gpt-3.5-turbo-0125:momo:charlotte2:9AKp7xmS", messages=ftMessages)
-
-    # ft: gpt-3.5-turbo-0125: momo: ms-relations: 9G5YVIyT
-
     response = client.chat.completions.create(
         model="ft:gpt-3.5-turbo-0125:momo:ms-relations:9G5YVIyT", messages=ftMessages)
 
@@ -226,10 +221,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# allWordTries = createWordTries()
-# gptWrapper(
-#     "%", allWordTries)
-
-# prechosenStr = str(prechosen)
-# print(prechosenStr[1:-1])
